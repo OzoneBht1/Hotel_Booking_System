@@ -1,55 +1,111 @@
-import { useRef } from "react";
-import { AppBar, Button } from "@mui/material";
+import React, { useState } from "react";
+import { AppBar, Button, Drawer, List, ListItem, Stack } from "@mui/material";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Box } from "@mui/system";
-import React from "react";
-import { styled } from "@mui/material/styles";
-import { NavLink } from "react-router-dom";
-
-const pages = ["List your Property", "Login", "Register"];
+import { Link, NavLink } from "react-router-dom";
+import HomeIcon from "@mui/icons-material/Home";
+import MenuIcon from "@mui/icons-material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+const pages = ["List your Property", "Support", "Login", "Register"];
 
 enum Page {
   Home = "/",
   "List your Property" = "/add-property",
+  Support = "support",
   Login = "/login",
   Register = "/register",
 }
 // enum which associates each page with their path
 
-const PagesList = styled(Box)({
-  display: "flex",
-});
-
 const NavBar = () => {
-  const navRef = useRef<HTMLAnchorElement>(null);
+  const [open, setOpen] = useState(false);
+  // state to control the menu
+
   type pageStrings = keyof typeof Page;
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky" sx={{ background: "#063970" }}>
       <Toolbar
         sx={{
           display: "flex",
           flexDirection: "row",
-          justifyContent: "space-around",
+          justifyContent: {
+            xs: "space-between",
+            md: "space-around",
+            lg: "space-around",
+          },
         }}
       >
-        <h3>My App(LOGO)</h3>
-        <PagesList>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <HomeIcon sx={{ width: 30, height: 30 }} />
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1, display: { md: "block", xs: "none" } }}
+          >
+            HBS
+          </Typography>
+        </Stack>
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{ display: { xs: "none", sm: "block" } }}
+        >
           {pages.map((page) => (
-            <Button key={page} variant="text">
-              <NavLink
-                ref={navRef}
-                style={{ textDecoration: "none" }}
-                to={`${Page[page as pageStrings]}`}
-              >
-                {page}
-              </NavLink>
+            <Button
+              to={`${Page[page as pageStrings]}`}
+              key={page}
+              variant="text"
+              color="inherit"
+              component={NavLink}
+              sx={{
+                color: "white",
+                "&.active": {
+                  color: "white",
+                  fontWeight: 600,
+                  borderBottom: "2px solid orange",
+                },
+              }}
+            >
+              {page}
             </Button>
           ))}
-        </PagesList>
+        </Stack>
 
-        {/* <Button color="inherit">Login</Button> */}
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{ display: { xs: "block", sm: "none" } }}
+        >
+          <MenuIcon
+            sx={{ width: 30, height: 30 }}
+            onClick={() => setOpen(true)}
+          />
+
+          <Drawer open={open} onClose={() => setOpen(false)} anchor="right">
+            <List>
+              {pages.map((page) => (
+                <ListItem
+                  to={`${Page[page as pageStrings]}`}
+                  key={page}
+                  color="inherit"
+                  component={NavLink}
+                  // sx={{
+                  //   color: "black",
+                  //   "&.active": {
+                  //     color: "black",
+                  //     fontWeight: 600,
+                  //     borderBottom: "0.3px solid black",
+                  //   },
+                  // }}
+                >
+                  {page}
+                </ListItem>
+              ))}
+            </List>
+          </Drawer>
+        </Stack>
       </Toolbar>
     </AppBar>
   );
