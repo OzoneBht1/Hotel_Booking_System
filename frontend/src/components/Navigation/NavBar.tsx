@@ -7,6 +7,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+
 const pages = ["List your Property", "Support", "Login", "Register"];
 
 enum Page {
@@ -38,11 +39,21 @@ const NavBar = () => {
         }}
       >
         <Stack direction="row" spacing={2} alignItems="center">
-          <HomeIcon sx={{ width: 30, height: 30 }} />
+          <HomeIcon sx={{ color: "white", width: 30, height: 30 }} />
           <Typography
             variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, display: { md: "block", xs: "none" } }}
+            component={NavLink}
+            to={Page.Home}
+            sx={{
+              flexGrow: 1,
+              color: "white",
+              textDecoration: "none",
+              display: { md: "block", xs: "none" },
+              "&.active": {
+                color: "white",
+                fontWeight: 600,
+              },
+            }}
           >
             HBS
           </Typography>
@@ -91,14 +102,6 @@ const NavBar = () => {
                   key={page}
                   color="inherit"
                   component={NavLink}
-                  // sx={{
-                  //   color: "black",
-                  //   "&.active": {
-                  //     color: "black",
-                  //     fontWeight: 600,
-                  //     borderBottom: "0.3px solid black",
-                  //   },
-                  // }}
                 >
                   {page}
                 </ListItem>
