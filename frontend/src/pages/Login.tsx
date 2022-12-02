@@ -1,4 +1,4 @@
-import { Avatar, Box, Container } from "@mui/material";
+import { Avatar, Box, Container, Snackbar, Alert } from "@mui/material";
 import React from "react";
 import LoginForm from "../components/LoginForm";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -8,12 +8,17 @@ import { LoginInformation } from "../components/types/types";
 import { useVerifyLoginMutation } from "../store/api/apiSlice";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-// import {LoadingSpinner}
+import { useAppDispatch } from "../store/hooks";
+import { authActions } from "../store/auth-slice";
+import { TokenState } from "../components/types/types";
 
 const Login = () => {
   const nav = useNavigate();
+  const [open, setOpen] = useState(false);
+  const dispatch = useAppDispatch();
 
-  const [verifyLogin, { data, isLoading, error }] = useVerifyLoginMutation();
+  const [verifyLogin, { data: tokens, isLoading, error }] =
+    useVerifyLoginMutation();
   let errorText: string | undefined = "";
 
   if (error) {
@@ -37,8 +42,11 @@ const Login = () => {
   const loginDataHandler = async (data: LoginInformation) => {
     await verifyLogin({ email: data.email, password: data.password })
       .unwrap()
-      .then(() => nav("/"))
-      .catch((error) => console.log("rejected", error));
+      .then(() => dispatch(authActions.setCredentials(tokens)))
+      .then(() => nav("/", { state: { open: true } }))
+      .catch(() => {
+        setOpen(true);
+      });
   };
 
   const StyledBox = styled(Box)({
@@ -50,6 +58,22 @@ const Login = () => {
 
   return (
     <Container component="main" maxWidth="xs">
+      {open && errorText != "" && (
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          onClose={() => setOpen(false)}
+        >
+          <Alert
+            onClose={() => setOpen(false)}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            {errorText}
+          </Alert>
+        </Snackbar>
+      )}
+
       <StyledBox>
         <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
           <LockOutlinedIcon />

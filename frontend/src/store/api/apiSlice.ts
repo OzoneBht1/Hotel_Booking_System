@@ -12,14 +12,6 @@ export const apiSlice = createApi({
         body: { email: loginInfo.email, password: loginInfo.password },
         include: "credentials",
       }),
-      // async onQueryStarted(loginInfo, { dispatch, queryFulfilled }) {
-      //   try {
-      //     const test = await queryFulfilled;
-      //     return await test.data;
-      //     // dispatch(authActions.setCredentials(data));
-      //     // console.log(data);
-      //   } catch (err) {}
-      // },
     }),
   }),
 });
