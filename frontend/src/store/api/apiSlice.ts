@@ -17,3 +17,5 @@ export const apiSlice = createApi({
 });
 
 export const { useVerifyLoginMutation } = apiSlice;
+
+export default apiSlice.reducer;

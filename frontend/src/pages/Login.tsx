@@ -19,6 +19,7 @@ const Login = () => {
 
   const [verifyLogin, { data: tokens, isLoading, error }] =
     useVerifyLoginMutation();
+  console.log(verifyLogin, tokens, isLoading);
   let errorText: string | undefined = "";
 
   if (error) {
@@ -39,12 +40,15 @@ const Login = () => {
 
   // text =
 
-  const loginDataHandler = async (data: LoginInformation) => {
-    await verifyLogin({ email: data.email, password: data.password })
+  const loginDataHandler = (data: LoginInformation) => {
+    console.log(data);
+    verifyLogin({ email: data.email, password: data.password })
       .unwrap()
+      .then(() => console.log("success"))
       .then(() => dispatch(authActions.setCredentials(tokens)))
       .then(() => nav("/", { state: { open: true } }))
-      .catch(() => {
+      .catch((err: Error) => {
+        console.log(err.message);
         setOpen(true);
       });
   };

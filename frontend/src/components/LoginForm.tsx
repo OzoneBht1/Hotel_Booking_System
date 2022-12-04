@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useAppDispatch } from "../store/hooks";
-import Box from "@mui/material/Box";
+import { Box } from "@mui/material/";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { LoginInformation } from "./types/types";
@@ -24,7 +24,7 @@ const LoginForm = ({ onReceiveData, isLoading, errorText }: LoginFormProps) => {
     valueChangeHandler: emailChangedHandler,
     inputBlurHandler: emailBlurHandler,
     reset: resetEmailInput,
-  } = useInput((value) => value.includes("@") && value.includes("."));
+  } = useInput((value) => value.includes("@"));
 
   const {
     value: passwordValue,
@@ -35,7 +35,7 @@ const LoginForm = ({ onReceiveData, isLoading, errorText }: LoginFormProps) => {
     reset: resetPasswordInput,
   } = useInput((value) => value.trim().length > 6);
 
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -79,7 +79,7 @@ const LoginForm = ({ onReceiveData, isLoading, errorText }: LoginFormProps) => {
         label="Email Address"
         helperText="This field is required"
         onChange={emailChangedHandler}
-        autoFocus
+        // autoFocus
         onBlur={emailBlurHandler}
       />
       <TextField

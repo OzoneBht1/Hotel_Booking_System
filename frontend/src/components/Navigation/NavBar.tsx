@@ -7,8 +7,16 @@ import HomeIcon from "@mui/icons-material/Home";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+// import { user } from "../../store/hooks";
+import { useAppSelector } from "../../store/hooks";
 
-const pages = ["List your Property", "Support", "Login", "Register"];
+const authenticatedPages = ["List your Property", "Support"];
+const unauthenticatedPages = [
+  "List your Property",
+  "Support",
+  "Login",
+  "Register",
+];
 
 enum Page {
   Home = "/",
@@ -21,9 +29,57 @@ enum Page {
 
 const NavBar = () => {
   const [open, setOpen] = useState(false);
+  const user = useAppSelector((state) => state.auth.authTokens);
+  console.log(user);
   // state to control the menu
 
   type pageStrings = keyof typeof Page;
+  const pagesToRender = user ? authenticatedPages : unauthenticatedPages;
+
+  const navigationItems = (
+    <Stack
+      direction="row"
+      spacing={2}
+      sx={{ display: { xs: "none", sm: "block" } }}
+    >
+      {pagesToRender.map((page) => (
+        <Button
+          to={`${Page[page as pageStrings]}`}
+          key={page}
+          variant="text"
+          color="inherit"
+          component={NavLink}
+          sx={{
+            color: "white",
+            "&.active": {
+              color: "white",
+              fontWeight: 600,
+              borderBottom: "2px solid orange",
+            },
+          }}
+        >
+          {page}
+        </Button>
+      ))}
+    </Stack>
+  );
+
+  const mobileNavigationDrawer = (
+    <Drawer open={open} onClose={() => setOpen(false)} anchor="right">
+      <List>
+        {pagesToRender.map((page) => (
+          <ListItem
+            to={`${Page[page as pageStrings]}`}
+            key={page}
+            color="inherit"
+            component={NavLink}
+          >
+            {page}
+          </ListItem>
+        ))}
+      </List>
+    </Drawer>
+  );
 
   return (
     <AppBar position="sticky" sx={{ background: "#063970" }}>
@@ -58,31 +114,7 @@ const NavBar = () => {
             HBS
           </Typography>
         </Stack>
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{ display: { xs: "none", sm: "block" } }}
-        >
-          {pages.map((page) => (
-            <Button
-              to={`${Page[page as pageStrings]}`}
-              key={page}
-              variant="text"
-              color="inherit"
-              component={NavLink}
-              sx={{
-                color: "white",
-                "&.active": {
-                  color: "white",
-                  fontWeight: 600,
-                  borderBottom: "2px solid orange",
-                },
-              }}
-            >
-              {page}
-            </Button>
-          ))}
-        </Stack>
+        {navigationItems}
 
         <Stack
           direction="row"
@@ -94,20 +126,7 @@ const NavBar = () => {
             onClick={() => setOpen(true)}
           />
 
-          <Drawer open={open} onClose={() => setOpen(false)} anchor="right">
-            <List>
-              {pages.map((page) => (
-                <ListItem
-                  to={`${Page[page as pageStrings]}`}
-                  key={page}
-                  color="inherit"
-                  component={NavLink}
-                >
-                  {page}
-                </ListItem>
-              ))}
-            </List>
-          </Drawer>
+          {mobileNavigationDrawer}
         </Stack>
       </Toolbar>
     </AppBar>
