@@ -9,11 +9,12 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.routers import Route, DynamicRoute, SimpleRouter
 from rest_framework import viewsets
+from .serializers import UserCreateSerializer
 
 
-# class UserProfileCreateApi(generics.CreateAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserProfileCreateSerializer
+class UserProfileCreateApi(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
 
 
 # class UserProfileDetailApi(generics.RetrieveAPIView):
