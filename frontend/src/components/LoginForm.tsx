@@ -1,12 +1,14 @@
 import React, { useRef, useState } from "react";
 import { useAppDispatch } from "../store/hooks";
-import { verifyLogin } from "../store/api";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { LoginInformation } from "./types/types";
 import LoadingButton from "@mui/lab/LoadingButton";
 import CircularProgress from "@mui/material/CircularProgress";
+import useInput from "../hooks/use-input";
+import { Alert, Snackbar } from "@mui/material";
+
 interface LoginFormProps {
   onReceiveData: (data: LoginInformation) => void;
   isLoading?: boolean;
@@ -14,67 +16,84 @@ interface LoginFormProps {
 }
 
 const LoginForm = ({ onReceiveData, isLoading, errorText }: LoginFormProps) => {
-  const [err, setErr] = useState(errorText ? true : false);
-  const [emailwasTouched, setEmailWasTouched] = useState(false);
-  const [passwordwasTouched, setPasswordWasTouched] = useState(false);
+  const [open, setOpen] = useState(false);
+  const {
+    value: emailValue,
+    hasError: emailInputHasError,
+    isValid: emailIsValid,
+    valueChangeHandler: emailChangedHandler,
+    inputBlurHandler: emailBlurHandler,
+    reset: resetEmailInput,
+  } = useInput((value) => value.includes("@") && value.includes("."));
+
+  const {
+    value: passwordValue,
+    hasError: passwordInputHasError,
+    isValid: passwordIsValid,
+    valueChangeHandler: passwordChangedHandler,
+    inputBlurHandler: passwordBlurHandler,
+    reset: resetPasswordInput,
+  } = useInput((value) => value.trim().length > 6);
 
   const dispatch = useAppDispatch();
-  const emailRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
-
-  const emailTouchHandler = () => {
-    setEmailWasTouched(true);
-  };
-
-  const passwordTouchHandler = () => {
-    setPasswordWasTouched(true);
-  };
-
-  // console.log("wasTouched", wasTouched);
-  console.log("err", err);
-  let emailDisplayError = !emailwasTouched && err;
-  let passwordDisplayError = !passwordwasTouched && err;
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setEmailWasTouched(false);
-    setPasswordWasTouched(false);
-    onReceiveData({
-      email: emailRef.current!.value,
-      password: passwordRef.current!.value,
-    });
+    resetEmailInput();
+    resetPasswordInput();
+
+    console.log(emailInputHasError, passwordInputHasError);
+    if (emailIsValid && passwordIsValid) {
+      onReceiveData({
+        email: emailValue,
+        password: passwordValue,
+      });
+    } else {
+      setOpen(true);
+    }
   };
-  // if (isLoading) {
-  //   return (
-  //     <Box sx={{ display: "flex", justifyContent: "center" }}>
-  //       <CircularProgress />
-  //     </Box>
-  //   );
-  // }
 
   return (
     <Box component="form" onSubmit={submitHandler}>
+      {open && (
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          onClose={() => setOpen(false)}
+        >
+          <Alert
+            onClose={() => setOpen(false)}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            Invalid username or password
+          </Alert>
+        </Snackbar>
+      )}
       <TextField
-        inputRef={emailRef}
-        error={emailDisplayError}
+        value={emailValue}
+        error={emailInputHasError}
         margin="normal"
         required
         fullWidth
         label="Email Address"
         helperText="This field is required"
-        onKeyDown={emailTouchHandler}
+        onChange={emailChangedHandler}
+        autoFocus
+        onBlur={emailBlurHandler}
       />
       <TextField
-        inputRef={passwordRef}
+        value={passwordValue}
         margin="normal"
-        error={passwordDisplayError}
+        error={passwordInputHasError}
         required
         fullWidth
         name="password"
         label="Password"
         type="password"
         helperText="This field is required"
-        onKeyDown={passwordTouchHandler}
+        onBlur={passwordBlurHandler}
+        onChange={passwordChangedHandler}
       />
       {/* {isLoading && (
         <LoadingButton loading variant="outlined">
