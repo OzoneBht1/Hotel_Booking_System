@@ -5,13 +5,14 @@ import { useLocation } from "react-router-dom";
 
 const Home = () => {
   const { state } = useLocation();
-  console.log(state.open);
-  const [snackbarOpen, setSnackbarOpen] = useState(state.open);
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(
+    state ? true : false
+  );
   return (
     <div>
       Home
-      {state && state.open && (
-        <div>
+      <div>
+        {snackbarOpen && (
           <Snackbar
             open={snackbarOpen}
             autoHideDuration={6000}
@@ -25,8 +26,9 @@ const Home = () => {
               Successfully Logged In!
             </Alert>
           </Snackbar>
-        </div>
-      )}
+        )}
+      </div>
+      )
     </div>
   );
 };

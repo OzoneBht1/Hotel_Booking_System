@@ -30,7 +30,6 @@ enum Page {
 const NavBar = () => {
   const [open, setOpen] = useState(false);
   const user = useAppSelector((state) => state.auth.authTokens);
-  console.log(user);
   // state to control the menu
 
   type pageStrings = keyof typeof Page;

@@ -19,3 +19,21 @@ export interface LoginInformation {
   email: string;
   password: string;
 }
+
+export interface countryInformation {
+  name: string;
+  capital: string;
+  currencies: Array<any>;
+  flag?: string;
+  independant?: boolean;
+}
+
+export interface RegistrationInformation {
+  email: string;
+  password: string;
+  password2: string;
+  first_name: string;
+  last_name: string;
+  gender: string;
+  country: string;
+}

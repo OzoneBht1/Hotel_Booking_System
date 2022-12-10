@@ -8,18 +8,21 @@ import { LoginInformation } from "../components/types/types";
 import { useVerifyLoginMutation } from "../store/api/apiSlice";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useAppDispatch } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { authActions } from "../store/auth-slice";
 import { TokenState } from "../components/types/types";
+import { useLocation } from "react-router-dom";
 
 const Login = () => {
+  const { state } = useLocation();
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(
+    state ? true : false
+  );
   const nav = useNavigate();
   const [open, setOpen] = useState(false);
   const dispatch = useAppDispatch();
 
-  const [verifyLogin, { data: tokens, isLoading, error }] =
-    useVerifyLoginMutation();
-  console.log(verifyLogin, tokens, isLoading);
+  const [verifyLogin, { error, isLoading }] = useVerifyLoginMutation();
   let errorText: string | undefined = "";
 
   if (error) {
@@ -36,19 +39,14 @@ const Login = () => {
     }
   }
 
-  console.log(errorText);
-
   // text =
 
   const loginDataHandler = (data: LoginInformation) => {
-    console.log(data);
     verifyLogin({ email: data.email, password: data.password })
       .unwrap()
-      .then(() => console.log("success"))
-      .then(() => dispatch(authActions.setCredentials(tokens)))
+      .then((tokens) => dispatch(authActions.setCredentials(tokens)))
       .then(() => nav("/", { state: { open: true } }))
       .catch((err: Error) => {
-        console.log(err.message);
         setOpen(true);
       });
   };
@@ -62,6 +60,21 @@ const Login = () => {
 
   return (
     <Container component="main" maxWidth="xs">
+      {snackbarOpen && (
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={() => setSnackbarOpen(false)}
+        >
+          <Alert
+            onClose={() => setSnackbarOpen(false)}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Successfully created a user!
+          </Alert>
+        </Snackbar>
+      )}
       {open && errorText != "" && (
         <Snackbar
           open={open}

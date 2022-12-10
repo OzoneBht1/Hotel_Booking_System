@@ -17,6 +17,7 @@ interface LoginFormProps {
 
 const LoginForm = ({ onReceiveData, isLoading, errorText }: LoginFormProps) => {
   const [open, setOpen] = useState(false);
+  const [err, setErr] = useState(errorText ? true : false);
   const {
     value: emailValue,
     hasError: emailInputHasError,
@@ -35,14 +36,15 @@ const LoginForm = ({ onReceiveData, isLoading, errorText }: LoginFormProps) => {
     reset: resetPasswordInput,
   } = useInput((value) => value.trim().length > 6);
 
-  // const dispatch = useAppDispatch();
+  const keyDownHandler = () => {
+    setErr(false);
+  };
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     resetEmailInput();
     resetPasswordInput();
 
-    console.log(emailInputHasError, passwordInputHasError);
     if (emailIsValid && passwordIsValid) {
       onReceiveData({
         email: emailValue,
@@ -66,34 +68,38 @@ const LoginForm = ({ onReceiveData, isLoading, errorText }: LoginFormProps) => {
             severity="error"
             sx={{ width: "100%" }}
           >
-            Invalid username or password
+            Invalid username or password!
           </Alert>
         </Snackbar>
       )}
       <TextField
         value={emailValue}
-        error={emailInputHasError}
+        error={emailInputHasError || err}
         margin="normal"
         required
         fullWidth
+        autoFocus={err}
         label="Email Address"
-        helperText="This field is required"
+        helperText={emailInputHasError ? "Please enter a valid email" : ""}
         onChange={emailChangedHandler}
-        // autoFocus
         onBlur={emailBlurHandler}
+        onKeyDown={keyDownHandler}
       />
       <TextField
         value={passwordValue}
         margin="normal"
-        error={passwordInputHasError}
+        error={passwordInputHasError || err}
         required
         fullWidth
         name="password"
         label="Password"
         type="password"
-        helperText="This field is required"
+        helperText={
+          passwordInputHasError ? "Please enter a valid password" : ""
+        }
         onBlur={passwordBlurHandler}
         onChange={passwordChangedHandler}
+        onKeyDown={keyDownHandler}
       />
       {/* {isLoading && (
         <LoadingButton loading variant="outlined">

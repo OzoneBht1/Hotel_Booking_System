@@ -5,7 +5,7 @@ import apiReducer, { apiSlice } from "./api/apiSlice";
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    api: apiReducer,
+    [apiSlice.reducerPath]: apiReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat([apiSlice.middleware]),
