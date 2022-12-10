@@ -1,10 +1,11 @@
-from rest_framework.serializers import ModelSerializer
 from .models import User
+from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
-
-# from rest_framework.validators import ValidationError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth import authenticate
 
 GENDER_CHOICES = (
     ("Male", "Male"),
@@ -22,26 +23,36 @@ class UserCreateSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['name', 'email', 'gender',
+        fields = ['first_name', 'last_name', 'email', 'gender',
                   'country', 'password', 'password2']
 
     def create(self, validated_data):
-        print("AOBUT TO RETURN USER")
-        validated_data['password'] = make_password(
-            validated_data.get('password'))
-        # validated_data['password2'] = make_password(
-        #     validated_data.get('password2'))
 
-        validated_data.pop('password2')
-        user = User.objects.create(**validated_data)
-        user.set_password(validated_data['password'])
+        # Get the password from the validated data
+        password = validated_data.get('password')
+
+        # Hash the password
+        hashed_password = make_password(password)
+
+        # Create the user object
+        user = User.objects.create(
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            email=validated_data['email'],
+            gender=validated_data['gender'],
+            country=validated_data['country'],
+            password=hashed_password,
+        )
+        # Save the user object
+        user.save()
         return user
 
     def validate(self, data):
         print(data)
         if data['password'] != data['password2']:
 
-            raise ValidationError({"password2": "Passwords must match"})
+            raise ValidationError(
+                {"password2": "The two passwords do not match"})
 
         return data
 
@@ -51,5 +62,37 @@ class UserCreateSerializer(ModelSerializer):
             raise ValidationError(
                 {"password": "Password must be at least 7 characters long"})
 
-            # "The length of password must be greater than 7")
         return value
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        print(user)
+
+        token = super().get_token(user)
+        # print(token)
+
+        # Add custom claims
+        # token['name'] = user.name
+        # ...
+
+        return token
+
+    def validate(self, attrs):
+        try:
+            # Get the user object using the email address
+            user = User.objects.get(email=attrs['email'])
+            result = check_password(attrs['password'], user.password)
+            # check_password method is how authenticate method validates under the hood
+            if result:
+                authenticate(
+                    username_field="email", username=attrs['email'], password=attrs['password'])
+
+                return super().validate(attrs)
+            else:
+                # The user is authenticated, so return the user object
+                raise serializers.ValidationError(
+                    {"email": "Invalid credentials"})
+        except:
+            raise serializers.ValidationError({"email": "Invalid creden"})
