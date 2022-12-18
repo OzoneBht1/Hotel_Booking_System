@@ -12,7 +12,7 @@ export interface UserState {
 }
 export interface AuthState {
   authTokens: null | TokenState;
-  // user: null | {};
+  user: null | {};
 }
 
 export interface LoginInformation {

@@ -1,9 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import jwtDecode from "jwt-decode";
+import jwt_decode from "jwt-decode";
 import { TokenState, AuthState } from "../components/types/types";
 
 const initialState: AuthState = {
-  authTokens: null,
+  authTokens: localStorage.getItem("authTokens")
+    ? JSON.parse(localStorage.getItem("authTokens")!)
+    : null,
+  // authTokens: null,
+  user: localStorage.getItem("authTokens")
+    ? jwt_decode(JSON.parse(localStorage.getItem("authTokens")!)?.access)
+    : null,
   // user: null,
 };
 const authSlice = createSlice({
@@ -11,13 +17,22 @@ const authSlice = createSlice({
   initialState: initialState,
   reducers: {
     setCredentials(state, action: PayloadAction<{ authTokens: TokenState }>) {
+      console.log(action.payload);
       const { authTokens } = action.payload;
-      state.authTokens = authTokens;
-      // state.user = jwtDecode(authTokens.access);
+      console.log("DISPATCHED");
+
+      state.authTokens = action.payload.authTokens;
+
+      if (authTokens) {
+        state.user = jwt_decode(authTokens.access);
+      }
+
+      localStorage.setItem("authTokens", JSON.stringify(authTokens));
     },
     logOut(state) {
       state.authTokens = null;
-      // state.user = null;
+      state.user = null;
+      localStorage.removeItem("authTokens");
     },
   },
 });

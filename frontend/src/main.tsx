@@ -7,13 +7,15 @@ import { Provider } from "react-redux";
 import store from "./store";
 import { ApiProvider } from "@reduxjs/toolkit/dist/query/react";
 import { apiSlice } from "./store/api/apiSlice";
+import { ThemeProvider } from "@mui/material";
+import { theme } from "./components/theme/custom-theme";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <Provider store={store}>
-    {/* <ApiProvider api={apiSlice}> */}
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-    {/* </ApiProvider> */}
-  </Provider>
+  <ThemeProvider theme={theme}>
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Provider>
+  </ThemeProvider>
 );

@@ -1,6 +1,6 @@
 import React from "react";
-import { Avatar, Box, Container, Snackbar, Alert } from "@mui/material";
-import LoginForm from "../components/LoginForm";
+import { Avatar, Box, Container, Snackbar, Alert, Stack } from "@mui/material";
+import LoginForm from "../components/forms/LoginForm";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/system";
@@ -14,11 +14,13 @@ import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { authActions } from "../store/auth-slice";
 import { TokenState } from "../components/types/types";
-import RegisterForm from "../components/RegisterForm";
+import RegisterForm from "../components/forms/RegisterForm";
 import { useDispatch } from "react-redux";
 import { useRegisterUserMutation } from "../store/api/apiSlice";
+import RegisterPageIllustration from "../assets/RegisterpageIllustration.png";
 
 let errorText: string | undefined;
+let HEIGHT_OF_NAVBAR = 64;
 const Register = () => {
   const [registerUser, { error, isLoading }] = useRegisterUserMutation();
   const [open, setOpen] = useState(false);
@@ -61,18 +63,40 @@ const Register = () => {
     alignItems: "center",
   });
   return (
-    <Container component="main" maxWidth="xs">
-      <StyledBox>
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign Up
-        </Typography>
-        {error && <p>{errorText}</p>}
-        <RegisterForm onReceiveData={formSubmitHandler} isLoading={isLoading} />
-      </StyledBox>
-    </Container>
+    <Stack
+      flexDirection="row"
+      marginTop={-1}
+      height={`calc(100vh - ${HEIGHT_OF_NAVBAR}px)`}
+    >
+      <Stack
+        component="aside"
+        width="50%"
+        sx={{
+          backgroundImage: `url(${RegisterPageIllustration})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          display: { xs: "none", sm: "flex" },
+        }}
+      ></Stack>
+      <Stack
+        component="main"
+        width={{ xs: "100%", sm: "60%", md: "50%" }}
+        padding={0}
+      >
+        <StyledBox>
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Sign Up
+          </Typography>
+          <RegisterForm
+            onReceiveData={formSubmitHandler}
+            isLoading={isLoading}
+          />
+        </StyledBox>
+      </Stack>
+    </Stack>
   );
 };
 

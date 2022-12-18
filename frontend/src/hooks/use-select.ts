@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
-
 const useSelect = () => {
   const [selectedValue, setSelectedValue] = useState<string | undefined>(
     undefined
   );
+  type MyOptionType = { label: string; value: number };
   const [isTouched, setIsTouched] = useState(false);
 
   const hasError = isTouched && !selectedValue;
