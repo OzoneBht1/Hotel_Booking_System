@@ -42,6 +42,7 @@ enum Page {
 const NavBar = () => {
   const [open, setOpen] = useState(false);
   const user = useAppSelector((state) => state.auth.user);
+  console.log(user);
   // state to control the menu
   const dispatch = useAppDispatch();
   const theme = useTheme();

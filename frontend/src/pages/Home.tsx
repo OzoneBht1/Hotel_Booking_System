@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import HomepageImg from "../assets/homepage-img.jpg";
 import { styled } from "@mui/system";
+import HomePageCard from "../components/HomePageCard";
 
 const Home = () => {
   const { state } = useLocation();
@@ -13,15 +14,6 @@ const Home = () => {
   const [snackbarOpenOnLogout, setSnackbarOpenOnLogout] = useState<boolean>(
     state?.openOnLogout ? true : false
   );
-
-  const StyledCard = styled(Box)({
-    width: "60%",
-    height: "350px",
-    backgroundColor: "#fff",
-
-    borderRadius: "10px",
-    boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.75)",
-  });
 
   return (
     <div>
@@ -69,13 +61,9 @@ const Home = () => {
             width: "100%",
           }}
         >
-          <StyledCard style={{ position: "relative", bottom: "-60%" }}>
-            {/* content goes here */}
-          </StyledCard>
+          <HomePageCard />
         </Box>
       </Box>
-
-      <p>TESTINGTESTING</p>
     </div>
   );
 };

@@ -35,16 +35,13 @@ const customStyles: StylesConfig = {
     height: 56,
     minHeight: 56,
   }),
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
 };
 
 interface RegisterFormProps {
   onReceiveData: (data: RegistrationInformation) => void;
   isLoading?: boolean;
 }
-
-const CountrySelectWrapper = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(2, 0),
-}));
 
 const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
   const [open, setOpen] = useState(false);
@@ -249,7 +246,8 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
           onChange={selectedGenderChangeHandler}
           onBlur={selectedGenderBlurHandler}
           styles={customStyles}
-          // maxMenuHeight={200}
+          menuPortalTarget={document.body}
+          maxMenuHeight={200}
           placeholder="Gender*"
         />
       </Box>
@@ -272,6 +270,7 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
           onChange={selectedCountryChangeHandler}
           onBlur={selectedCountryBlurHandler}
           styles={customStyles}
+          menuPortalTarget={document.body}
           maxMenuHeight={200}
           placeholder="Select your country...*"
         />
