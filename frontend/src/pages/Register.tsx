@@ -32,7 +32,7 @@ const Register = () => {
       errorText =
         "error" in error
           ? "There is a problem with the server. Please try again later."
-          : JSON.stringify(error.data);
+          : Object.values<string>(error.data as {})[0];
     } else {
       // SerializedError
       errorText = error.message;
@@ -68,6 +68,21 @@ const Register = () => {
       marginTop={-1}
       height={`calc(100vh - ${HEIGHT_OF_NAVBAR}px)`}
     >
+      {open && (
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          onClose={() => setOpen(false)}
+        >
+          <Alert
+            onClose={() => setOpen(false)}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            {errorText}
+          </Alert>
+        </Snackbar>
+      )}
       <Stack
         component="aside"
         width="50%"

@@ -18,6 +18,7 @@ interface LoginFormProps {
 const LoginForm = ({ onReceiveData, isLoading, errorText }: LoginFormProps) => {
   const [open, setOpen] = useState(false);
   const [err, setErr] = useState(errorText ? true : false);
+
   const {
     value: emailValue,
     hasError: emailInputHasError,

@@ -1,16 +1,21 @@
 import React, { useCallback, useEffect, useState } from "react";
 import useInput from "../../hooks/use-input";
 import { getCountries } from "../api/getCountries";
-import Select, { Theme } from "react-select";
 import { countryInformation } from "../types/types";
-import { Alert, Box, Snackbar, TextField } from "@mui/material";
+import {
+  Alert,
+  Autocomplete,
+  Box,
+  createFilterOptions,
+  Snackbar,
+  TextField,
+} from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import Typography from "@mui/material/Typography";
 import useSelect from "../../hooks/use-select";
 import { useAppDispatch } from "../../store/hooks";
 import { RegistrationInformation } from "../types/types";
 import { styled } from "@mui/system";
-import { StylesConfig } from "react-select";
 
 const GENDERS = [
   {
@@ -28,15 +33,6 @@ const GENDERS = [
 ];
 
 let errorText: string | undefined;
-
-const customStyles: StylesConfig = {
-  control: (base) => ({
-    ...base,
-    height: 56,
-    minHeight: 56,
-  }),
-  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-};
 
 interface RegisterFormProps {
   onReceiveData: (data: RegistrationInformation) => void;
@@ -126,6 +122,8 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
 
   let formIsValid: boolean = true;
 
+  console.log(selectedCountry?.value, selectedGender?.value);
+
   if (
     !firstNameIsValid ||
     !lastNameIsValid ||
@@ -157,10 +155,18 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
         email: emailValue,
         password: passwordValue,
         password2: password2Value,
-        country: selectedCountry!,
-        gender: selectedGender!,
+        country: selectedCountry!.value,
+        gender: selectedGender!.value,
       });
     }
+  };
+
+  const OPTIONS_LIMIT = 7;
+
+  const defaultFilterOptions = createFilterOptions();
+
+  const filterOptions = (options: any, state: any) => {
+    return defaultFilterOptions(options, state).slice(0, OPTIONS_LIMIT);
   };
 
   return (
@@ -194,6 +200,9 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
           value={firstNameValue}
           error={firstNameInputHasError}
           margin="normal"
+          sx={{
+            marginBottom: "-1rem",
+          }}
           required
           fullWidth
           autoFocus={firstNameInputHasError ? true : false}
@@ -241,14 +250,17 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
         marginTop={1.5}
         marginBottom={selectedGenderHasError ? "0.1px" : "1.5rem"}
       >
-        <Select
+        <Autocomplete
+          disablePortal
+          id="combo-box-gender"
           options={GENDERS}
-          onChange={selectedGenderChangeHandler}
+          autoComplete={true}
           onBlur={selectedGenderBlurHandler}
-          styles={customStyles}
-          menuPortalTarget={document.body}
-          maxMenuHeight={200}
-          placeholder="Gender*"
+          onChange={selectedGenderChangeHandler}
+          // sx={{ width: 300 }}
+          renderInput={(params) => (
+            <TextField {...params} label="Select your gender*" />
+          )}
         />
       </Box>
       {selectedGenderHasError && (
@@ -265,14 +277,20 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
         marginTop={1.5}
         marginBottom={selectedGenderHasError ? "0.1px" : "0.5rem"}
       >
-        <Select
+        <Autocomplete
+          disablePortal
+          id="combo-box-country"
+          fullWidth={true}
           options={countries}
+          autoComplete={true}
           onChange={selectedCountryChangeHandler}
           onBlur={selectedCountryBlurHandler}
-          styles={customStyles}
-          menuPortalTarget={document.body}
-          maxMenuHeight={200}
-          placeholder="Select your country...*"
+          // filterOptions={filterOptions}
+
+          // sx={{ width: 300 }}
+          renderInput={(params) => (
+            <TextField {...params} label="Select your country*" />
+          )}
         />
         {selectedCountryHasError && (
           <Typography
