@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import ListProperties from "./pages/ListProperties";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/add-property" element={<ListProperties />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/user=:userId" element={<Profile />} />
       </Routes>
     </div>
   );

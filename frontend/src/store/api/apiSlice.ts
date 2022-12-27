@@ -31,8 +31,22 @@ export const apiSlice = createApi({
           last_name: registrationInfo.last_name,
           gender: registrationInfo.gender,
           country: registrationInfo.country,
+          image: registrationInfo.image,
         },
         include: "credentials",
+      }),
+    }),
+    logoutUser: build.mutation<void, void>({
+      query: () => ({
+        url: "logout/",
+        method: "GET",
+      }),
+    }),
+    verifyEmail: build.query({
+      query: (email: string) => ({
+        url: "verify-email/",
+        method: "POST",
+        body: { email: email },
       }),
     }),
   }),
@@ -40,5 +54,7 @@ export const apiSlice = createApi({
 
 export const { useVerifyLoginMutation } = apiSlice;
 export const { useRegisterUserMutation } = apiSlice;
+export const { useLogoutUserMutation } = apiSlice;
+export const { useVerifyEmailQuery } = apiSlice;
 
 export default apiSlice.reducer;

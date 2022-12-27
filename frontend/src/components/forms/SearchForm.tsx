@@ -10,10 +10,11 @@ import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
-import { Menu, MenuList } from "@mui/material";
+import { Divider, InputAdornment, Menu, MenuList } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import MenuItem from "@mui/material/MenuItem";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 const Search = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -114,7 +115,7 @@ const SearchForm = () => {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
             renderInput={(props) => <TextField {...props} />}
-            label="DateTimePicker"
+            label="Check-in date"
             value={selectedCheckInDate}
             onChange={(newValue) => {
               setSelectedCheckInDate(newValue);
@@ -122,7 +123,7 @@ const SearchForm = () => {
           />
           <DateTimePicker
             renderInput={(props) => <TextField {...props} />}
-            label="DateTimePicker"
+            label="Check-out date"
             value={selectedCheckOutDate}
             onChange={(newValue) => {
               setSelectedCheckOutDate(newValue);
@@ -163,6 +164,7 @@ const SearchForm = () => {
                 </Box>
               </StyledBox>
             </MenuItem>
+            <Divider />
 
             <MenuItem>
               <StyledBox>
@@ -182,6 +184,7 @@ const SearchForm = () => {
                 </Box>
               </StyledBox>
             </MenuItem>
+            <Divider />
 
             <MenuItem>
               <StyledBox>
@@ -207,7 +210,13 @@ const SearchForm = () => {
       <Button
         type="submit"
         variant="contained"
-        sx={{ position: "absolute", bottom: -10 }}
+        sx={{
+          // position: "absolute",
+          bottom: -10,
+          width: "30%",
+          height: "45px",
+          borderRadius: "10px",
+        }}
       >
         Search
       </Button>

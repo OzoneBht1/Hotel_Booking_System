@@ -7,6 +7,8 @@ const StyledCard = styled(Box)({
   width: "60%",
   height: "350px",
   backgroundColor: "#fff",
+  position: "relative",
+  bottom: "-60%",
 
   borderRadius: "10px",
   boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.75)",
@@ -27,7 +29,7 @@ const StyledFormWrapper = styled(Box)({
 
 const HomePageCard = () => {
   return (
-    <StyledCard sx={{ position: "relative", bottom: "-60%" }}>
+    <StyledCard>
       <StyledFormWrapper>
         <SearchForm />
       </StyledFormWrapper>

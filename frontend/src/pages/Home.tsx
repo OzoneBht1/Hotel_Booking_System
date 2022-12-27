@@ -1,6 +1,6 @@
 import { Alert, Box, Button, Card, Grid } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import HomepageImg from "../assets/homepage-img.jpg";
 import { styled } from "@mui/system";
@@ -14,6 +14,11 @@ const Home = () => {
   const [snackbarOpenOnLogout, setSnackbarOpenOnLogout] = useState<boolean>(
     state?.openOnLogout ? true : false
   );
+  useEffect(() => {
+    setSnackbarOpenOnLogout(state?.openOnLogout ? true : false);
+    // handling the case when user logs out from home page, as page isnt re-rendered
+  }, [state]);
+  console.log(state);
 
   return (
     <div>

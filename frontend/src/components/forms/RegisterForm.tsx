@@ -16,6 +16,7 @@ import useSelect from "../../hooks/use-select";
 import { useAppDispatch } from "../../store/hooks";
 import { RegistrationInformation } from "../types/types";
 import { styled } from "@mui/system";
+import Button from "@mui/material/Button";
 
 const GENDERS = [
   {
@@ -44,6 +45,8 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
   const [countries, setCountries] = useState<
     { value: string; label: string }[]
   >([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const dispatch = useAppDispatch();
   const {
     selectedValue: selectedCountry,
@@ -337,16 +340,15 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
         onBlur={password2BlurHandler}
         // onKeyDown={keyDownHandler}
       />
-
-      <LoadingButton
-        loading={isLoading}
+      <Button
+        // loading={isLoading}
         type="submit"
         fullWidth
         variant="contained"
         sx={{ mt: 3 }}
       >
-        Sign up
-      </LoadingButton>
+        Next
+      </Button>
     </Box>
   );
 };
