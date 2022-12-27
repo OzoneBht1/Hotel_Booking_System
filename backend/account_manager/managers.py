@@ -16,10 +16,14 @@ class UserProfileManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('user_type', "Admin")
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
+        if extra_fields.get('user_type')!= "Admin":
+            raise ValueError('Superuser must have user_type=True.')
+            
         user = self.create_user(email, password, is_active, **extra_fields)
         user.save(using=self._db)
         return user

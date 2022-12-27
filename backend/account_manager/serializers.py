@@ -24,7 +24,7 @@ class UserCreateSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email', 'gender',
-                  'country', 'password', 'password2']
+                  'country', 'password', 'password2', 'image']
 
     def create(self, validated_data):
 
@@ -42,9 +42,11 @@ class UserCreateSerializer(ModelSerializer):
             gender=validated_data['gender'],
             country=validated_data['country'],
             password=hashed_password,
+            image=validated_data['image']
         )
         # Save the user object
         user.save()
+        print(user)
         return user
 
     def validate(self, data):

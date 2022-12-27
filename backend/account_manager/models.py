@@ -2,8 +2,21 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from .managers import UserProfileManager
+from django.templatetags.static import static
+from PIL import Image
 
 # Create your models here.
+GENDER_CHOICES = (
+    ("Male", "Male"),
+    ("Female", "Female"),
+    ("Others", "Others"),
+)
+
+USER_CHOICES = (
+    ("Normal", "Normal"),
+    ("Partner", "Partner"),
+    ("Admin", "Admin")
+)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -12,15 +25,38 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    gender = models.CharField(max_length=50)
+    gender = models.CharField(choices=GENDER_CHOICES, max_length=10)
     objects = UserProfileManager()
     country = models.CharField(max_length=150)
-
+    image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+    default_pic_mapping = {'Male': 'def_male.jpg', 'Female': 'def_female.jpg', 'Others': 'def_others.jpg'}
+    user_type = models.CharField(max_length=50, choices=USER_CHOICES, default="Normal")
+    
     REQUIRED_FIELDS = ['first_name', 'last_name', 'country', 'gender']
     USERNAME_FIELD = 'email'
 
     def str(self) -> str:
-        return f"{self.first_name},{self.email}"
+        return f"{self.first_name},{self.email}, {self.user_type}"    
+
+           
+    
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)        
+        if not self.image: 
+            default_image_path= "profile_images/"+self.default_pic_mapping[self.gender]
+            self.image = default_image_path               
+        image = Image.open(self.image.path)
+        if image.height >=300 or image.width >= 300:
+            output_size = (300, 300)
+            image.thumbnail(output_size)
+            image.save(self.image.path)
+     
+    
+    
+        
+            
+        
 
 
 # class Owner(models.Model):
