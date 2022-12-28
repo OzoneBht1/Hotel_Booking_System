@@ -1,12 +1,17 @@
 from rest_framework import generics
-from .models import User
+from .models import User, EmailVerification
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import UserCreateSerializer, MyTokenObtainPairSerializer
+from .serializers import UserCreateSerializer, MyTokenObtainPairSerializer, EmailVerificationSerializer
 from rest_framework.views import APIView
 from django.contrib.auth import logout
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.mail import send_mail
+from django.http import HttpResponse
+import string
+import random
+from rest_framework.decorators import api_view
+
 
 class UserProfileCreateApi(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -19,14 +24,21 @@ class UserProfileCreateApi(generics.CreateAPIView):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         print(serializer.data)
+        code = ''.join(random.choices(string.digits, k=4))
+        user = User.objects.get(email=serializer.data['email'])
+        
+        verification = EmailVerification(user = user, code = code)
+        verification.save()
+        
         
         send_mail(
         'Verify your email address',
-        'Click the link to verify your email: http://localhost:8000/verify-email/' + "BLABLA",
+        f'Your verification code is: {code}',
         'ozonebhattarai@gmail.com',
         [serializer.data['email']],
         fail_silently=False,
         )
+        
         # send_welcome_email(request.user)
         return Response({"success": "Created account Successfully"},status=status.HTTP_201_CREATED, headers=headers)
 
@@ -41,6 +53,32 @@ class UserLogoutView(APIView):
         
 
 
-def verify_email(request, token):
-    pass
+    
+@api_view(['POST'])
+def verify_email(request):
+    serializer = EmailVerificationSerializer(data=request.data)
+    print(serializer)
+   
+    
+    serializer.is_valid(raise_exception=True)
+    email = serializer.validated_data['email']
+    code = serializer.validated_data['code']
+
+    
+    # Get the EmailVerification object with the matching code and user
+    try:
+        verification = EmailVerification.objects.get(user__email=email, code=code)
+    except:
+        return Response({'message': 'Invalid code'}, status=status.HTTP_400_BAD_REQUEST)
         
+         
+    
+    # Mark the user's email as verified
+    user = verification.user
+    user.is_active = True
+    user.save()
+    
+    # Delete the EmailVerification object
+    verification.delete()
+    
+    return Response({'message': 'Email verified'}, status=status.HTTP_200_OK)

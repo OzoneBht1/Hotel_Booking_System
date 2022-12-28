@@ -98,3 +98,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
                     {"email": "Invalid credentials"})
         except:
             raise serializers.ValidationError({"email": "Invalid creden"})
+
+
+class EmailVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    code = serializers.CharField(max_length=10)
