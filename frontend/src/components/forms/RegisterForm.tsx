@@ -34,13 +34,15 @@ const GENDERS = [
 ];
 
 let errorText: string | undefined;
+let defGender: { value: string; label: string } | null = null;
+let defCountry: { value: string; label: string } | null = null;
 
 interface RegisterFormProps {
   onReceiveData: (data: RegistrationInformation) => void;
-  isLoading?: boolean;
+  data: RegistrationInformation | null;
 }
 
-const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
+const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
   const [open, setOpen] = useState(false);
   const [countries, setCountries] = useState<
     { value: string; label: string }[]
@@ -50,19 +52,24 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
   const dispatch = useAppDispatch();
   const {
     selectedValue: selectedCountry,
+    setSelectedValue: setSelectedCountry,
     valueChangeHandler: selectedCountryChangeHandler,
     inputBlurHandler: selectedCountryBlurHandler,
     hasError: selectedCountryHasError,
+    defaultValueReceive: countryDefaultValueReceived,
   } = useSelect();
   const {
     selectedValue: selectedGender,
+    setSelectedValue: setSelectedGender,
     valueChangeHandler: selectedGenderChangeHandler,
     inputBlurHandler: selectedGenderBlurHandler,
     hasError: selectedGenderHasError,
+    defaultValueReceive: genderDefaultValueReceived,
   } = useSelect();
 
   const {
     value: lastNameValue,
+    setValue: setLastNameValue,
     hasError: lastNameInputHasError,
     isValid: lastNameIsValid,
     valueChangeHandler: lastNameChangedHandler,
@@ -72,6 +79,7 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
 
   const {
     value: firstNameValue,
+    setValue: setFirstNameValue,
     hasError: firstNameInputHasError,
     isValid: firstNameIsValid,
     valueChangeHandler: firstNameChangedHandler,
@@ -79,8 +87,11 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
     reset: resetFirstNameInput,
   } = useInput((value) => value.trim().length > 0);
 
+  console.log(firstNameValue);
+
   const {
     value: emailValue,
+    setValue: setEmailValue,
     hasError: emailInputHasError,
     isValid: emailIsValid,
     valueChangeHandler: emailChangedHandler,
@@ -90,6 +101,7 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
 
   const {
     value: passwordValue,
+    setValue: setPasswordValue,
     hasError: passwordInputHasError,
     isValid: passwordIsValid,
     valueChangeHandler: passwordChangedHandler,
@@ -98,6 +110,7 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
   } = useInput((value) => value.trim().length > 6);
   const {
     value: password2Value,
+    setValue: setPassword2Value,
     hasError: password2InputHasError,
     isValid: password2IsValid,
     valueChangeHandler: password2ChangedHandler,
@@ -123,6 +136,20 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
     fetchCountries();
   }, []);
 
+  useEffect(() => {
+    if (data) {
+      setFirstNameValue(data.first_name);
+      setLastNameValue(data.last_name);
+      setEmailValue(data.email);
+      genderDefaultValueReceived({ value: data.gender, label: data.gender });
+      countryDefaultValueReceived({ value: data.country, label: data.country });
+      // selectedGenderChangeHandler({ value: data.gender, label: data})
+
+      setPasswordValue(data.password);
+      setPassword2Value(data.password2);
+    }
+  }, [data]);
+
   let formIsValid: boolean = true;
 
   console.log(selectedCountry?.value, selectedGender?.value);
@@ -139,7 +166,7 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
     errorText = "Please fill out all fields correctly";
     formIsValid = false;
   }
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitHandler = (e: any) => {
     e.preventDefault();
     if (passwordValue !== password2Value) {
       console.log("NOT SAME PASSWORD");
@@ -166,22 +193,8 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
 
   const OPTIONS_LIMIT = 7;
 
-  const defaultFilterOptions = createFilterOptions();
-
-  const filterOptions = (options: any, state: any) => {
-    return defaultFilterOptions(options, state).slice(0, OPTIONS_LIMIT);
-  };
-
   return (
-    <Box component="form" onSubmit={submitHandler} padding={2}>
-      <Typography
-        alignSelf={"flex-start"}
-        component="h1"
-        variant="h5"
-        marginTop={1}
-      >
-        Get your own travel ally!
-      </Typography>
+    <Box>
       {open && (
         <Snackbar
           open={open}
@@ -257,7 +270,12 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
           disablePortal
           id="combo-box-gender"
           options={GENDERS}
+          value={selectedGender || null}
           autoComplete={true}
+          autoHighlight={true}
+          isOptionEqualToValue={(selectedValue, optionValue) => {
+            return selectedValue.value === optionValue.value;
+          }}
           onBlur={selectedGenderBlurHandler}
           onChange={selectedGenderChangeHandler}
           // sx={{ width: 300 }}
@@ -285,7 +303,12 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
           id="combo-box-country"
           fullWidth={true}
           options={countries}
+          value={selectedCountry || null}
           autoComplete={true}
+          isOptionEqualToValue={(selectedValue, optionValue) => {
+            return selectedValue.value === optionValue.value;
+          }}
+          autoHighlight={true}
           onChange={selectedCountryChangeHandler}
           onBlur={selectedCountryBlurHandler}
           // filterOptions={filterOptions}
@@ -342,10 +365,10 @@ const RegisterForm = ({ onReceiveData, isLoading }: RegisterFormProps) => {
       />
       <Button
         // loading={isLoading}
-        type="submit"
+        onClick={submitHandler}
         fullWidth
         variant="contained"
-        sx={{ mt: 3 }}
+        sx={{ mt: 3, mb: 3 }}
       >
         Next
       </Button>

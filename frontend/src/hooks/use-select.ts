@@ -1,5 +1,4 @@
 import { ChangeEventHandler, SyntheticEvent, useRef, useState } from "react";
-
 const useSelect = () => {
   const [selectedValue, setSelectedValue] = useState<
     { value: string; label: string } | null | undefined
@@ -23,12 +22,17 @@ const useSelect = () => {
     setIsTouched(true);
   };
 
+  const defaultValueReceive = (value: { value: string; label: string }) => {
+    setSelectedValue(value);
+  };
+
   return {
     selectedValue,
+    setSelectedValue,
     hasError,
     valueChangeHandler,
     inputBlurHandler,
+    defaultValueReceive,
   };
 };
-
 export default useSelect;

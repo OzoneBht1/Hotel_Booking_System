@@ -20,7 +20,10 @@ import { authActions } from "../store/auth-slice";
 import { TokenState } from "../components/types/types";
 import RegisterForm from "../components/forms/RegisterForm";
 import { useDispatch } from "react-redux";
-import { useRegisterUserMutation } from "../store/api/apiSlice";
+import {
+  useRegisterUserMutation,
+  useVerifyEmailMutation,
+} from "../store/api/apiSlice";
 import RegisterPageIllustration from "../assets/RegisterpageIllustration.png";
 import { useMultistepForm } from "../hooks/use-multistep-form";
 import ImageForm from "../components/forms/ImageForm";
@@ -39,13 +42,30 @@ let providedEmail = "";
 const Register = () => {
   const [registerUser, { error, isLoading }] = useRegisterUserMutation();
   const [open, setOpen] = useState(false);
+  const [successSnackbar, setSuccessSnackbar] = useState(false);
+  const [completed, setCompleted] = useState(false);
   const nav = useNavigate();
+  const [verifyEmail, { isLoading: verificationApiIsLoading, isSuccess }] =
+    useVerifyEmailMutation();
 
   const [data, setData] = useState<RegistrationInformation | null>(null);
+  console.log(data);
 
   useEffect(() => {
     providedEmail = data?.email || "";
   }, [data?.email]);
+
+  // useEffect(() => {
+  //   if (currentStepIndex === 1 && open) {
+  //     next();
+  //   }
+  // }, [open]);
+
+  useEffect(() => {
+    if (completed) {
+      submitData(data!);
+    }
+  }, [completed]);
 
   if (error) {
     // either FetchBaseQueryError or SerializedError
@@ -73,53 +93,84 @@ const Register = () => {
   };
 
   const imageReceiveHandler = (image: File | null) => {
-    if (image && data) {
-      console.log("Hi mom");
-      setData((prevData) => {
-        if (prevData) {
-          console.log("Hi dad");
-          return { ...prevData, image };
-        }
-        return prevData;
-      });
-    }
+    console.log(image);
+    setData((prevData) => {
+      if (prevData && image) {
+        return { ...prevData, image };
+      }
+      return prevData;
+    });
 
-    next();
-    formSubmitHandler(data!);
+    setCompleted(true);
+  };
+
+  const backHandler = () => {
+    prev();
+  };
+
+  const codeReceiveHandler = (email: string, code: string) => {
+    verifyEmail({ email, code })
+      .unwrap()
+      .then(() => {
+        nav("/login", { state: { open: true } });
+      });
   };
 
   const { steps, currentStepIndex, next, prev } = useMultistepForm([
-    <RegisterForm onReceiveData={formReceiveHandler} isLoading={isLoading} />,
-    <ImageForm onReceiveImage={imageReceiveHandler} />,
+    <RegisterForm onReceiveData={formReceiveHandler} data={data} />,
+    <ImageForm
+      onReceiveImage={imageReceiveHandler}
+      loading={isLoading}
+      onBack={backHandler}
+    />,
     // pass email as prop to verify email once it gets value
-    <VerifyEmail email={providedEmail} />,
+    <VerifyEmail
+      email={providedEmail}
+      onCodeReceieve={codeReceiveHandler}
+      isLoading={verificationApiIsLoading}
+    />,
   ]);
 
-  const formSubmitHandler = (data: RegistrationInformation) => {
-    console.log(data);
-    registerUser({
-      first_name: data.first_name,
-      last_name: data.last_name,
-      email: data.email,
-      password: data.password,
-      password2: data.password2,
-      country: data.country,
-      gender: data.gender,
-      image: data.image,
-    })
+  const submitData = (data: RegistrationInformation) => {
+    console.log("HERE");
+    const formData = new FormData();
+    formData.append("first_name", data.first_name);
+    formData.append("last_name", data.last_name);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("password2", data.password2);
+    formData.append("country", data.country);
+    formData.append("gender", data.gender);
+    if (data.image) {
+      formData.append("image", data.image, data.image.name);
+    } else {
+      formData.append("image", "");
+    }
+
+    console.log(data.image);
+    console.log(formData.get("image"));
+    for (const value of formData.values()) {
+      console.log(value);
+    }
+
+    registerUser(formData)
       .unwrap()
       // .then(() => nav("/login", { state: { open: true } }))
       .then(() => next())
+      .then(() => setSuccessSnackbar(true))
       .catch((err: Error) => {
         console.log(err);
         setOpen(true);
+        setCompleted(false);
+        prev();
       });
   };
 
   const StyledBox = styled(Box)({
-    marginTop: 65,
+    marginTop: "30px",
     display: "flex",
     flexDirection: "column",
+    // justifyContent: "center",
     alignItems: "center",
   });
   return (
@@ -129,6 +180,22 @@ const Register = () => {
       // height={`calc(100vh - ${HEIGHT_OF_NAVBAR}px)`}
       height="100vh"
     >
+      {successSnackbar && (
+        <Snackbar
+          open={successSnackbar}
+          autoHideDuration={6000}
+          onClose={() => setSuccessSnackbar(false)}
+        >
+          <Alert
+            onClose={() => setSuccessSnackbar(false)}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Successfully registered! Verify your email to proceed.
+          </Alert>
+        </Snackbar>
+      )}
+
       {open && (
         <Snackbar
           open={open}

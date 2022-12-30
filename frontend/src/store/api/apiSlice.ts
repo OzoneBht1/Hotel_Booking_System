@@ -20,19 +20,13 @@ export const apiSlice = createApi({
       }),
     }),
     registerUser: build.mutation({
-      query: (registrationInfo: RegistrationInformation) => ({
+      query: (formData: FormData) => ({
         url: "register/",
         method: "POST",
-        body: {
-          email: registrationInfo.email,
-          password: registrationInfo.password,
-          password2: registrationInfo.password2,
-          first_name: registrationInfo.first_name,
-          last_name: registrationInfo.last_name,
-          gender: registrationInfo.gender,
-          country: registrationInfo.country,
-          image: registrationInfo.image,
-        },
+        // headers: {
+        //   "Content-Type": `multipart/form-data; boundary=`,
+        // },
+        body: formData,
         include: "credentials",
       }),
     }),
@@ -42,11 +36,11 @@ export const apiSlice = createApi({
         method: "GET",
       }),
     }),
-    verifyEmail: build.query({
-      query: (email: string) => ({
-        url: "verify-email/",
+    verifyEmail: build.mutation({
+      query: ({ email, code }) => ({
+        url: "verify/",
         method: "POST",
-        body: { email: email },
+        body: { email: email, code: code as number },
       }),
     }),
   }),
@@ -55,6 +49,6 @@ export const apiSlice = createApi({
 export const { useVerifyLoginMutation } = apiSlice;
 export const { useRegisterUserMutation } = apiSlice;
 export const { useLogoutUserMutation } = apiSlice;
-export const { useVerifyEmailQuery } = apiSlice;
+export const { useVerifyEmailMutation } = apiSlice;
 
 export default apiSlice.reducer;

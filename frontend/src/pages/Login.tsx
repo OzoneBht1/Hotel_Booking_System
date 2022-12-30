@@ -23,7 +23,7 @@ import { TokenState } from "../components/types/types";
 import { useLocation } from "react-router-dom";
 import LoginPageIllustration from "../assets/LoginpageIllustration.png";
 
-let HEIGHT_OF_NAVBAR = 64;
+let HEIGHT_OF_NAVBAR = 68;
 
 const Login = () => {
   const { state } = useLocation();
@@ -91,7 +91,7 @@ const Login = () => {
             severity="success"
             sx={{ width: "100%" }}
           >
-            Successfully created a user!
+            Your account has been verified! You can now log in.
           </Alert>
         </Snackbar>
       )}

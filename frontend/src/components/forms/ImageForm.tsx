@@ -9,6 +9,8 @@ import { LoadingButton } from "@mui/lab";
 
 interface ImageFormProps {
   onReceiveImage: (value: File | null) => void;
+  loading: boolean;
+  onBack: () => void;
 }
 
 const CustomBox = styled(Box)({
@@ -25,31 +27,40 @@ const CustomBox = styled(Box)({
 
 const allowedFileTypes = ["png", "jpeg", "jpg"];
 
-const ImageForm = ({ onReceiveImage }: ImageFormProps) => {
+const ImageForm = ({ onReceiveImage, loading, onBack }: ImageFormProps) => {
   const [value, setValue] = React.useState<File | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const handleChange = (newValue: File | null) => {
-    if (!newValue) return setValue(null);
+    // if (!newValue) return setValue(null);
 
-    if (
-      allowedFileTypes.includes(newValue?.type.split("/")[1]) &&
-      newValue?.size < 5 * 1024 * 1024
-    ) {
-      setValue(newValue);
-      setError(null);
-    } else {
-      setError(
-        "The image must be a png, jpeg or jpg file with a maximum size of 5MB"
-      );
-    }
+    // if (
+    //   allowedFileTypes.includes(newValue?.type.split("/")[1]) &&
+    //   newValue?.size < 5 * 1024 * 1024
+    // ) {
+    //   setValue(newValue);
+    //   setError(null);
+    // } else {
+    //   setError(
+    //     "The image must be a png, jpeg or jpg file with a maximum size of 5MB"
+    //   );
+    // }
+    setValue(newValue);
   };
 
-  const buttonClickHandler = () => {
+  const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log(value);
     onReceiveImage(value);
   };
 
   return (
-    <>
+    <Box
+      component="form"
+      onSubmit={submitHandler}
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+    >
       <Avatar
         src={value ? URL.createObjectURL(value!) : ""}
         sx={{ width: 200, height: 200, margin: 1 }}
@@ -57,7 +68,8 @@ const ImageForm = ({ onReceiveImage }: ImageFormProps) => {
       {/* <CircularProgress /> */}
       <MuiFileInput
         size="small"
-        getInputText={(file) => file?.name || "Input file"}
+        getInputText={(file) => (file?.name ? file.name : "No file selected")}
+        placeholder="Upload your profile picture"
         value={value}
         onChange={handleChange}
         sx={{ margin: 1 }}
@@ -68,27 +80,20 @@ const ImageForm = ({ onReceiveImage }: ImageFormProps) => {
           {error}
         </Typography>
       )}
-      <Box display="flex">
-        <Button
-          // loading={isLoading}
-          type="submit"
-          sx={{ width: "40%", m: 3, flex: 3 }}
-          variant="contained"
-        >
-          Previous
+      <Box display="flex" sx={{ width: "100%" }} alignItems="center">
+        <Button variant="outlined" onClick={onBack} sx={{ margin: 3, flex: 3 }}>
+          Back
         </Button>
-
-        <Button
-          // loading={isLoading}
-          onClick={buttonClickHandler}
+        <LoadingButton
+          loading={loading}
           type="submit"
-          sx={{ width: "40%", m: 3, flex: 3 }}
+          sx={{ m: 3, flex: 3 }}
           variant="contained"
         >
           Submit
-        </Button>
+        </LoadingButton>
       </Box>
-    </>
+    </Box>
   );
 };
 
