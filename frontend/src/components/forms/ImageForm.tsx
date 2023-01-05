@@ -1,8 +1,6 @@
 import React from "react";
-import { TextField, Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { styled } from "@mui/system";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
-import IconButton from "@mui/material/IconButton";
 import { MuiFileInput } from "mui-file-input";
 import { CircularProgress, Avatar } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
@@ -31,20 +29,19 @@ const ImageForm = ({ onReceiveImage, loading, onBack }: ImageFormProps) => {
   const [value, setValue] = React.useState<File | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const handleChange = (newValue: File | null) => {
-    // if (!newValue) return setValue(null);
+    if (!newValue) return setValue(null);
 
-    // if (
-    //   allowedFileTypes.includes(newValue?.type.split("/")[1]) &&
-    //   newValue?.size < 5 * 1024 * 1024
-    // ) {
-    //   setValue(newValue);
-    //   setError(null);
-    // } else {
-    //   setError(
-    //     "The image must be a png, jpeg or jpg file with a maximum size of 5MB"
-    //   );
-    // }
-    setValue(newValue);
+    if (
+      allowedFileTypes.includes(newValue?.type.split("/")[1]) &&
+      newValue?.size < 5 * 1024 * 1024
+    ) {
+      setValue(newValue);
+      setError(null);
+    } else {
+      setError(
+        "The image must be a png, jpeg or jpg file with a maximum size of 5MB"
+      );
+    }
   };
 
   const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
@@ -65,7 +62,6 @@ const ImageForm = ({ onReceiveImage, loading, onBack }: ImageFormProps) => {
         src={value ? URL.createObjectURL(value!) : ""}
         sx={{ width: 200, height: 200, margin: 1 }}
       />
-      {/* <CircularProgress /> */}
       <MuiFileInput
         size="small"
         getInputText={(file) => (file?.name ? file.name : "No file selected")}

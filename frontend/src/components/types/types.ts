@@ -28,7 +28,7 @@ export interface countryInformation {
   independant?: boolean;
 }
 
-export interface FormInformation {
+export interface RegistrationInformation {
   email: string;
   password: string;
   password2: string;
@@ -36,8 +36,10 @@ export interface FormInformation {
   last_name: string;
   gender: string;
   country: string;
+  image?: File | null;
 }
 
-export interface RegistrationInformation extends FormInformation {
-  image?: File | null;
+export interface SelectState {
+  value: string;
+  label: string;
 }

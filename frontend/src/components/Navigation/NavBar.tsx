@@ -1,29 +1,24 @@
-import React, { useState, memo, useEffect } from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   Avatar,
   Box,
   Button,
-  ButtonTypeMap,
   Divider,
   Drawer,
-  ExtendButtonBase,
   List,
   ListItem,
   ListItemIcon,
   Stack,
 } from "@mui/material";
 import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import HomeIcon from "@mui/icons-material/Home";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Menu, { MenuProps } from "@mui/material/Menu";
-// import { user } from "../../store/hooks";
+import Menu from "@mui/material/Menu";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { styled } from "@mui/system";
-import { createStyles, useTheme, withStyles } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import travAlly from "../../assets/travAlly.png";
 import { authActions } from "../../store/auth-slice";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -53,7 +48,6 @@ const NavBar = () => {
   const [open, setOpen] = useState(false);
   const user = useAppSelector((state) => state.auth.user);
   const [logout, { isSuccess }] = useLogoutUserMutation();
-  // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const openMenu = Boolean(anchorEl);
 
@@ -185,8 +179,7 @@ const NavBar = () => {
               width: { sm: 140, md: 170, lg: 200 },
               height: 75,
             }}
-            // to={Page.Home}
-
+            to={Page.Home}
             width={{ sm: 140, md: 170, lg: 200 }}
             height={70}
           />

@@ -2,21 +2,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import useInput from "../../hooks/use-input";
 import { getCountries } from "../api/getCountries";
 import { countryInformation } from "../types/types";
-import {
-  Alert,
-  Autocomplete,
-  Box,
-  createFilterOptions,
-  Snackbar,
-  TextField,
-} from "@mui/material";
-import { LoadingButton } from "@mui/lab";
+import { Alert, Autocomplete, Box, Snackbar, TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import useSelect from "../../hooks/use-select";
-import { useAppDispatch } from "../../store/hooks";
 import { RegistrationInformation } from "../types/types";
-import { styled } from "@mui/system";
 import Button from "@mui/material/Button";
+import { SelectState } from "../types/types";
 
 const GENDERS = [
   {
@@ -34,8 +25,6 @@ const GENDERS = [
 ];
 
 let errorText: string | undefined;
-let defGender: { value: string; label: string } | null = null;
-let defCountry: { value: string; label: string } | null = null;
 
 interface RegisterFormProps {
   onReceiveData: (data: RegistrationInformation) => void;
@@ -44,15 +33,10 @@ interface RegisterFormProps {
 
 const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
   const [open, setOpen] = useState(false);
-  const [countries, setCountries] = useState<
-    { value: string; label: string }[]
-  >([]);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [countries, setCountries] = useState<SelectState[]>([]);
 
-  const dispatch = useAppDispatch();
   const {
     selectedValue: selectedCountry,
-    setSelectedValue: setSelectedCountry,
     valueChangeHandler: selectedCountryChangeHandler,
     inputBlurHandler: selectedCountryBlurHandler,
     hasError: selectedCountryHasError,
@@ -60,7 +44,6 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
   } = useSelect();
   const {
     selectedValue: selectedGender,
-    setSelectedValue: setSelectedGender,
     valueChangeHandler: selectedGenderChangeHandler,
     inputBlurHandler: selectedGenderBlurHandler,
     hasError: selectedGenderHasError,
@@ -74,7 +57,6 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
     isValid: lastNameIsValid,
     valueChangeHandler: lastNameChangedHandler,
     inputBlurHandler: lastNameBlurHandler,
-    reset: resetLastNameInput,
   } = useInput((value) => value.trim().length > 0);
 
   const {
@@ -84,7 +66,6 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
     isValid: firstNameIsValid,
     valueChangeHandler: firstNameChangedHandler,
     inputBlurHandler: firstNameBlurHandler,
-    reset: resetFirstNameInput,
   } = useInput((value) => value.trim().length > 0);
 
   console.log(firstNameValue);
@@ -96,7 +77,6 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
     isValid: emailIsValid,
     valueChangeHandler: emailChangedHandler,
     inputBlurHandler: emailBlurHandler,
-    reset: resetEmailInput,
   } = useInput((value) => value.includes("@"));
 
   const {
@@ -121,7 +101,7 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
   const fetchCountries = useCallback(async () => {
     const returnedData =
       (await getCountries()) as unknown as countryInformation[];
-    const transformedCountries: { value: string; label: string }[] = [];
+    const transformedCountries: SelectState[] = [];
 
     returnedData.map((country) => {
       transformedCountries.push({
@@ -143,8 +123,6 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
       setEmailValue(data.email);
       genderDefaultValueReceived({ value: data.gender, label: data.gender });
       countryDefaultValueReceived({ value: data.country, label: data.country });
-      // selectedGenderChangeHandler({ value: data.gender, label: data})
-
       setPasswordValue(data.password);
       setPassword2Value(data.password2);
     }
@@ -169,7 +147,6 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
   const submitHandler = (e: any) => {
     e.preventDefault();
     if (passwordValue !== password2Value) {
-      console.log("NOT SAME PASSWORD");
       errorText = "The two passwords do not match.";
       formIsValid = false;
       resetPasswordInput();
@@ -190,8 +167,6 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
       });
     }
   };
-
-  const OPTIONS_LIMIT = 7;
 
   return (
     <Box>
@@ -228,7 +203,6 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
           }
           onChange={firstNameChangedHandler}
           onBlur={firstNameBlurHandler}
-          // onKeyDown={keyDownHandler}
         />
         <TextField
           value={lastNameValue}
@@ -259,9 +233,7 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
         helperText={emailInputHasError ? "Please enter a valid email" : ""}
         onChange={emailChangedHandler}
         onBlur={emailBlurHandler}
-        // onKeyDown={keyDownHandler}
       />
-      {/* add margin top and bottom to the select below */}
       <Box
         marginTop={1.5}
         marginBottom={selectedGenderHasError ? "0.1px" : "1.5rem"}
@@ -278,7 +250,6 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
           }}
           onBlur={selectedGenderBlurHandler}
           onChange={selectedGenderChangeHandler}
-          // sx={{ width: 300 }}
           renderInput={(params) => (
             <TextField {...params} label="Select your gender*" />
           )}
@@ -304,16 +275,13 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
           fullWidth={true}
           options={countries}
           value={selectedCountry || null}
-          autoComplete={true}
+          // autoComplete={true}
           isOptionEqualToValue={(selectedValue, optionValue) => {
             return selectedValue.value === optionValue.value;
           }}
           autoHighlight={true}
           onChange={selectedCountryChangeHandler}
           onBlur={selectedCountryBlurHandler}
-          // filterOptions={filterOptions}
-
-          // sx={{ width: 300 }}
           renderInput={(params) => (
             <TextField {...params} label="Select your country*" />
           )}

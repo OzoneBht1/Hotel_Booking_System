@@ -34,17 +34,10 @@ const VerifyEmail = ({
   const [value, setValue] = useState("");
 
   const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
-    // const code = parseInt(value1 + value2 + value3 + value4);
+    event.preventDefault();
     const code = value;
     console.log(email, code);
     onCodeReceieve(email, code);
-    // verifyEmail({ email, code })
-    //   .unwrap()
-    //   .then((res) => {
-    //     console.log(res);
-    //   });
-
-    event.preventDefault();
   };
   return (
     <Box
@@ -63,7 +56,7 @@ const VerifyEmail = ({
       />
       <LoadingButton
         loading={isLoading}
-        disabled={parseInt(value).toString().length < 4}
+        disabled={value.length < 4}
         type="submit"
         fullWidth
         sx={{ m: 3, flex: 3 }}

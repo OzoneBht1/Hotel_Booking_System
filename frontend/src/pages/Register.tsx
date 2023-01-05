@@ -7,19 +7,11 @@ import { styled } from "@mui/system";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
-import {
-  LoginInformation,
-  RegistrationInformation,
-  FormInformation,
-} from "../components/types/types";
+import { RegistrationInformation } from "../components/types/types";
 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { authActions } from "../store/auth-slice";
-import { TokenState } from "../components/types/types";
 import RegisterForm from "../components/forms/RegisterForm";
-import { useDispatch } from "react-redux";
 import {
   useRegisterUserMutation,
   useVerifyEmailMutation,
@@ -27,11 +19,9 @@ import {
 import RegisterPageIllustration from "../assets/RegisterpageIllustration.png";
 import { useMultistepForm } from "../hooks/use-multistep-form";
 import ImageForm from "../components/forms/ImageForm";
-import { LoadingButton } from "@mui/lab";
 import VerifyEmail from "../components/VerifyEmail";
 
 let errorText: string | undefined;
-let HEIGHT_OF_NAVBAR = 75;
 const STEPS_TITLE = [
   "Fill the form",
   "Add a profile picture",
@@ -54,12 +44,6 @@ const Register = () => {
   useEffect(() => {
     providedEmail = data?.email || "";
   }, [data?.email]);
-
-  // useEffect(() => {
-  //   if (currentStepIndex === 1 && open) {
-  //     next();
-  //   }
-  // }, [open]);
 
   useEffect(() => {
     if (completed) {
@@ -123,7 +107,6 @@ const Register = () => {
       loading={isLoading}
       onBack={backHandler}
     />,
-    // pass email as prop to verify email once it gets value
     <VerifyEmail
       email={providedEmail}
       onCodeReceieve={codeReceiveHandler}
@@ -155,7 +138,6 @@ const Register = () => {
 
     registerUser(formData)
       .unwrap()
-      // .then(() => nav("/login", { state: { open: true } }))
       .then(() => next())
       .then(() => setSuccessSnackbar(true))
       .catch((err: Error) => {

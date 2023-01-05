@@ -1,9 +1,4 @@
-import {
-  createTheme,
-  ThemeProvider,
-  styled,
-  PaletteColorOptions,
-} from "@mui/material/styles";
+import { createTheme, PaletteColorOptions } from "@mui/material/styles";
 
 const { palette } = createTheme();
 

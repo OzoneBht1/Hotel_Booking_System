@@ -1,11 +1,8 @@
 import React, { useRef, useState } from "react";
-import { useAppDispatch } from "../../store/hooks";
 import { Box, Typography } from "@mui/material/";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import { LoginInformation } from "../types/types";
 import LoadingButton from "@mui/lab/LoadingButton";
-import CircularProgress from "@mui/material/CircularProgress";
 import useInput from "../../hooks/use-input";
 import { Alert, Snackbar } from "@mui/material";
 
@@ -113,11 +110,6 @@ const LoginForm = ({ onReceiveData, isLoading, errorText }: LoginFormProps) => {
         onChange={passwordChangedHandler}
         onKeyDown={keyDownHandler}
       />
-      {/* {isLoading && (
-        <LoadingButton loading variant="outlined">
-          Submit
-        </LoadingButton>
-      )} */}
 
       <LoadingButton
         loading={isLoading}

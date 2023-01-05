@@ -1,14 +1,5 @@
-import {
-  Avatar,
-  Box,
-  Container,
-  Snackbar,
-  Alert,
-  Grid,
-  Stack,
-  Link,
-} from "@mui/material";
 import React from "react";
+import { Avatar, Box, Snackbar, Alert, Grid, Stack } from "@mui/material";
 import LoginForm from "../components/forms/LoginForm";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
@@ -51,8 +42,6 @@ const Login = () => {
       errorText = error.message;
     }
   }
-
-  // text =
 
   const loginDataHandler = (data: LoginInformation) => {
     console.log("HELLO");
@@ -143,8 +132,6 @@ const Login = () => {
 
       <Stack
         component="aside"
-        // sx={{ backgroundColor: "primary.main" }}
-
         width="50%"
         sx={{
           backgroundImage: `url(${LoginPageIllustration})`,
