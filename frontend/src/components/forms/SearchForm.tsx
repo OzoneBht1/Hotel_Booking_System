@@ -1,30 +1,36 @@
 import Button from "@mui/material/Button";
-import Popover from "@mui/material/Popover";
 import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-
 import { Box, styled } from "@mui/system";
 import React, { useState } from "react";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
-import { Divider, InputAdornment, Menu, MenuList } from "@mui/material";
+import { Divider, Menu, MenuList, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import MenuItem from "@mui/material/MenuItem";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 
 const Search = styled(Toolbar)(({ theme }) => ({
   display: "flex",
   backgroundColor: "white",
-  padding: "0 10px",
-  //   width: "100%",
+  // padding: "0 10px",
+  marginBottom: "12px",
+  // padding: "0px 14px",
   border: "1px solid #ccc",
   borderRadius: theme.shape.borderRadius,
-  width: "80%",
+
+  // width: "80%",
+
+  width: "95%",
+
   height: "40px",
+  // [theme.breakpoints.up("xs")]: {
+  //   width: "80%",
+  // },
 }));
 
 const Icon = styled(Box)(({ theme }) => ({
@@ -41,6 +47,14 @@ const PlusMinusIcon = styled(Box)(({ theme }) => ({
 
 const BookingDetails = styled(Box)(({ theme }) => ({
   display: "flex",
+  width: "100%",
+  paddingLeft: "10px",
+  gap: 10,
+  flexWrap: "wrap",
+  paddingRight: "10px",
+  [theme.breakpoints.up("md")]: {
+    flexWrap: "nowrap",
+  },
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
@@ -72,13 +86,16 @@ const SearchForm = () => {
   const [rooms, setRooms] = useState(1);
 
   const handleAdultsChange = (increment: number) => {
+    if (adults < 1 && increment < 0) return;
     setAdults(adults + increment);
   };
   const handleChildrenChange = (increment: number) => {
+    if (childrenNum < 1 && increment < 0) return;
     setChildrenNum(childrenNum + increment);
   };
 
   const handleRoomChange = (increment: number) => {
+    if (rooms < 1 && increment < 0) return;
     setRooms(rooms + increment);
   };
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -98,7 +115,10 @@ const SearchForm = () => {
       display="flex"
       flexDirection="column"
       flexGrow={1}
-      justifyContent="space-around"
+      padding={2}
+      height="100%"
+      // flexWrap="wrap"
+      justifyContent="space-between"
       alignItems="center"
     >
       <Search>
@@ -113,25 +133,77 @@ const SearchForm = () => {
       </Search>
       <BookingDetails>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DateTimePicker
-            renderInput={(props) => <TextField {...props} />}
-            label="Check-in date"
-            value={selectedCheckInDate}
-            onChange={(newValue) => {
-              setSelectedCheckInDate(newValue);
+          <Box
+            sx={{
+              display: { xs: "flex", md: "inline-flex" },
+
+              width: { xs: "100%", md: "100%" },
             }}
-          />
-          <DateTimePicker
-            renderInput={(props) => <TextField {...props} />}
-            label="Check-out date"
-            value={selectedCheckOutDate}
-            onChange={(newValue) => {
-              setSelectedCheckOutDate(newValue);
-            }}
-          />
+          >
+            <DateTimePicker
+              renderInput={(props) => (
+                <TextField
+                  {...props}
+                  sx={{ marginRight: 0.5, width: { xs: "50%", md: "40%" } }}
+                />
+              )}
+              label="Check-in date"
+              value={selectedCheckInDate}
+              onChange={(newValue) => {
+                setSelectedCheckInDate(newValue);
+              }}
+            />
+            <DateTimePicker
+              renderInput={(props) => (
+                <TextField
+                  {...props}
+                  sx={{ width: { xs: "50%", md: "40%" } }}
+                />
+              )}
+              label="Check-out date"
+              value={selectedCheckOutDate}
+              onChange={(newValue) => {
+                setSelectedCheckOutDate(newValue);
+              }}
+            />
+          </Box>
         </LocalizationProvider>
-        <Button onClick={handleMenuOpen} variant="contained">
-          Open Menu
+        <Button
+          onClick={handleMenuOpen}
+          variant="outlined"
+          sx={{
+            justifyContent: "flex-start",
+            width: { xs: "100%", md: "50%" },
+            height: "56px",
+          }}
+        >
+          <Stack direction="row" justifyContent="flex-start">
+            <Icon>
+              <SupervisorAccountIcon sx={{ width: 30, height: 30 }} />
+            </Icon>
+            <Stack display={{ xs: "hidden" }}>
+              <Stack direction="row">
+                <Typography variant="body2" textTransform="none">
+                  {adults} {adults > 1 ? "Adults" : "Adult"}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  textTransform="none"
+                  display={childrenNum > 0 ? "block" : "none"}
+                >
+                  {childrenNum} {childrenNum > 1 ? "Children" : "Child"}
+                </Typography>
+              </Stack>
+
+              <Typography
+                variant="body2"
+                textTransform="none"
+                alignSelf="flex-start"
+              >
+                {rooms} {rooms > 1 ? "Rooms" : "Room"}
+              </Typography>
+            </Stack>
+          </Stack>
         </Button>
         <Menu
           anchorEl={anchorEl}
@@ -211,7 +283,6 @@ const SearchForm = () => {
         type="submit"
         variant="contained"
         sx={{
-          // position: "absolute",
           bottom: -10,
           width: "30%",
           height: "45px",
