@@ -74,6 +74,14 @@ class UserCreateSerializer(ModelSerializer):
 
         return value
 
+class UserDetailSerializer(ModelSerializer):
+    image = Base64ImageField(required=False, allow_null=True)
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'gender', 'country', 'image']
+        read_only_fields = ['email']
+    
+    
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -97,7 +105,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             # check_password method is how authenticate method validates under the hood
            
             if result:
-                if user.is_active:                    
+                if user.is_active:
+                    print("AUTHENTICATING")                    
                     user = authenticate(
                     username_field="email", username=attrs['email'], password=attrs['password'])
                     return super().validate(attrs)
@@ -105,7 +114,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
                     print("RAISING")
                     raise serializers.ValidationError({"email": "Email Not verified"})
             else:
-                # The user is authenticated, so return the user object
+        
                 raise serializers.ValidationError(
                     {"email": "Invalid credentials"})
         except User.DoesNotExist:

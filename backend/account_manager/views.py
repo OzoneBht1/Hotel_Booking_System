@@ -1,7 +1,7 @@
 from rest_framework import generics
 from .models import User, EmailVerification
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import UserCreateSerializer, MyTokenObtainPairSerializer, EmailVerificationSerializer
+from .serializers import UserCreateSerializer, MyTokenObtainPairSerializer, EmailVerificationSerializer, UserDetailSerializer
 from rest_framework.views import APIView
 from django.contrib.auth import logout
 from rest_framework.response import Response
@@ -11,6 +11,8 @@ from django.http import HttpResponse
 import string
 import random
 from rest_framework.decorators import api_view
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from .permissions import UserDetailPermission
 
 
 class UserProfileCreateApi(generics.CreateAPIView):
@@ -44,6 +46,13 @@ class UserProfileCreateApi(generics.CreateAPIView):
         
         # send_welcome_email(request.user)
         return Response({"success": "Created account Successfully"},status=status.HTTP_201_CREATED, headers=headers)
+
+class UserDetailApi(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserDetailSerializer
+    lookup_field = 'id'
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [UserDetailPermission]
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
