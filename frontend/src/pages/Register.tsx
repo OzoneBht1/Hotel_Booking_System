@@ -7,7 +7,7 @@ import { styled } from "@mui/system";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
-import { RegistrationInformation } from "../components/types/types";
+import { registrationData } from "../components/types/types";
 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -38,7 +38,7 @@ const Register = () => {
   const [verifyEmail, { isLoading: verificationApiIsLoading, isSuccess }] =
     useVerifyEmailMutation();
 
-  const [data, setData] = useState<RegistrationInformation | null>(null);
+  const [data, setData] = useState<registrationData | null>(null);
   console.log(data);
 
   useEffect(() => {
@@ -65,7 +65,7 @@ const Register = () => {
     }
   }
 
-  const formReceiveHandler = (formData: RegistrationInformation) => {
+  const formReceiveHandler = (formData: registrationData) => {
     setData((prevData) => {
       if (prevData && prevData.image) {
         return { ...formData, image: prevData.image };
@@ -114,7 +114,7 @@ const Register = () => {
     />,
   ]);
 
-  const submitData = (data: RegistrationInformation) => {
+  const submitData = (data: registrationData) => {
     console.log("HERE");
     const formData = new FormData();
     formData.append("first_name", data.first_name);

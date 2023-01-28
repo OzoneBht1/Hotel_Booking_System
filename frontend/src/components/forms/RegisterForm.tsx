@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import useInput from "../../hooks/use-input";
 import { getCountries } from "../api/getCountries";
-import { countryInformation } from "../types/types";
+import { countryData } from "../types/types";
 import { Alert, Autocomplete, Box, Snackbar, TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import useSelect from "../../hooks/use-select";
-import { RegistrationInformation } from "../types/types";
+import { registrationData } from "../types/types";
 import Button from "@mui/material/Button";
 import { SelectState } from "../types/types";
 
@@ -27,8 +27,8 @@ const GENDERS = [
 let errorText: string | undefined;
 
 interface RegisterFormProps {
-  onReceiveData: (data: RegistrationInformation) => void;
-  data: RegistrationInformation | null;
+  onReceiveData: (data: registrationData) => void;
+  data: registrationData | null;
 }
 
 const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
@@ -99,8 +99,7 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
   } = useInput((value) => value.trim().length > 6);
 
   const fetchCountries = useCallback(async () => {
-    const returnedData =
-      (await getCountries()) as unknown as countryInformation[];
+    const returnedData = await getCountries<countryData[]>();
     const transformedCountries: SelectState[] = [];
 
     returnedData.map((country) => {

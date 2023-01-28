@@ -49,6 +49,7 @@ const BookingDetails = styled(Box)(({ theme }) => ({
   display: "flex",
   width: "100%",
   paddingLeft: "10px",
+  justifyContent: "center",
   gap: 10,
   flexWrap: "wrap",
   paddingRight: "10px",
@@ -133,47 +134,55 @@ const SearchForm = () => {
       </Search>
       <BookingDetails>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Box
+          {/* <Box
             sx={{
-              display: { xs: "flex", md: "inline-flex" },
+              // display: { xs: "flex", md: "block" },
+              width: "100%",
 
-              width: { xs: "100%", md: "100%" },
+              flexWrap: "nowrap",
             }}
-          >
-            <DateTimePicker
-              renderInput={(props) => (
-                <TextField
-                  {...props}
-                  sx={{ marginRight: 0.5, width: { xs: "50%", md: "40%" } }}
-                />
-              )}
-              label="Check-in date"
-              value={selectedCheckInDate}
-              onChange={(newValue) => {
-                setSelectedCheckInDate(newValue);
-              }}
-            />
-            <DateTimePicker
-              renderInput={(props) => (
-                <TextField
-                  {...props}
-                  sx={{ width: { xs: "50%", md: "40%" } }}
-                />
-              )}
-              label="Check-out date"
-              value={selectedCheckOutDate}
-              onChange={(newValue) => {
-                setSelectedCheckOutDate(newValue);
-              }}
-            />
-          </Box>
+          > */}
+          <DateTimePicker
+            renderInput={(props) => (
+              <TextField
+                {...props}
+                sx={{
+                  marginRight: 0.5,
+                  width: { xs: "48%", md: "30%" },
+                  flexShrink: 1,
+                }}
+              />
+            )}
+            label="Check-in date"
+            value={selectedCheckInDate}
+            onChange={(newValue) => {
+              setSelectedCheckInDate(newValue);
+            }}
+          />
+          <DateTimePicker
+            renderInput={(props) => (
+              <TextField
+                {...props}
+                sx={{
+                  width: { xs: "45%", sm: "48%", md: "30%" },
+                  flexShrink: 1,
+                }}
+              />
+            )}
+            label="Check-out date"
+            value={selectedCheckOutDate}
+            onChange={(newValue) => {
+              setSelectedCheckOutDate(newValue);
+            }}
+          />
+          {/* </Box> */}
         </LocalizationProvider>
         <Button
           onClick={handleMenuOpen}
           variant="outlined"
           sx={{
             justifyContent: "flex-start",
-            width: { xs: "100%", md: "50%" },
+            width: { xs: "98%", md: "35%" },
             height: "56px",
           }}
         >
@@ -182,7 +191,7 @@ const SearchForm = () => {
               <SupervisorAccountIcon sx={{ width: 30, height: 30 }} />
             </Icon>
             <Stack display={{ xs: "hidden" }}>
-              <Stack direction="row">
+              <Stack direction="column">
                 <Typography variant="body2" textTransform="none">
                   {adults} {adults > 1 ? "Adults" : "Adult"}
                 </Typography>

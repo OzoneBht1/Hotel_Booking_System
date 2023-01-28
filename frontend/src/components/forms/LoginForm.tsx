@@ -1,13 +1,13 @@
 import React, { useRef, useState } from "react";
 import { Box, Typography } from "@mui/material/";
 import TextField from "@mui/material/TextField";
-import { LoginInformation } from "../types/types";
+import { loginCredentials } from "../types/types";
 import LoadingButton from "@mui/lab/LoadingButton";
 import useInput from "../../hooks/use-input";
 import { Alert, Snackbar } from "@mui/material";
 
 interface LoginFormProps {
-  onReceiveData: (data: LoginInformation) => void;
+  onReceiveData: (data: loginCredentials) => void;
   isLoading?: boolean;
   errorText?: string;
 }

@@ -4,15 +4,16 @@ import LoginForm from "../components/forms/LoginForm";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/system";
-import { LoginInformation } from "../components/types/types";
+import { loginCredentials } from "../components/types/types";
 import { useVerifyLoginMutation } from "../store/api/apiSlice";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { authActions } from "../store/auth-slice";
-import { TokenState } from "../components/types/types";
+import { tokenState } from "../components/types/types";
 import { useLocation } from "react-router-dom";
 import LoginPageIllustration from "../assets/LoginpageIllustration.png";
+import VerifyEmail from "../components/VerifyEmail";
 
 let HEIGHT_OF_NAVBAR = 68;
 
@@ -23,35 +24,46 @@ const Login = () => {
   );
   const nav = useNavigate();
   const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
   const dispatch = useAppDispatch();
 
   const [verifyLogin, { error, isLoading, isSuccess }] =
     useVerifyLoginMutation();
+  const [emailVerified, setEmailVerified] = useState(true);
   let errorText: string | undefined = "";
 
   if (error) {
     // either FetchBaseQueryError or SerializedError
     if ("status" in error) {
+      const { data } = error as { status: number; data: { email: string[] } };
+
       // FetchBaseQueryError
-      errorText =
-        "error" in error
-          ? "There is a problem with the server. Please try again later."
-          : "Invalid email or password";
+      if ("error" in error) {
+        errorText =
+          "There is a problem with the server. Please try again later.";
+      } else if (data?.email?.[0] === "Email Not verified") {
+        errorText = "Please verify your email before logging in.";
+      } else {
+        errorText = "Invalid Credentials";
+      }
     } else {
       // SerializedError
       errorText = error.message;
     }
   }
 
-  const loginDataHandler = (data: LoginInformation) => {
-    console.log("HELLO");
+  const loginDataHandler = (data: loginCredentials) => {
     verifyLogin({ email: data.email, password: data.password })
       .unwrap()
-      .then((tokens: TokenState) =>
+      .then((tokens: tokenState) =>
         dispatch(authActions.setCredentials({ authTokens: tokens }))
       )
       .then(() => nav("/", { state: { open: true } }))
-      .catch((err: Error) => {
+      .catch((err: { status: number; data: { email: string[] } }) => {
+        if (err.data.email[0] === "Email Not verified") {
+          setEmailVerified(false);
+          setEmail(data.email);
+        }
         setOpen(true);
       });
   };
@@ -63,12 +75,19 @@ const Login = () => {
     alignItems: "center",
   });
 
+  const codeReceiveHandler = (email: string, code: string) => {
+    console.log(email, code);
+  };
+
   return (
     <Stack
       flexDirection="row"
       marginTop={-1}
       height={`calc(100vh - ${HEIGHT_OF_NAVBAR}px)`}
     >
+      {!isSuccess && !emailVerified && !!email && (
+        <VerifyEmail onCodeReceieve={codeReceiveHandler} email={email} />
+      )}
       {snackbarOpen && (
         <Snackbar
           open={snackbarOpen}

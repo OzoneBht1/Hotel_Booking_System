@@ -9,22 +9,22 @@ import ReactInputVerificationCode from "react-input-verification-code";
 interface VerifyEmailProps {
   email: string;
   onCodeReceieve: (email: string, code: string) => void;
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
-const StyledTextField = styled(TextField)({
-  width: "50px",
-  height: "50px",
-  fontSize: "30px",
-  textAlign: "center",
-  margin: "0 5px",
-  "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-    display: "none",
-  },
-  "& input[type=number]": {
-    MozAppearance: "textfield",
-  },
-});
+// const StyledTextField = styled(TextField)({
+//   width: "50px",
+//   height: "50px",
+//   fontSize: "30px",
+//   textAlign: "center",
+//   margin: "0 5px",
+//   "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+//     display: "none",
+//   },
+//   "& input[type=number]": {
+//     MozAppearance: "textfield",
+//   },
+// });
 
 const VerifyEmail = ({
   email,

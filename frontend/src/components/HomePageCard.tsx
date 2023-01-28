@@ -27,16 +27,7 @@ const StyledCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up("lg")]: {
     width: "70%",
   },
-  [theme.breakpoints.up("xl")]: {
-    width: "60%",
-  },
 }));
-
-const StyledFormWrapper = styled(Box)({
-  height: "100%",
-  width: "100%",
-  display: "flex",
-});
 
 const HomePageCard = () => {
   return (

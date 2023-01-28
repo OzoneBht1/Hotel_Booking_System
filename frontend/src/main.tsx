@@ -9,6 +9,7 @@ import { ApiProvider } from "@reduxjs/toolkit/dist/query/react";
 import { apiSlice } from "./store/api/apiSlice";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "./components/theme/custom-theme";
+import type {} from "@mui/types/OverridableComponentAugmentation";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <ThemeProvider theme={theme}>

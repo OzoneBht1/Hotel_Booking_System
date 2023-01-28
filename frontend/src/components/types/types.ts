@@ -1,26 +1,26 @@
-export interface TokenState {
+export interface tokenState {
   access: string;
   refresh: string;
 }
 
-export interface UserState {
+export interface userState {
   id: number;
   username: string;
   email: string;
   first_name: string;
   last_name: string;
 }
-export interface AuthState {
-  authTokens: null | TokenState;
-  user: null | {};
+export interface authState {
+  authTokens: null | tokenState;
+  user: null | userState;
 }
 
-export interface LoginInformation {
+export interface loginCredentials {
   email: string;
   password: string;
 }
 
-export interface countryInformation {
+export interface countryData {
   name: string;
   capital: string;
   currencies: Array<any>;
@@ -28,7 +28,7 @@ export interface countryInformation {
   independant?: boolean;
 }
 
-export interface RegistrationInformation {
+export interface registrationData {
   email: string;
   password: string;
   password2: string;

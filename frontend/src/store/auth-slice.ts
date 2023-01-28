@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import jwt_decode from "jwt-decode";
-import { TokenState, AuthState } from "../components/types/types";
+import { tokenState, authState } from "../components/types/types";
 
-const initialState: AuthState = {
+const initialState: authState = {
   authTokens: localStorage.getItem("authTokens")
     ? JSON.parse(localStorage.getItem("authTokens")!)
     : null,
@@ -16,7 +16,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState: initialState,
   reducers: {
-    setCredentials(state, action: PayloadAction<{ authTokens: TokenState }>) {
+    setCredentials(state, action: PayloadAction<{ authTokens: tokenState }>) {
       console.log(action.payload);
       const { authTokens } = action.payload;
       console.log("DISPATCHED");

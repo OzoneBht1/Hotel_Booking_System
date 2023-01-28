@@ -100,9 +100,11 @@ const NavBar = () => {
           color="primary_btn"
           component={NavLink}
           sx={{
+            opacity: 0.8,
             "&.active": {
               color: theme.palette.primary.dark,
               fontWeight: 900,
+              opacity: 1,
             },
           }}
         >
