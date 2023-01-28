@@ -17,7 +17,10 @@ class UserProfileCreateApi(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
     
-    def create(self, request, *args, **kwargs):       
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        
+               
         validated_data = request.data        
         serializer = self.get_serializer(data=validated_data)
         serializer.is_valid(raise_exception=True)

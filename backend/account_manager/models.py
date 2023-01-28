@@ -33,7 +33,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     default_pic_mapping = {'Male': 'def_male.jpg', 'Female': 'def_female.jpg', 'Others': 'def_others.jpg'}
     user_type = models.CharField(max_length=50, choices=USER_CHOICES, default="Normal")
 
-   
+
     
     REQUIRED_FIELDS = ['first_name', 'last_name', 'country', 'gender']
     USERNAME_FIELD = 'email'

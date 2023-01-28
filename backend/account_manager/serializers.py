@@ -6,6 +6,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
+from .base64encoder import Base64ImageField
+
 
 GENDER_CHOICES = (
     ("Male", "Male"),
@@ -20,16 +22,22 @@ class UserCreateSerializer(ModelSerializer):
                                      'input_type': 'password', })
     password2 = serializers.CharField(write_only=True, required=True, style={
         'input_type': 'password', })
+    # image = Base64ImageField(max_length=None, use_url=True, required=False)
+    image =Base64ImageField(required=False, allow_null=True)
 
+    
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email', 'gender',
                   'country', 'password', 'password2', 'image']
 
     def create(self, validated_data):
+        
 
         # Get the password from the validated data
         password = validated_data.get('password')
+        
+        
 
         # Hash the password
         hashed_password = make_password(password)
@@ -87,19 +95,26 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             user = User.objects.get(email=attrs['email'])
             result = check_password(attrs['password'], user.password)
             # check_password method is how authenticate method validates under the hood
+           
             if result:
-                authenticate(
+                if user.is_active:                    
+                    user = authenticate(
                     username_field="email", username=attrs['email'], password=attrs['password'])
-
-                return super().validate(attrs)
+                    return super().validate(attrs)
+                else:
+                    print("RAISING")
+                    raise serializers.ValidationError({"email": "Email Not verified"})
             else:
                 # The user is authenticated, so return the user object
                 raise serializers.ValidationError(
                     {"email": "Invalid credentials"})
-        except:
+        except User.DoesNotExist:
+            print("IM HERE AS WELL")
             raise serializers.ValidationError({"email": "Invalid creden"})
 
 
 class EmailVerificationSerializer(serializers.Serializer):
     email = serializers.EmailField()
     code = serializers.CharField(max_length=10)
+    
+    
