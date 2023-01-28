@@ -15,7 +15,7 @@ import RegisterForm from "../components/forms/RegisterForm";
 import {
   useRegisterUserMutation,
   useVerifyEmailMutation,
-} from "../store/api/apiSlice";
+} from "../store/api/authentication-api-slice";
 import RegisterPageIllustration from "../assets/RegisterpageIllustration.png";
 import { useMultistepForm } from "../hooks/use-multistep-form";
 import ImageForm from "../components/forms/ImageForm";

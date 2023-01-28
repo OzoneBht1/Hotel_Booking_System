@@ -5,7 +5,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/system";
 import { loginCredentials } from "../components/types/types";
-import { useVerifyLoginMutation } from "../store/api/apiSlice";
+import { useVerifyLoginMutation } from "../store/api/authentication-api-slice";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";

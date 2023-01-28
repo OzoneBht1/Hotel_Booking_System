@@ -2,7 +2,7 @@ import { LoadingButton } from "@mui/lab";
 import { InputAdornment, TextField } from "@mui/material";
 import Box from "@mui/material/Box/Box";
 import React, { ChangeEvent, useState } from "react";
-import { useVerifyEmailMutation } from "../store/api/apiSlice";
+import { useVerifyEmailMutation } from "../store/api/authentication-api-slice";
 import { styled } from "@mui/system";
 import ReactInputVerificationCode from "react-input-verification-code";
 

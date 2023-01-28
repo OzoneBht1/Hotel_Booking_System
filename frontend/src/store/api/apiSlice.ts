@@ -1,54 +1,21 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import {
-  loginCredentials,
-  registrationData,
-} from "../../components/types/types";
-import { authActions } from "../auth-slice";
+import { tokenState } from "../../components/types/types";
 
-const BASE_URL = "http://localhost:8000/api";
-
-export const apiSlice = createApi({
-  reducerPath: "api",
-  baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
-  endpoints: (build) => ({
-    verifyLogin: build.mutation({
-      query: (loginInfo: loginCredentials) => ({
-        url: "token/",
-        method: "POST",
-        body: { email: loginInfo.email, password: loginInfo.password },
-        include: "credentials",
-      }),
-    }),
-    registerUser: build.mutation({
-      query: (formData: FormData) => ({
-        url: "register/",
-        method: "POST",
-        // headers: {
-        //   "Content-Type": `multipart/form-data; boundary=`,
-        // },
-        body: formData,
-        include: "credentials",
-      }),
-    }),
-    logoutUser: build.mutation<void, void>({
-      query: () => ({
-        url: "logout/",
-        method: "GET",
-      }),
-    }),
-    verifyEmail: build.mutation({
-      query: ({ email, code }) => ({
-        url: "verify/",
-        method: "POST",
-        body: { email: email, code: code as number },
-      }),
-    }),
-  }),
+const baseQuery = fetchBaseQuery({
+  baseUrl: "http://localhost:8000/api",
+  prepareHeaders: (headers) => {
+    const token = localStorage.getItem("authTokens");
+    const tokenObj: tokenState = JSON.parse(token as string);
+    console.log(tokenObj);
+    if (token) {
+      headers.set("authorization", `Bearer ${tokenObj.access}`);
+    }
+    return headers;
+  },
 });
 
-export const { useVerifyLoginMutation } = apiSlice;
-export const { useRegisterUserMutation } = apiSlice;
-export const { useLogoutUserMutation } = apiSlice;
-export const { useVerifyEmailMutation } = apiSlice;
-
-export default apiSlice.reducer;
+export const apiSlice = createApi({
+  baseQuery: baseQuery,
+  reducerPath: "api",
+  endpoints: () => ({}),
+});

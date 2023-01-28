@@ -4,11 +4,11 @@ export interface tokenState {
 }
 
 export interface userState {
-  id: number;
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
+  token_type: string;
+  exp: number;
+  iat: number;
+  jti: string;
+  user_id: number;
 }
 export interface authState {
   authTokens: null | tokenState;
@@ -42,4 +42,13 @@ export interface registrationData {
 export interface SelectState {
   value: string;
   label: string;
+}
+
+export interface UserDetails {
+  first_name: string;
+  last_name: string;
+  email: string;
+  gender: string;
+  country: string;
+  image: string;
 }

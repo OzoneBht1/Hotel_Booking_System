@@ -25,7 +25,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Logout from "@mui/icons-material/Logout";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
-import { useLogoutUserMutation } from "../../store/api/apiSlice";
+import { useLogoutUserMutation } from "../../store/api/authentication-api-slice";
 
 const authenticatedPages = ["List your Property", "Support"];
 const unauthenticatedPages = [
@@ -240,7 +240,7 @@ const NavBar = () => {
             transformOrigin={{ horizontal: "right", vertical: "top" }}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           >
-            <MenuItem>
+            <MenuItem component={Link} to="/profile">
               <Avatar /> Profile
             </MenuItem>
             <MenuItem>
