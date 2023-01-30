@@ -1,7 +1,7 @@
 /node_modules
 env-fyp
-settings.py
 .vscode
 media
 *.sqlite3
 __pycache__
+config.py
