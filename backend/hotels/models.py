@@ -20,7 +20,7 @@ class Amenity(BaseModel):
 class Hotel(BaseModel):
     name = models.CharField(max_length=200)
     address = models.CharField(max_length=200)
-    amenities = models.ManyToManyField(Amenity)
+    amenities = models.ManyToManyField(Amenity, related_name='hotels')
     manager = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     room_count = models.IntegerField(default = 10)
     

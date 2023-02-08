@@ -42,7 +42,8 @@ class Command(BaseCommand):
             for i in range(1, random.randint(8, 20)):
                 amenity = Amenity.objects.get(id=random.randint(1, 103))          
                 hotel.amenities.add(amenity)
-    
+            # TODO: add images
+            # TODO: hotel room count should start from 1
             hotel.save()
             for i in range(hotel.room_count + 1):
                 random_room_type = room_types[random.randint(0, len(room_types) - 1)]
