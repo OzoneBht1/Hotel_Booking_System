@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from .models import Hotel, Amenity
+from .models import Hotel, Amenity, Booking
 
 
 class HotelSerializer(ModelSerializer):
@@ -30,4 +30,9 @@ class HotelSerializer(ModelSerializer):
         return value
     
 
-        
+
+class BookingSerializer(ModelSerializer):
+    class Meta:
+        model = Booking
+        fields = ['id', 'user', 'hotel', 'room', 'check_in', 'check_out', 'booking_date', 'booking_amount']
+            

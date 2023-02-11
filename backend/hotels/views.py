@@ -5,7 +5,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import HotelSerializer
+from .serializers import HotelSerializer, BookingSerializer
 
 from .models import Hotel, Amenity, User
 from .permissions import IsPartnerPermission
@@ -22,7 +22,7 @@ class HotelDetailApi(generics.RetrieveUpdateDestroyAPIView):
     
 
 class HotelCreateApi(generics.ListCreateAPIView):
-    queryset = Hotel.objects.filter(id__lte=220772)
+    queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAdminUser, IsPartnerPermission]    
@@ -36,3 +36,18 @@ class HotelCreateApi(generics.ListCreateAPIView):
         return self.list(request, *args, **kwargs)
 
     
+    
+    
+    
+class BookingCreateApi(generics.CreateAPIView):
+    queryset = Hotel.objects.all()
+    serializer_class = BookingSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    
+    
+    
+    
+    
+    
+        

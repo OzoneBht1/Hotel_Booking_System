@@ -51,8 +51,8 @@ class Booking(BaseModel):
     cancelled_date = models.DateTimeField(null=True, blank=True)
     # booking_status = models.ChoiceField(choices=[("Pending", "Pending"), ("Confirmed", "Confirmed"), ("Cancelled", "Cancelled")])
     booking_status = models.CharField(max_length=200, default="Pending")
-    booking_amount = models.IntegerField()    
+    booking_amount = models.IntegerField(default=0)    
     def __str__(self):
-        return f"{self.hotel.name} - {self.room.room_number} - {self.booking_id}"
+        return f"{self.hotel.name} - {self.room.room_number}"
     
     
