@@ -52,3 +52,22 @@ export interface UserDetails {
   country: string;
   image: string;
 }
+
+export type ISearchResult = {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  price: number;
+  category: string;
+  rating: number;
+  numReviews: number;
+  countInStock: number;
+};
+
+export interface ISearchResponse {
+  count: number;
+  next: string;
+  previous: string;
+  results: Array<ISearchResult | null>;
+}

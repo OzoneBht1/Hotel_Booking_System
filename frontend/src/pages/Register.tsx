@@ -159,8 +159,8 @@ const Register = () => {
     <Stack
       flexDirection="row"
       marginTop={-1}
-      // height={`calc(100vh - ${HEIGHT_OF_NAVBAR}px)`}
       height="100vh"
+      // height="100%"
     >
       {successSnackbar && (
         <Snackbar
@@ -220,7 +220,7 @@ const Register = () => {
 
           <Stepper activeStep={currentStepIndex} alternativeLabel>
             {STEPS_TITLE.map((label) => (
-              <Step>
+              <Step key={label}>
                 <StepLabel>{label}</StepLabel>
               </Step>
             ))}

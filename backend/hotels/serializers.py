@@ -14,7 +14,7 @@ class HotelSerializer(ModelSerializer):
         
         
     def create(self, validated_data):
-        print(validated_data["manager"])
+        # print(validated_data["manager"])
         
         amenities = validated_data.pop('amenities',[])
         print(validated_data)

@@ -3,7 +3,7 @@ import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { Box, styled } from "@mui/system";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -13,6 +13,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import MenuItem from "@mui/material/MenuItem";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
+import { useHotelSearchMutation } from "../../store/api/hotelSlice";
 
 const Search = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -85,6 +86,8 @@ const SearchForm = () => {
   const [adults, setAdults] = useState(1);
   const [childrenNum, setChildrenNum] = useState(0);
   const [rooms, setRooms] = useState(1);
+  const [searchText, setSearchText] = useState("");
+  const [hotelSearch, { isLoading }] = useHotelSearchMutation();
 
   const handleAdultsChange = (increment: number) => {
     if (adults < 1 && increment < 0) return;
@@ -107,7 +110,43 @@ const SearchForm = () => {
     setAnchorEl(null);
   };
 
-  const formSubmitHandler = () => {};
+  const textSearchHandler = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | undefined
+  ) => {
+    setSearchText(e?.target.value || "");
+  };
+
+  const searchHotel = useCallback(
+    (q: string) => {
+      hotelSearch({ q });
+    },
+    [hotelSearch]
+  );
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      searchHotel(searchText);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchText]);
+
+  useEffect(() => {
+    console.log(selectedCheckInDate);
+  }, [selectedCheckInDate]);
+
+  const formSubmitHandler = (e: React.FormEvent<HTMLDivElement>) => {
+    const checkInDate = selectedCheckInDate?.toString();
+    const checkOutDate = selectedCheckOutDate;
+    console.log({
+      checkInDate,
+      checkOutDate,
+      adults,
+      childrenNum,
+      rooms,
+    });
+
+    e.preventDefault();
+  };
 
   return (
     <Box
@@ -127,9 +166,11 @@ const SearchForm = () => {
           <SearchIcon />
         </Icon>
         <InputBase
+          onChange={textSearchHandler}
           placeholder="Where would you like to go?"
           color="info"
           fullWidth={true}
+          value={searchText}
         />
       </Search>
       <BookingDetails>
