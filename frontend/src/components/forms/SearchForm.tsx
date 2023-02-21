@@ -8,12 +8,17 @@ import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
-import { Divider, Menu, MenuList, Stack } from "@mui/material";
+import { Autocomplete, Divider, Menu, MenuList, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import MenuItem from "@mui/material/MenuItem";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import { useHotelSearchMutation } from "../../store/api/hotelSlice";
+import { ISearchResult } from "../types/types";
+
+interface ISearchFormProps {
+  onSearch: (text: string) => void;
+}
 
 const Search = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -72,7 +77,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   justifyContent: "space-between",
 }));
 
-const SearchForm = () => {
+const SearchForm = ({ onSearch }: ISearchFormProps) => {
   const [selectedCheckInDate, setSelectedCheckInDate] = useState<Date | null>(
     null
   );
@@ -80,14 +85,14 @@ const SearchForm = () => {
     null
   );
 
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-    null
-  );
   const [adults, setAdults] = useState(1);
   const [childrenNum, setChildrenNum] = useState(0);
   const [rooms, setRooms] = useState(1);
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState<string>("");
   const [hotelSearch, { isLoading }] = useHotelSearchMutation();
+  const [hotels, setHotels] = useState<ISearchResult[]>([]);
+  const [menuAnchorEl, setMenuAnchorEl] =
+    React.useState<HTMLButtonElement | null>(null);
 
   const handleAdultsChange = (increment: number) => {
     if (adults < 1 && increment < 0) return;
@@ -103,36 +108,38 @@ const SearchForm = () => {
     setRooms(rooms + increment);
   };
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+    setMenuAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = () => {
-    setAnchorEl(null);
+    setMenuAnchorEl(null);
   };
 
-  const textSearchHandler = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | undefined
-  ) => {
-    setSearchText(e?.target.value || "");
-  };
+  // const textSearchHandler = (
+  //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | undefined
+  // ) => {
+  //   setSearchText(e?.target.value || "");
+  // };
 
   const searchHotel = useCallback(
     (q: string) => {
-      hotelSearch({ q });
+      hotelSearch({ q })
+        .unwrap()
+        .then((res) => {
+          console.log(res.results);
+          setHotels(res.results);
+        });
     },
     [hotelSearch]
   );
 
   useEffect(() => {
+    console.log("INSIDE HERE");
     const timer = setTimeout(() => {
       searchHotel(searchText);
     }, 500);
     return () => clearTimeout(timer);
   }, [searchText]);
-
-  useEffect(() => {
-    console.log(selectedCheckInDate);
-  }, [selectedCheckInDate]);
 
   const formSubmitHandler = (e: React.FormEvent<HTMLDivElement>) => {
     const checkInDate = selectedCheckInDate?.toString();
@@ -165,14 +172,43 @@ const SearchForm = () => {
         <Icon>
           <SearchIcon />
         </Icon>
-        <InputBase
-          onChange={textSearchHandler}
-          placeholder="Where would you like to go?"
-          color="info"
+        <Autocomplete
+          id="combo-box-country"
           fullWidth={true}
-          value={searchText}
+          options={hotels}
+          disableClearable={true}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              // border: "1px solid yellow",
+              borderRadius: "0",
+              border: "1px solid white",
+              bgColor: "transparent",
+              outline: "none",
+            },
+            "& .MuiAutocomplete-endAdornment": {
+              display: "none",
+            },
+            "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+              border: "1px solid #eee",
+            },
+            "& .MuiOutlinedInput-root:hover ": {
+              border: "1px solid #eee",
+            },
+          }}
+          // value={selectedCountry || null}
+          autoComplete={true}
+          isOptionEqualToValue={(selectedValue, optionValue) => {
+            return selectedValue.name === optionValue.name;
+          }}
+          autoHighlight={true}
+          getOptionLabel={(option) => option.name}
+          onInputChange={(event, newValue) => {
+            setSearchText(newValue);
+          }}
+          renderInput={(params) => <TextField {...params} />}
         />
       </Search>
+
       <BookingDetails>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           {/* <Box
@@ -256,8 +292,8 @@ const SearchForm = () => {
           </Stack>
         </Button>
         <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
+          anchorEl={menuAnchorEl}
+          open={Boolean(menuAnchorEl)}
           onClose={handleMenuClose}
           PaperProps={{
             elevation: 0,

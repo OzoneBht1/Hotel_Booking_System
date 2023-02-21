@@ -18,7 +18,6 @@ const Home = () => {
     setSnackbarOpenOnLogout(state?.openOnLogout ? true : false);
     // handling the case when user logs out from home page, as page isnt re-rendered
   }, [state]);
-  console.log(state);
 
   return (
     <div>

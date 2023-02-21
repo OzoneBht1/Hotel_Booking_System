@@ -30,9 +30,13 @@ const StyledCard = styled(Box)(({ theme }) => ({
 }));
 
 const HomePageCard = () => {
+  const searchHandler = (searchTerm: string) => {
+    console.log(searchTerm);
+  };
+
   return (
     <StyledCard>
-      <SearchForm />
+      <SearchForm onSearch={searchHandler} />
     </StyledCard>
   );
 };

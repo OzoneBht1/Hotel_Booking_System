@@ -1,10 +1,10 @@
 import { apiSlice } from "./apiSlice";
-import { ISearchResult } from "../../components/types/types";
+import { ISearchResponse } from "../../components/types/types";
 
 export const hotelApiSlice = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     hotelSearch: build.mutation<
-      ISearchResult,
+      ISearchResponse,
       { q?: string | number; limit?: number }
     >({
       query: ({ q = "", limit = "" }) => ({

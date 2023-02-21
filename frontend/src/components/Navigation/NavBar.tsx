@@ -97,7 +97,6 @@ const NavBar = () => {
           to={`${Page[page as pageStrings]}`}
           key={page}
           variant="text"
-          color="primary_btn"
           component={NavLink}
           sx={{
             opacity: 0.8,
@@ -120,7 +119,6 @@ const NavBar = () => {
             aria-haspopup="true"
             aria-expanded={openMenu ? true : false}
             variant="text"
-            color="primary_btn"
             sx={{
               "&.active": {
                 color: theme.palette.primary.dark,
@@ -143,7 +141,6 @@ const NavBar = () => {
           <ListItem
             to={`${Page[page as pageStrings]}`}
             key={page}
-            color="primary_btn"
             component={NavLink}
           >
             {page}
@@ -158,7 +155,7 @@ const NavBar = () => {
   });
 
   return (
-    <AppBar position="sticky" sx={{ backgroundColor: "bgColor.main" }}>
+    <AppBar position="sticky" sx={{ backgroundColor: "white" }}>
       <Toolbar
         sx={{
           display: "flex",

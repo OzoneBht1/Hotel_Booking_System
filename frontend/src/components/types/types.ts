@@ -53,7 +53,7 @@ export interface UserDetails {
   image: string;
 }
 
-export type ISearchResult = {
+export interface ISearchResult {
   id: number;
   name: string;
   description: string;
@@ -63,11 +63,11 @@ export type ISearchResult = {
   rating: number;
   numReviews: number;
   countInStock: number;
-};
+}
 
 export interface ISearchResponse {
   count: number;
   next: string;
   previous: string;
-  results: Array<ISearchResult | null>;
+  results: ISearchResult[];
 }
