@@ -19,6 +19,13 @@ const Home = () => {
     // handling the case when user logs out from home page, as page isnt re-rendered
   }, [state]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setSnackbarOpen(false);
+      setSnackbarOpenOnLogout(false);
+    }, 6000);
+  });
+
   return (
     <div>
       {snackbarOpenOnLogout && (

@@ -15,6 +15,7 @@ import MenuItem from "@mui/material/MenuItem";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import { useHotelSearchMutation } from "../../store/api/hotelSlice";
 import { ISearchResult } from "../types/types";
+import PersonAdd from "@mui/icons-material/PersonAdd";
 
 interface ISearchFormProps {
   onSearch: (text: string) => void;
@@ -126,7 +127,6 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
       hotelSearch({ q })
         .unwrap()
         .then((res) => {
-          console.log(res.results);
           setHotels(res.results);
         });
     },
@@ -180,19 +180,21 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
           sx={{
             "& .MuiOutlinedInput-root": {
               // border: "1px solid yellow",
-              borderRadius: "0",
-              border: "1px solid white",
-              bgColor: "transparent",
-              outline: "none",
             },
             "& .MuiAutocomplete-endAdornment": {
               display: "none",
             },
             "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-              border: "1px solid #eee",
+              border: "1px solid #eee !important",
             },
             "& .MuiOutlinedInput-root:hover ": {
-              border: "1px solid #eee",
+              border: "1px solid #eee !important",
+            },
+            "& .Mui-focused": {
+              border: "1px solid #eee !important",
+            },
+            "& .MuiAutocomplete-inputRoot !important": {
+              padding: "0",
             },
           }}
           // value={selectedCountry || null}
@@ -256,8 +258,10 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
         </LocalizationProvider>
         <Button
           onClick={handleMenuOpen}
+          color="inherit"
           variant="outlined"
           sx={{
+            border: "1px solid #eee",
             justifyContent: "flex-start",
             width: { xs: "98%", md: "35%" },
             height: "56px",
