@@ -23,13 +23,17 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-input-verification-code": "^1.0.2",
+    "react-multi-carousel": "^2.8.2",
     "react-query": "^3.39.2",
     "react-redux": "^8.0.5",
-    "react-router-dom": "^6.4.3"
+    "react-router-dom": "^6.4.3",
+    "react-slick": "^0.29.0",
+    "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
+    "@types/react-slick": "^0.23.10",
     "@vitejs/plugin-react": "^2.2.0",
     "typescript": "^4.6.4",
     "vite": "^3.2.3"

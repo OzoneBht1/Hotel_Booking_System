@@ -24,6 +24,9 @@ class Hotel(BaseModel):
     amenities = models.ManyToManyField(Amenity, related_name='hotels')
     manager = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     room_count = models.IntegerField(default = 10)
+
+    def __str__(self) -> str:
+        return self.name
     
 class HotelImages(BaseModel):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)

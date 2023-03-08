@@ -5,3 +5,4 @@ media
 *.sqlite3
 __pycache__
 config.py
+hotels.csv

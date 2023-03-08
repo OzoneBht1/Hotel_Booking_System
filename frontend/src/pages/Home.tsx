@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import HomepageImg from "../assets/homepage-img.jpg";
 import { styled } from "@mui/system";
 import HomePageCard from "../components/HomePageCard";
+import HomePageItems from "../components/HomePageItems";
 
 const Home = () => {
   const { state } = useLocation();
@@ -27,7 +28,7 @@ const Home = () => {
   });
 
   return (
-    <div>
+    <>
       {snackbarOpenOnLogout && (
         <Snackbar
           open={snackbarOpenOnLogout}
@@ -74,8 +75,9 @@ const Home = () => {
         >
           <HomePageCard />
         </Box>
+        <HomePageItems />
       </Box>
-    </div>
+    </>
   );
 };
 

@@ -1,5 +1,5 @@
 import { apiSlice } from "./apiSlice";
-import { ISearchResponse } from "../../components/types/types";
+import { ISearchResponse, ISearchResult } from "../../components/types/types";
 
 export const hotelApiSlice = apiSlice.injectEndpoints({
   endpoints: (build) => ({
@@ -13,7 +13,15 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         include: "credentials",
       }),
     }),
+
+    getHomePageItems: build.query<ISearchResult[], void>({
+      query: () => ({
+        url: `/hotels-by-location`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useHotelSearchMutation } = hotelApiSlice;
+export const { useHotelSearchMutation, useGetHomePageItemsQuery } =
+  hotelApiSlice;

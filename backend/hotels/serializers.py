@@ -28,7 +28,19 @@ class HotelSerializer(ModelSerializer):
         if len(value) < 2:
             raise serializers.ValidationError("Hotel must have atleast 2 amenities")
         return value
-    
+ 
+class HomepageHotelSerializer(ModelSerializer):
+    country = serializers.CharField()
+    hotel_images = serializers.StringRelatedField(many=True, read_only = True)
+
+    class Meta:
+        model = Hotel
+        fields = ['id', 'name', 'address','amenities', 'room_count', 'manager', 'country', 'hotel_images']     
+        
+        
+   
+        # print(validated_data["manager"])
+        
 
 
 class BookingSerializer(ModelSerializer):
