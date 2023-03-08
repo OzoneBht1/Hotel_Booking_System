@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import HomepageImg from "../assets/homepage-img.jpg";
 import { styled } from "@mui/system";
 import HomePageCard from "../components/HomePageCard";
+import HomePageItems from "../components/HomePageItems";
 
 const Home = () => {
   const { state } = useLocation();
@@ -18,10 +19,16 @@ const Home = () => {
     setSnackbarOpenOnLogout(state?.openOnLogout ? true : false);
     // handling the case when user logs out from home page, as page isnt re-rendered
   }, [state]);
-  console.log(state);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setSnackbarOpen(false);
+      setSnackbarOpenOnLogout(false);
+    }, 6000);
+  });
 
   return (
-    <div>
+    <>
       {snackbarOpenOnLogout && (
         <Snackbar
           open={snackbarOpenOnLogout}
@@ -68,8 +75,9 @@ const Home = () => {
         >
           <HomePageCard />
         </Box>
+        <HomePageItems />
       </Box>
-    </div>
+    </>
   );
 };
 

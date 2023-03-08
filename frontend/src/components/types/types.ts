@@ -43,7 +43,6 @@ export interface SelectState {
   value: string;
   label: string;
 }
-
 export interface UserDetails {
   first_name: string;
   last_name: string;
@@ -52,3 +51,30 @@ export interface UserDetails {
   country: string;
   image: string;
 }
+
+export interface ISearchResult {
+  id: number;
+  name: string;
+  address : string;
+  description: string;
+  image?: string;
+  price: number;
+  category: string;
+  //images? : string[];
+  rating: number;
+  numReviews: number;
+  countInStock: number;
+}
+
+export interface ISearchResponse {
+  count: number;
+  next: string;
+  previous: string;
+  results: ISearchResult[];
+}
+
+
+export interface IHomePageItems extends ISearchResult{
+
+}
+

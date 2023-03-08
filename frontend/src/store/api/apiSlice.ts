@@ -12,7 +12,6 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers) => {
     const token = localStorage.getItem("authTokens");
     const tokenObj: tokenState = JSON.parse(token as string);
-    console.log(tokenObj);
     if (token) {
       // checkToken(tokenObj);
 
@@ -28,7 +27,6 @@ const baseQueryWithReauth: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   const result = await baseQuery(args, api, extraOptions);
-  console.log(result);
 
   if (result.error && result.error.status === 401) {
     const tokens = localStorage.getItem("authTokens");
