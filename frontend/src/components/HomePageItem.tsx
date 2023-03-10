@@ -15,6 +15,7 @@ import {IHomePageItems} from "./types/types";
 
 
 const HomePageItem = (props : IHomePageItems) => {
+  console.log(props)
   return (
     <Card sx={{ maxWidth: 300 }} elevation={0}>
       <CardActionArea>

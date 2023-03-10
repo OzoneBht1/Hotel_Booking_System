@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from .models import Hotel, Amenity, Booking
+from .models import Hotel, Amenity, Booking, HotelImages
 
 
 class HotelSerializer(ModelSerializer):
@@ -28,20 +28,21 @@ class HotelSerializer(ModelSerializer):
         if len(value) < 2:
             raise serializers.ValidationError("Hotel must have atleast 2 amenities")
         return value
- 
-class HomepageHotelSerializer(ModelSerializer):
+
+
+
+class HotelImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HotelImages
+        fields = '__all__'
+
+class HomepageHotelSerializer(serializers.ModelSerializer):
     country = serializers.CharField()
-    hotel_images = serializers.StringRelatedField(many=True, read_only = True)
+    hotel_images = HotelImagesSerializer(many=True, read_only=True)
 
     class Meta:
         model = Hotel
-        fields = ['id', 'name', 'address','amenities', 'room_count', 'manager', 'country', 'hotel_images']     
-        
-        
-   
-        # print(validated_data["manager"])
-        
-
+        fields = ['id', 'name', 'address', 'amenities', 'room_count', 'manager', 'country', 'hotel_images']
 
 class BookingSerializer(ModelSerializer):
     class Meta:
