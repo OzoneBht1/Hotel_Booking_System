@@ -25,6 +25,20 @@ class Hotel(BaseModel):
     manager = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     room_count = models.IntegerField(default = 10)
 
+
+
+    def get_average_rating(self):
+        reviews = Review.objects.filter(hotel=self)
+        total_ratings = sum([review.rating for review in reviews])
+        if len(reviews) > 0:
+            return total_ratings / len(reviews)
+        return 2.5
+        # the minimum rating from Booking.com
+
+    
+    average_rating = property(get_average_rating) 
+
+
     def __str__(self) -> str:
         return self.name
     
@@ -56,4 +70,13 @@ class Booking(BaseModel):
     def __str__(self):
         return f"{self.hotel.name} - {self.room.room_number}"
     
-    
+
+class Review(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    review = models.TextField()
+    score = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.hotel.name} - {self.user.username}"
+

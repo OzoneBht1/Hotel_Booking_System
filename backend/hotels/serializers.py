@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from .models import Hotel, Amenity, Booking, HotelImages
+from .models import Hotel, Amenity, Booking, HotelImages, Room
 
 
 class HotelSerializer(ModelSerializer):
@@ -36,13 +36,23 @@ class HotelImagesSerializer(serializers.ModelSerializer):
         model = HotelImages
         fields = '__all__'
 
+
 class HomepageHotelSerializer(serializers.ModelSerializer):
-    country = serializers.CharField()
-    hotel_images = HotelImagesSerializer(many=True, read_only=True)
+    hotel_images = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
+   
 
     class Meta:
         model = Hotel
-        fields = ['id', 'name', 'address', 'amenities', 'room_count', 'manager', 'country', 'hotel_images']
+        fields = ['id', 'name', 'address', 'amenities', 'room_count', 'manager' , 'hotel_images', 'price']
+
+    def get_hotel_images(self, obj):
+        hotel_images = HotelImages.objects.filter(hotel=obj)
+        return HotelImagesSerializer(hotel_images, many=True).data
+
+    def get_price(self, obj):
+        price = Room.objects.filter(hotel=obj).order_by('?').first()
+        return price.price
 
 class BookingSerializer(ModelSerializer):
     class Meta:

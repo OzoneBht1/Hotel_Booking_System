@@ -70,7 +70,7 @@ class BookingCreateApi(generics.CreateAPIView):
     
     
 class HotelsByLocationApi(generics.ListAPIView):
-    serializer_class = HotelSerializer
+    serializer_class = HomepageHotelSerializer
     authentication_classes = []
     permission_classes = []
     # pagination_class = CustomHotelSearchPagination
@@ -84,7 +84,7 @@ class HotelsByLocationApi(generics.ListAPIView):
         hotels = []
         
         for country in countries:
-            country_hotels = Hotel.objects.filter(address__icontains=country)[:12].annotate(country = Value(country, CharField()))
+            country_hotels = Hotel.objects.filter(address__icontains=country)[:12]
             hotels.extend(country_hotels)
         
 
