@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { tokenState } from "../../components/types/types";
+import { ITokenState } from "../../components/types/types";
 import type {
   BaseQueryFn,
   FetchArgs,
@@ -7,11 +7,12 @@ import type {
 } from "@reduxjs/toolkit/query";
 import { authActions } from "../auth-slice";
 
+export const BASEURL = "http://localhost:8000";
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:8000/api",
+  baseUrl: `${BASEURL}/api`,
   prepareHeaders: (headers) => {
     const token = localStorage.getItem("authTokens");
-    const tokenObj: tokenState = JSON.parse(token as string);
+    const tokenObj: ITokenState = JSON.parse(token as string);
     if (token) {
       // checkToken(tokenObj);
 
@@ -30,7 +31,7 @@ const baseQueryWithReauth: BaseQueryFn<
 
   if (result.error && result.error.status === 401) {
     const tokens = localStorage.getItem("authTokens");
-    const tokenObj: tokenState = JSON.parse(tokens as string);
+    const tokenObj: ITokenState = JSON.parse(tokens as string);
     console.log(tokens);
     console.log(args, api, extraOptions);
     console.log(tokenObj);

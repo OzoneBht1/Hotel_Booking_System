@@ -9,20 +9,30 @@ import { Box, Stack } from "@mui/system";
 import React from "react";
 import { useTheme } from "@mui/material/styles";
 import getScore from "../utils/GetScoreRating";
-import {IHomePageItems} from "./types/types";
+import { IHomePageItems } from "./types/types";
+import { BASEURL } from "../store/api/apiSlice";
+import DefaultImage from "../assets/default-hotel-image.jpg";
+import { useNavigate } from "react-router-dom";
 
+const HomePageItem = (props: IHomePageItems) => {
+  const nav = useNavigate();
+  const cardClickHandler = () => {
+    console.log(props);
+    console.log("clicked");
+    nav(`/hotel/${props.id}`);
+  };
 
-
-
-const HomePageItem = (props : IHomePageItems) => {
-  console.log(props)
   return (
-    <Card sx={{ maxWidth: 300 }} elevation={0}>
+    <Card sx={{ maxWidth: 300 }} elevation={0} onClick={cardClickHandler}>
       <CardActionArea>
         <CardMedia
           component="img"
           height="190"
-          image={props.image}
+          image={
+            props.hotel_images
+              ? `${BASEURL}${props.hotel_images[0].image}`
+              : DefaultImage
+          }
           alt="green iguana"
         />
         <CardContent>

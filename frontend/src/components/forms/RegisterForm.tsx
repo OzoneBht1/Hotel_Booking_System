@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import useInput from "../../hooks/use-input";
 import { getCountries } from "../api/getCountries";
-import { countryData } from "../types/types";
+import { ICountryInfo } from "../types/types";
 import { Alert, Autocomplete, Box, Snackbar, TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import useSelect from "../../hooks/use-select";
-import { registrationData } from "../types/types";
+import { IRegistration } from "../types/types";
 import Button from "@mui/material/Button";
-import { SelectState } from "../types/types";
+import { ISelect } from "../types/types";
 
 const GENDERS = [
   {
@@ -27,13 +27,13 @@ const GENDERS = [
 let errorText: string | undefined;
 
 interface RegisterFormProps {
-  onReceiveData: (data: registrationData) => void;
-  data: registrationData | null;
+  onReceiveData: (data: IRegistration) => void;
+  data: IRegistration | null;
 }
 
 const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
   const [open, setOpen] = useState(false);
-  const [countries, setCountries] = useState<SelectState[]>([]);
+  const [countries, setCountries] = useState<ISelect[]>([]);
 
   const {
     selectedValue: selectedCountry,
@@ -99,8 +99,8 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
   } = useInput((value) => value.trim().length > 6);
 
   const fetchCountries = useCallback(async () => {
-    const returnedData = await getCountries<countryData[]>();
-    const transformedCountries: SelectState[] = [];
+    const returnedData = await getCountries<ICountryInfo[]>();
+    const transformedCountries: ISelect[] = [];
 
     returnedData.map((country) => {
       transformedCountries.push({

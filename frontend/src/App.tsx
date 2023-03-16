@@ -8,6 +8,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import RequireAuth from "./utils/RequireAuth";
+import Error from "./pages/404";
+import HotelPage from "./pages/HotelPage";
 
 function App() {
   const nav = useNavigate();
@@ -16,13 +18,14 @@ function App() {
       <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/hotel/:id" element={<HotelPage />} />
         <Route path="/add-property" element={<ListProperties />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route element={<RequireAuth />}>
           <Route path="/profile" element={<Profile />} />
         </Route>
-        <Route path="*" element={<p>There's nothing here: 404!</p>} />
+        <Route path="*" element={<Error />} />
       </Routes>
     </div>
   );
