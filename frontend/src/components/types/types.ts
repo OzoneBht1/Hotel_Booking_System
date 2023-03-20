@@ -1,26 +1,26 @@
-export interface tokenState {
+export interface ITokenState {
   access: string;
   refresh: string;
 }
 
-export interface userState {
+export interface IUserJwt {
   token_type: string;
   exp: number;
   iat: number;
   jti: string;
   user_id: number;
 }
-export interface authState {
-  authTokens: null | tokenState;
-  user: null | userState;
+export interface IAuthState {
+  authTokens: null | ITokenState;
+  user: null | IUserJwt;
 }
 
-export interface loginCredentials {
+export interface ILoginCreds {
   email: string;
   password: string;
 }
 
-export interface countryData {
+export interface ICountryData {
   name: string;
   capital: string;
   currencies: Array<any>;
@@ -28,7 +28,7 @@ export interface countryData {
   independant?: boolean;
 }
 
-export interface registrationData {
+export interface IRegistration {
   email: string;
   password: string;
   password2: string;
@@ -39,11 +39,11 @@ export interface registrationData {
   image?: File | null;
 }
 
-export interface SelectState {
+export interface ISelect {
   value: string;
   label: string;
 }
-export interface UserDetails {
+export interface IUserData {
   first_name: string;
   last_name: string;
   email: string;
@@ -52,12 +52,18 @@ export interface UserDetails {
   image: string;
 }
 
-export interface ISearchResult {
+export interface IHotelData {
   id: number;
   name: string;
-  address : string;
+  address: string;
   description: string;
-  image?: string;
+  hotel_images?: {
+    id: number;
+    created_at: string;
+    updated_at: string;
+    image: string;
+    hotel: number;
+  }[];
   price: number;
   category: string;
   //images? : string[];
@@ -70,11 +76,7 @@ export interface ISearchResponse {
   count: number;
   next: string;
   previous: string;
-  results: ISearchResult[];
+  results: IHotelData[];
 }
 
-
-export interface IHomePageItems extends ISearchResult{
-
-}
-
+export interface IHomePageItems extends IHotelData {}

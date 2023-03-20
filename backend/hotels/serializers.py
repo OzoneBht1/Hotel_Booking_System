@@ -1,17 +1,22 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from .models import Hotel, Amenity, Booking
+from .models import Hotel, Amenity, Booking, HotelImages, Room
 
 
 class HotelSerializer(ModelSerializer):
+    hotel_images = serializers.SerializerMethodField()
     amenities = serializers.StringRelatedField(many=True,read_only=True)   
     manager = serializers.StringRelatedField(read_only=True)
   
     
     class Meta:
         model = Hotel
-        fields = ['id', 'name', 'address','amenities', 'room_count', 'manager']     
+        fields = ['id', 'name', 'address','amenities', 'room_count', 'manager', 'hotel_images']     
         
+    def get_hotel_images(self, obj):
+        hotel_images = HotelImages.objects.filter(hotel=obj)
+        return HotelImagesSerializer(hotel_images, many=True).data
+
         
     def create(self, validated_data):
         # print(validated_data["manager"])
@@ -28,20 +33,31 @@ class HotelSerializer(ModelSerializer):
         if len(value) < 2:
             raise serializers.ValidationError("Hotel must have atleast 2 amenities")
         return value
- 
-class HomepageHotelSerializer(ModelSerializer):
-    country = serializers.CharField()
-    hotel_images = serializers.StringRelatedField(many=True, read_only = True)
+
+
+
+class HotelImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HotelImages
+        fields = '__all__'
+
+
+class HomepageHotelSerializer(serializers.ModelSerializer):
+    hotel_images = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
+   
 
     class Meta:
         model = Hotel
-        fields = ['id', 'name', 'address','amenities', 'room_count', 'manager', 'country', 'hotel_images']     
-        
-        
-   
-        # print(validated_data["manager"])
-        
+        fields = ['id', 'name', 'address', 'amenities', 'room_count', 'manager' , 'hotel_images', 'price']
 
+    def get_hotel_images(self, obj):
+        hotel_images = HotelImages.objects.filter(hotel=obj)
+        return HotelImagesSerializer(hotel_images, many=True).data
+
+    def get_price(self, obj):
+        price = Room.objects.filter(hotel=obj).order_by('?').first()
+        return price.price
 
 class BookingSerializer(ModelSerializer):
     class Meta:

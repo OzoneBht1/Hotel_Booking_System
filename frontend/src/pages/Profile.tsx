@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useAppSelector } from "../store/hooks";
 import { useUserDetailQuery } from "../store/api/authorization-api-slice";
-
 const Profile = () => {
   const user = useAppSelector((state) => state.auth.user);
   console.log(user);

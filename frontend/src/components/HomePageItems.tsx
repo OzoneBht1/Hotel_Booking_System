@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import HomePageItem from "./HomePageItem";
 import { styled } from "@mui/system";
 import Carousel from "react-multi-carousel";
@@ -46,10 +46,13 @@ const responsive = {
 };
 
 const HomePageItems = () => {
-  const { data: countryApiData, error, isLoading } =
-    useGetHomePageItemsQuery();
+  const { data: countryApiData, error, isLoading } = useGetHomePageItemsQuery();
 
-
+  useEffect(() => {
+    if (countryApiData) {
+      console.log(countryApiData);
+    }
+  }, [countryApiData]);
   return (
     <StyledBox>
       {isLoading ? (
@@ -58,7 +61,7 @@ const HomePageItems = () => {
         <>
           {countryApiData &&
             countries.map((country) => (
-              <>
+              <React.Fragment key={country}>
                 <Typography
                   variant="h4"
                   component="h4"
@@ -77,14 +80,15 @@ const HomePageItems = () => {
                   containerClass="carousel-container"
                   removeArrowOnDeviceType={["tablet", "mobile"]}
                   deviceType="desktop"
-              >
-                  {countryApiData.map(apidata=> apidata.address.includes(country) && (
-                    <HomePageItem {...apidata} />
-                  ))
-                  }
-
+                >
+                  {countryApiData.map(
+                    (apidata) =>
+                      apidata.address.includes(country) && (
+                        <HomePageItem key={apidata.id} {...apidata} />
+                      )
+                  )}
                 </Carousel>
-              </>
+              </React.Fragment>
             ))}
         </>
       )}
@@ -93,4 +97,3 @@ const HomePageItems = () => {
 };
 
 export default HomePageItems;
-
