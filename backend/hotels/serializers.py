@@ -4,14 +4,19 @@ from .models import Hotel, Amenity, Booking, HotelImages, Room
 
 
 class HotelSerializer(ModelSerializer):
+    hotel_images = serializers.SerializerMethodField()
     amenities = serializers.StringRelatedField(many=True,read_only=True)   
     manager = serializers.StringRelatedField(read_only=True)
   
     
     class Meta:
         model = Hotel
-        fields = ['id', 'name', 'address','amenities', 'room_count', 'manager']     
+        fields = ['id', 'name', 'address','amenities', 'room_count', 'manager', 'hotel_images']     
         
+    def get_hotel_images(self, obj):
+        hotel_images = HotelImages.objects.filter(hotel=obj)
+        return HotelImagesSerializer(hotel_images, many=True).data
+
         
     def create(self, validated_data):
         # print(validated_data["manager"])

@@ -15,8 +15,6 @@ class HotelDetailApi(generics.RetrieveUpdateDestroyAPIView):
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
     lookup_field = 'id'
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser]
     
 
 class HotelCreateApi(generics.CreateAPIView):

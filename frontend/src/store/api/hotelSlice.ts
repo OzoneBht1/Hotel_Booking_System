@@ -20,8 +20,17 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    getHotelDetails: build.query<IHotelData, { id?: string }>({
+      query: ({ id }) => ({
+        url: `/hotels/${id}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useHotelSearchMutation, useGetHomePageItemsQuery } =
-  hotelApiSlice;
+export const {
+  useHotelSearchMutation,
+  useGetHomePageItemsQuery,
+  useGetHotelDetailsQuery,
+} = hotelApiSlice;

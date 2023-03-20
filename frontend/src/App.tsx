@@ -10,9 +10,9 @@ import Profile from "./pages/Profile";
 import RequireAuth from "./utils/RequireAuth";
 import Error from "./pages/404";
 import HotelPage from "./pages/HotelPage";
+import "./App.css";
 
 function App() {
-  const nav = useNavigate();
   return (
     <div>
       <NavBar />
