@@ -3,6 +3,7 @@ import pandas as pd
 from hotels.models import Hotel, Amenity, Room, HotelImages, Booking
 import random
 import os
+from django.core.files import File
 
 
 class Command(BaseCommand):
@@ -46,12 +47,14 @@ class Command(BaseCommand):
                 hotel.amenities.add(amenity)
 
             # Add hotel image
-            hotel_image_path = "media/hotel_images/"
+            hotel_image_path = "hotel_images/"
             hotel_image_filename = random.choice(os.listdir(hotel_image_path))
             hotel_image = HotelImages.objects.create(
                 hotel=hotel,
                 image=hotel_image_path + hotel_image_filename
             )
+            hotel_image.image.save(hotel_image_filename, File(open(hotel_image_path + hotel_image_filename, 'rb')))
+
             
 
             # TODO: hotel room count should start from 1

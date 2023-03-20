@@ -4,13 +4,13 @@ import LoginForm from "../components/forms/LoginForm";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/system";
-import { loginCredentials } from "../components/types/types";
+import { ILoginCreds } from "../components/types/types";
 import { useVerifyLoginMutation } from "../store/api/authentication-api-slice";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { authActions } from "../store/auth-slice";
-import { tokenState } from "../components/types/types";
+import { ITokenState } from "../components/types/types";
 import { useLocation } from "react-router-dom";
 import LoginPageIllustration from "../assets/LoginpageIllustration.png";
 import VerifyEmail from "../components/VerifyEmail";
@@ -52,10 +52,10 @@ const Login = () => {
     }
   }
 
-  const loginDataHandler = (data: loginCredentials) => {
+  const loginDataHandler = (data: ILoginCreds) => {
     verifyLogin({ email: data.email, password: data.password })
       .unwrap()
-      .then((tokens: tokenState) =>
+      .then((tokens: ITokenState) =>
         dispatch(authActions.setCredentials({ authTokens: tokens }))
       )
       .then(() => nav("/", { state: { open: true } }))

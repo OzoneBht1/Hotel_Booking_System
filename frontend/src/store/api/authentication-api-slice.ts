@@ -1,15 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import {
-  loginCredentials,
-  registrationData,
-} from "../../components/types/types";
+import { ILoginCreds, IRegistration } from "../../components/types/types";
 import { authActions } from "../auth-slice";
 import { apiSlice } from "./apiSlice";
 
 export const authenticationApiSlice = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     verifyLogin: build.mutation({
-      query: (loginInfo: loginCredentials) => ({
+      query: (loginInfo: ILoginCreds) => ({
         url: "token/",
         method: "POST",
         body: { email: loginInfo.email, password: loginInfo.password },

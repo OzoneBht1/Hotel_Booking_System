@@ -6,3 +6,4 @@ media
 __pycache__
 config.py
 hotels.csv
+hotel_images

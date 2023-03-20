@@ -14,7 +14,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import MenuItem from "@mui/material/MenuItem";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import { useHotelSearchMutation } from "../../store/api/hotelSlice";
-import { ISearchResult } from "../types/types";
+import { IHotelData } from "../types/types";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 
 interface ISearchFormProps {
@@ -91,7 +91,7 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
   const [rooms, setRooms] = useState(1);
   const [searchText, setSearchText] = useState<string>("");
   const [hotelSearch, { isLoading }] = useHotelSearchMutation();
-  const [hotels, setHotels] = useState<ISearchResult[]>([]);
+  const [hotels, setHotels] = useState<IHotelData[]>([]);
   const [menuAnchorEl, setMenuAnchorEl] =
     React.useState<HTMLButtonElement | null>(null);
 
@@ -185,13 +185,13 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
               display: "none",
             },
             "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-              border: "1px solid #eee !important",
+              border: "none",
             },
             "& .MuiOutlinedInput-root:hover ": {
-              border: "1px solid #eee !important",
+              border: "none",
             },
             "& .Mui-focused": {
-              border: "1px solid #eee !important",
+              border: "none",
             },
             "& .MuiAutocomplete-inputRoot !important": {
               padding: "0",
