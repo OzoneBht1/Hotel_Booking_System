@@ -57,6 +57,7 @@ export interface IHotelData {
   name: string;
   address: string;
   description: string;
+  amenities: string[];
   hotel_images?: {
     id: number;
     created_at: string;

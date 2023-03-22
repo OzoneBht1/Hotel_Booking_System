@@ -69,7 +69,7 @@ const HomePageItem = (props: IHomePageItems) => {
                 fontSize={"1rem"}
                 color="text.secondary"
               >
-                {getScore(props.rating)}
+                {getScore(6.5)}
               </Typography>
               <Typography
                 component="span"
