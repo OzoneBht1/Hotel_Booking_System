@@ -16,7 +16,7 @@ import {
   useRegisterUserMutation,
   useVerifyEmailMutation,
 } from "../store/api/authentication-api-slice";
-import RegisterPageIllustration from "../assets/RegisterpageIllustration.png";
+import RegisterPageIllustration from "../assets/RegisterPageIllustration.png";
 import { useMultistepForm } from "../hooks/use-multistep-form";
 import ImageForm from "../components/forms/ImageForm";
 import VerifyEmail from "../components/VerifyEmail";

@@ -15,7 +15,7 @@ import LocalLaundryServiceIcon from "@mui/icons-material/LocalLaundryService";
 import KitchenIcon from "@mui/icons-material/Kitchen";
 import WifiIcon from "@mui/icons-material/Wifi";
 import HotTubIcon from "@mui/icons-material/HotTub";
-import StoreFrontIcon from "@mui/icons-material/StoreFront";
+import StoreFrontIcon from "@mui/icons-material/Storefront";
 import LocalGroceryStoreIcon from "@mui/icons-material/LocalGroceryStore";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import LuggageIcon from "@mui/icons-material/Luggage";
@@ -44,8 +44,9 @@ import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import AccessibleIcon from "@mui/icons-material/Accessible";
 import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import SmokeFreeIcon from "@mui/icons-material/SmokeFree";
-import ACUnitIcon from "@mui/icons-material/ACUnit";
+import ACUnitIcon from "@mui/icons-material/AcUnit";
 import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
+
 export const amenitiesMap = {
   "Local Library": <LocalLibraryIcon />,
   "Local Pharmacy": <LocalPharmacyIcon />,
@@ -120,8 +121,8 @@ export const amenitiesMap = {
 };
 
 export const getIcon = (name: string) => {
-  return amenitiesMap[name] !== undefined ? (
-    amenitiesMap[name]
+  return amenitiesMap[name as keyof typeof amenitiesMap] !== undefined ? (
+    amenitiesMap[name as keyof typeof amenitiesMap]
   ) : (
     <DisabledByDefaultIcon />
   );

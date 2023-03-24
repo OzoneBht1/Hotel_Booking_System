@@ -63,13 +63,13 @@ const HomePageItem = (props: IHomePageItems) => {
               <Typography variant="body2">₹ 1000</Typography>
             </Stack>
             <Stack direction="row" alignItems="center" spacing={1}>
-              <ScoreBadge score={props.numReviews} />
+              <ScoreBadge score={props.hotel_score} />
               <Typography
                 component="span"
                 fontSize={"1rem"}
                 color="text.secondary"
               >
-                {getScore(6.5)}
+                {getScore(props.hotel_score)}
               </Typography>
               <Typography
                 component="span"

@@ -64,8 +64,8 @@ const HotelPage = () => {
             return (
               <ImageListItem key={item.img} rows={rows} cols={cols}>
                 <img
-                  src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
-                  srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                  src={`${item.img}`}
+                  srcSet={`${item.img}`}
                   alt={item.title}
                   loading="lazy"
                 />
@@ -80,6 +80,7 @@ const HotelPage = () => {
           borderColor: "divider",
           display: "flex",
           alignItems: "flex-start",
+          width: "75%",
         }}
       >
         <Tabs>
@@ -107,9 +108,9 @@ const HotelPage = () => {
       <Box
         ref={overviewRef}
         display="flex"
-        width="70%"
+        width="75%"
         padding={2}
-        gap={12}
+        // gap={12}
         // justifyContent="space-around"
       >
         <Box display="flex" flexDirection="column" gap={2}>
@@ -164,11 +165,10 @@ const HotelPage = () => {
           width="450px"
         >
           <iframe
-            src="https://maps.google.com/maps?q=52.3605759
-,4.9159683&hl=es;z=14&output=embed"
+            src={`https://maps.google.com/maps?q=${hotel?.lat},${hotel?.lng}&hl=es;z=14&output=embed`}
             width={410}
             height={240}
-            allowFullScreen
+            // allowFullScreen
           ></iframe>
         </Box>
       </Box>

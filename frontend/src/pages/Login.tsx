@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { authActions } from "../store/auth-slice";
 import { ITokenState } from "../components/types/types";
 import { useLocation } from "react-router-dom";
-import LoginPageIllustration from "../assets/LoginpageIllustration.png";
+import LoginPageIllustration from "../assets/LoginPageIllustration.png";
 import VerifyEmail from "../components/VerifyEmail";
 
 let HEIGHT_OF_NAVBAR = 68;
