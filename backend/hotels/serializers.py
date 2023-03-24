@@ -11,7 +11,7 @@ class HotelSerializer(ModelSerializer):
     
     class Meta:
         model = Hotel
-        fields = ['id', 'name', 'address','amenities', 'room_count', 'manager', 'hotel_images']     
+        fields = ['id', 'name', 'address','amenities', 'room_count', 'manager', 'hotel_images', 'hotel_score', 'lng', 'lat']     
         
     def get_hotel_images(self, obj):
         hotel_images = HotelImages.objects.filter(hotel=obj)
@@ -44,12 +44,11 @@ class HotelImagesSerializer(serializers.ModelSerializer):
 
 class HomepageHotelSerializer(serializers.ModelSerializer):
     hotel_images = serializers.SerializerMethodField()
-    price = serializers.SerializerMethodField()
    
 
     class Meta:
         model = Hotel
-        fields = ['id', 'name', 'address', 'amenities', 'room_count', 'manager' , 'hotel_images', 'price']
+        fields = ['id', 'name', 'address', 'amenities', 'room_count', 'manager' , 'hotel_images', 'hotel_score', 'lat', 'lng']
 
     def get_hotel_images(self, obj):
         hotel_images = HotelImages.objects.filter(hotel=obj)

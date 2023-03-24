@@ -1,9 +1,9 @@
 /node_modules
-env-fyp
+env
 .vscode
 media
 *.sqlite3
 __pycache__
 config.py
 hotels.csv
-hotel_images
+hotel_photos

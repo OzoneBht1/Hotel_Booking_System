@@ -6,7 +6,6 @@ from account_manager.models import User
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # TODO: Created By/ Updated BY
     
     class Meta:
         abstract = True
@@ -24,6 +23,11 @@ class Hotel(BaseModel):
     amenities = models.ManyToManyField(Amenity, related_name='hotels')
     manager = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     room_count = models.IntegerField(default = 10)
+    lat = models.FloatField(blank=True, null=True)
+    lng = models.FloatField(blank=True, null=True)
+    hotel_score = models.FloatField(default = 2.5)
+
+    
 
 
 

@@ -77,7 +77,7 @@ TEMPLATES = [
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
@@ -135,12 +135,10 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-CORS_ORIGIN_WHITELIST = [
-    'http://127.0.0.1:5173',
-]
-
 AUTH_USER_MODEL = 'account_manager.User'
-
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+ALLOWED_HOSTS = ['*']
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

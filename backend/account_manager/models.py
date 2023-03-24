@@ -30,7 +30,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserProfileManager()
     country = models.CharField(max_length=150)
     image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
-    default_pic_mapping = {'Male': 'def_male.jpg', 'Female': 'def_female.jpg', 'Others': 'def_others.jpg'}
+    default_pic_mapping = {'Male': 'def_male.jpg', 'Female': 'def_female.jpg', 'Others': 'def_other.jpg'}
     user_type = models.CharField(max_length=50, choices=USER_CHOICES, default="Normal")
 
 
