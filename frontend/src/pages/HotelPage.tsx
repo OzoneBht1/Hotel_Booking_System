@@ -5,15 +5,51 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import { IHotelData } from "../components/types/types";
+import Typography from "@mui/material/Typography";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetHotelDetailsQuery } from "../store/api/hotelSlice";
 import Loading from "../components/Loading";
 import { BASEURL } from "../store/api/apiSlice";
-import { Tab, Tabs, Typography } from "@mui/material";
+import { Button, Tab, Tabs } from "@mui/material";
 import { ScoreBadge } from "../components/HomePageItem";
 import getHotelRating from "../utils/GetScoreRating";
 import getBookingRating from "../utils/GetScoreRating";
 import { getIcon } from "../components/icons/Icons";
+import Room1 from "../assets/rooms/room1.jpg";
+import Room2 from "../assets/rooms/room2.jpg";
+import Room3 from "../assets/rooms/room3.jpg";
+import Room4 from "../assets/rooms/room4.jpg";
+import Room5 from "../assets/rooms/room5.jpg";
+import Room6 from "../assets/rooms/room6.jpg";
+import Room7 from "../assets/rooms/room7.jpg";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import { useTheme } from "@mui/material/styles";
+import { useGetLocationDetailQuery } from "../store/api/postitionStackSlice";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+// import {
+//   CleanHandsRounded,
+//   LocalLaundryServiceRounded,
+//   SanitizerRounded,
+//   CheckCircleRounded,
+//   LocalDiningRounded,
+//   RoomServiceRounded,
+//   VerifiedUserRounded,
+//   DirectionsRunRounded,
+//   StayCurrentPortraitRounded,
+// } from "@material-ui/icons";
+import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Dining, Sanitizer, StorefrontSharp } from "@mui/icons-material";
+import SocialDistanceIcon from "@mui/icons-material/SocialDistance";
 const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -28,20 +64,84 @@ const StyledBox = styled(Box)(({ theme }) => ({
 }));
 const HotelPage = () => {
   const [value, setValue] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<any>(null);
   const { id } = useParams();
+  const theme = useTheme();
   const nav = useNavigate();
-  const { data: hotel, isLoading, isError } = useGetHotelDetailsQuery({ id });
+  const {
+    data: hotel,
+    isLoading: hotelIsLoading,
+    isError: hotelHasError,
+  } = useGetHotelDetailsQuery({ id });
+
+  console.log(hotel);
+
+  const { data, isLoading, isError, error } = useGetLocationDetailQuery({
+    lat: 48.874707,
+    lng: 2.2936761,
+  });
+  console.log(data);
+  console.log(error);
+
   const overviewRef = React.useRef<HTMLDivElement>(null);
   const roomsRef = React.useRef<HTMLDivElement>(null);
   const reviewsRef = React.useRef<HTMLDivElement>(null);
   console.log(hotel);
   useEffect(() => {
-    if (isError) {
+    if (hotelHasError) {
       nav("/404");
     }
-  }, [isError]);
+  }, [hotelHasError]);
 
-  if (isLoading) {
+  const hotelImages = [
+    {
+      id: 1,
+      img: Room1,
+    },
+    {
+      id: 2,
+      img: Room2,
+    },
+    {
+      id: 3,
+      img: Room3,
+    },
+    {
+      id: 4,
+      img: Room4,
+    },
+    {
+      id: 5,
+      img: Room5,
+    },
+    {
+      id: 6,
+      img: Room6,
+    },
+    {
+      id: 7,
+      img: Room7,
+    },
+  ];
+  function createData(
+    name: string,
+    calories: number,
+    fat: number,
+    carbs: number,
+    protein: number
+  ) {
+    return { name, calories, fat, carbs, protein };
+  }
+  const rows = [
+    createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
+    createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
+    createData("Eclair", 262, 16.0, 24, 6.0),
+    createData("Cupcake", 305, 3.7, 67, 4.3),
+    createData("Gingerbread", 356, 16.0, 49, 3.9),
+  ];
+
+  if (hotelIsLoading) {
     return <Loading />;
   }
 
@@ -57,18 +157,21 @@ const HotelPage = () => {
         <Box display="flex" alignItems="center" gap={1}>
           <ArrowBackIcon /> See all properties
         </Box>
-        <ImageList variant="masonry" sx={{ width: "100%" }} cols={4}>
-          {itemData.map((item) => {
-            const rows = item.featured ? 2 : 1;
-            const cols = item.featured ? 5 : 5;
+        <ImageList
+          rowHeight={100}
+          variant="masonry"
+          sx={{ width: "100%" }}
+          cols={4}
+        >
+          <ImageListItem cols={2} rows={2}>
+            {hotel !== undefined && hotel.hotel_images !== undefined && (
+              <img src={`${BASEURL}${hotel.hotel_images[0].image}`} />
+            )}
+          </ImageListItem>
+          {hotelImages.map((image, index) => {
             return (
-              <ImageListItem key={item.img} rows={rows} cols={cols}>
-                <img
-                  src={`${item.img}`}
-                  srcSet={`${item.img}`}
-                  alt={item.title}
-                  loading="lazy"
-                />
+              <ImageListItem key={image.id} cols={2} rows={2}>
+                <img src={image.img} alt={"hotel image"} loading="lazy" />
               </ImageListItem>
             );
           })}
@@ -94,7 +197,7 @@ const HotelPage = () => {
             onClick={() =>
               roomsRef!.current!.scrollIntoView({ behavior: "smooth" })
             }
-            label="Amenities"
+            label="Rooms"
           />
           <Tab
             onClick={() =>
@@ -172,44 +275,232 @@ const HotelPage = () => {
           ></iframe>
         </Box>
       </Box>
-      <Box ref={roomsRef} display="flex" flexDirection="column" gap={2}>
+      <Box
+        ref={roomsRef}
+        display="flex"
+        flexDirection="column"
+        width="75%"
+        alignItems="flex-start"
+        gap={2}
+      >
         <Typography component="h4" variant="h5">
           Rooms
         </Typography>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead
+              sx={{
+                backgroundColor: theme.palette.primary.main,
+              }}
+            >
+              <TableRow>
+                <TableCell sx={{ color: theme.palette.primary.contrastText }}>
+                  Dessert (100g serving)
+                </TableCell>
+                <TableCell
+                  sx={{ color: theme.palette.primary.contrastText }}
+                  align="right"
+                >
+                  Calories
+                </TableCell>
+                <TableCell
+                  sx={{ color: theme.palette.primary.contrastText }}
+                  align="right"
+                >
+                  Fat&nbsp;(g)
+                </TableCell>
+
+                <TableCell
+                  sx={{ color: theme.palette.primary.contrastText }}
+                  align="right"
+                >
+                  Protein&nbsp;(g)
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow
+                  key={row.name}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    <Box display="flex" flexDirection={"column"} gap={1}>
+                      <Typography
+                        component="span"
+                        variant="h6"
+                        fontSize={14}
+                        fontWeight="700px"
+                        color="primary"
+                        sx={{ cursor: "pointer" }}
+                        onClick={() => setOpen(true)}
+                      >
+                        {row.name}
+                      </Typography>
+                      <Typography component="span" variant="caption">
+                        {"1 bed"}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell align="right">{row.calories}</TableCell>
+                  <TableCell align="right">{row.fat}</TableCell>
+                  <TableCell align="right">
+                    <Button sx={{ width: "80%" }} variant="contained">
+                      Book
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+
+      <Box
+        ref={reviewsRef}
+        display="flex"
+        width="75%"
+        alignItems="flex-start"
+        gap={2}
+      >
+        <Box display="flex" flexDirection="column" gap={2}>
+          <Box>
+            <Typography component="h4" variant="h5">
+              Frequently Asked Questions
+            </Typography>
+          </Box>
+          <Box>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Typography>Accordion 1</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
+                  eget.
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel2a-content"
+                id="panel2a-header"
+              >
+                <Typography>Accordion 2</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
+                  eget.
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel2a-content"
+                id="panel2a-header"
+              >
+                <Typography>Accordion 3</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
+                  eget.
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel2a-content"
+                id="panel2a-header"
+              >
+                <Typography>Accordion 4</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
+                  eget.
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
+          </Box>{" "}
+        </Box>
+        <Box>
+          <Typography component="h4" variant="h5">
+            Cleaning and Safety Practices
+          </Typography>
+          <Box>
+            <List component="nav" aria-label="hotel safety measures">
+              <ListItem>
+                <ListItemIcon>
+                  <AutoAwesomeIcon fill="black" />
+                </ListItemIcon>
+                <ListItemText primary="Enhanced cleanliness mesasures" />
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <SocialDistanceIcon />
+                </ListItemIcon>
+                <ListItemText primary="Social Distancing" />
+              </ListItem>
+
+              <ListItem>
+                <ListItemIcon>
+                  <Sanitizer />
+                </ListItemIcon>
+                <ListItemText primary="Disinfection with electrostatic spray" />
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <Dining />
+                </ListItemIcon>
+                <ListItemText primary="Enhanced food service safety" />
+              </ListItem>
+            </List>
+          </Box>
+        </Box>
+      </Box>
+
+      <Box
+        ref={reviewsRef}
+        display="flex"
+        width="75%"
+        alignItems="flex-start"
+        gap={2}
+      >
+        <Box display="flex" flexDirection="column" gap={2}>
+          <Box>
+            <Typography component="h4" variant="h5">
+              Reviews
+            </Typography>
+            <Box>
+              <List>
+                <ListItem>
+                  <Typography component="span" variant="h5">
+                    10.0
+                  </Typography>
+                  <Typography component="span" variant="h6">
+                    Excellent
+                  </Typography>
+                </ListItem>
+              </List>
+            </Box>
+          </Box>
+        </Box>
       </Box>
     </StyledBox>
   );
 };
 
 export default HotelPage;
-const itemData = [
-  {
-    img: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e",
-    title: "Breakfast",
-    featured: true,
-  },
-  {
-    img: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
-    title: "Burger",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1522770179533-24471fcdba45",
-    title: "Camera",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c",
-    title: "Coffee",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1533827432537-70133748f5c8",
-    title: "Hats",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c",
-    title: "Coffee",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c",
-    title: "Coffee",
-  },
-];
