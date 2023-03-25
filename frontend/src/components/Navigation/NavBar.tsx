@@ -19,7 +19,7 @@ import Menu from "@mui/material/Menu";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { styled } from "@mui/system";
 import { useTheme } from "@mui/material/styles";
-import travAlly from "../../assets/travAlly.png";
+import travAlly from "../../assets/TravAlly.png";
 import { authActions } from "../../store/auth-slice";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Logout from "@mui/icons-material/Logout";

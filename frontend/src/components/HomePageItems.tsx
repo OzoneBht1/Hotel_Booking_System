@@ -7,7 +7,7 @@ import "react-multi-carousel/lib/styles.css";
 import { useQuery } from "react-query";
 import { useGetHomePageItemsQuery } from "../store/api/hotelSlice";
 import Loading from "./Loading";
-
+import Error from "../pages/404";
 const countries = ["France", "United Kingdom", "Netherlands", "Austria"];
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -46,19 +46,27 @@ const responsive = {
 };
 
 const HomePageItems = () => {
-  const { data: countryApiData, error, isLoading } = useGetHomePageItemsQuery();
+  const {
+    data: countryApiData,
+    isError,
+    isLoading,
+  } = useGetHomePageItemsQuery();
 
   useEffect(() => {
-    if (countryApiData) {
-      console.log(countryApiData);
-    }
+    console.log(countryApiData);
   }, [countryApiData]);
+
+  // if (isError) {
+  //   return <Error />;
+  // }
   return (
     <StyledBox>
       {isLoading ? (
         <Loading />
+      ) : countryApiData?.length === 0 ? (
+        <p>No Data Found.</p>
       ) : (
-        <>
+        <StyledBox>
           {countryApiData &&
             countries.map((country) => (
               <React.Fragment key={country}>
@@ -90,7 +98,7 @@ const HomePageItems = () => {
                 </Carousel>
               </React.Fragment>
             ))}
-        </>
+        </StyledBox>
       )}
     </StyledBox>
   );

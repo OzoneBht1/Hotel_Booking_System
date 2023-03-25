@@ -57,6 +57,7 @@ export interface IHotelData {
   name: string;
   address: string;
   description: string;
+  amenities: string[];
   hotel_images?: {
     id: number;
     created_at: string;
@@ -66,10 +67,13 @@ export interface IHotelData {
   }[];
   price: number;
   category: string;
+  hotel_score: number;
   //images? : string[];
   rating: number;
   numReviews: number;
   countInStock: number;
+  lat: number;
+  lng: number;
 }
 
 export interface ISearchResponse {

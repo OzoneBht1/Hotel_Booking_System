@@ -1,17 +1,21 @@
-enum BookingRating {
-  "Terrible" = 1,
-  "Very poor" = 2,
-  "Poor" = 3,
-  "Disappointing" = 4,
-  "Okay" = 5,
-  "Pleasant" = 6,
-  "Good" = 7,
-  "Very good" = 8,
-  "Wonderful" = 9,
-  "Exceptional" = 10,
-}
+type BookingRatingType = {
+  [key: string]: string;
+};
+
+const BookingRating: BookingRatingType = {
+  "1": "Terrible",
+  "2": "Very poor",
+  "3": "Poor",
+  "4": "Disappointing",
+  "5": "Okay",
+  "6": "Pleasant",
+  "7": "Good",
+  "8": "Very good",
+  "9": "Wonderful",
+  "10": "Exceptional",
+};
 
 const getBookingRating = (score: number): string | undefined => {
-  return BookingRating[score];
+  return BookingRating[score.toString().split(".")[0]];
 };
 export default getBookingRating;

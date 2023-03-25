@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
-export function Error() {
+function Error() {
   return (
     <Box
       sx={{
