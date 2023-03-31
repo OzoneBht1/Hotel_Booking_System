@@ -149,7 +149,6 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
   );
 
   useEffect(() => {
-    console.log("INSIDE HERE");
     const timer = setTimeout(() => {
       searchHotel(searchQuery);
     }, 500);
@@ -163,7 +162,17 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
       setErrorMessage("Please select check in and check out dates");
       return;
     }
-    if (selectedCheckInDate < selectedCheckOutDate) {
+
+    const checkInISO = selectedCheckInDate.toISOString();
+    const checkOutISO = selectedCheckOutDate.toISOString();
+
+    const checkInDate = checkInISO.split("T")[0];
+    const checkOutDate = checkOutISO.split("T")[0];
+
+    const dateFormatCheckIn = new Date(checkInISO);
+    const dateFormatCheckOut = new Date(checkOutISO);
+
+    if (dateFormatCheckIn > dateFormatCheckOut) {
       setOpenSnackbar(true);
       setErrorMessage("Check out date must be greater than check in date");
       return;
@@ -175,8 +184,6 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
       return;
     }
 
-    const checkInDate = selectedCheckInDate?.toString();
-    const checkOutDate = selectedCheckOutDate?.toString();
     const queryData = {
       checkInDate,
       checkOutDate,
@@ -185,7 +192,6 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
       searchQuery,
       rooms,
     };
-
     onSearch(queryData);
   };
 
@@ -280,6 +286,7 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
             label="Check-in date"
             value={selectedCheckInDate}
             onChange={(newValue) => {
+              console.log(newValue);
               setSelectedCheckInDate(newValue);
             }}
           />

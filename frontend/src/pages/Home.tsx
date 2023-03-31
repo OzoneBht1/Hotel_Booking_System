@@ -1,17 +1,19 @@
 import { Alert, Box, Button, Card, Grid } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import HomepageImg from "../assets/homepage-img.jpg";
 import { styled } from "@mui/system";
 import HomePageCard from "../components/HomePageCard";
 import HomePageItems from "../components/HomePageItems";
+import { IQuery } from "../components/types/types";
 
 const Home = () => {
   const { state } = useLocation();
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(
     state?.open ? true : false
   );
+  const nav = useNavigate();
   const [snackbarOpenOnLogout, setSnackbarOpenOnLogout] = useState<boolean>(
     state?.openOnLogout ? true : false
   );
@@ -19,6 +21,12 @@ const Home = () => {
     setSnackbarOpenOnLogout(state?.openOnLogout ? true : false);
     // handling the case when user logs out from home page, as page isnt re-rendered
   }, [state]);
+
+  const searchHandler = (searchQuery: IQuery) => {
+    nav(
+      `/hotels/search?term=${searchQuery.searchQuery}&checkInDate=${searchQuery.checkInDate}&checkOutDate=${searchQuery.checkOutDate}&childrenNum=${searchQuery.childrenNum}&adults=${searchQuery.adults}&rooms=${searchQuery.rooms}`
+    );
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -73,7 +81,7 @@ const Home = () => {
             width: "100%",
           }}
         >
-          <HomePageCard />
+          <HomePageCard onSearch={searchHandler} />
         </Box>
         <HomePageItems />
       </Box>
