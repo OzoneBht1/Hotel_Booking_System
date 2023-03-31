@@ -7,18 +7,26 @@ import React, { useCallback, useEffect, useState } from "react";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
-import { Autocomplete, Divider, Menu, MenuList, Stack } from "@mui/material";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import {
+  Alert,
+  Autocomplete,
+  Divider,
+  Menu,
+  MenuList,
+  Snackbar,
+  Stack,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import MenuItem from "@mui/material/MenuItem";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import { useHotelSearchMutation } from "../../store/api/hotelSlice";
-import { IHotelData } from "../types/types";
+import { IHotelData, IQuery } from "../types/types";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 
 interface ISearchFormProps {
-  onSearch: (text: string) => void;
+  onSearch: (query: IQuery) => void;
 }
 
 const Search = styled(Toolbar)(({ theme }) => ({
@@ -85,16 +93,17 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
   const [selectedCheckOutDate, setSelectedCheckOutDate] = useState<Date | null>(
     null
   );
-
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [adults, setAdults] = useState(1);
   const [childrenNum, setChildrenNum] = useState(0);
   const [rooms, setRooms] = useState(1);
-  const [searchText, setSearchText] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [hotelSearch, { isLoading }] = useHotelSearchMutation();
   const [hotels, setHotels] = useState<IHotelData[]>([]);
   const [menuAnchorEl, setMenuAnchorEl] =
     React.useState<HTMLButtonElement | null>(null);
 
+  const [errorMessage, setErrorMessage] = useState("");
   const handleAdultsChange = (increment: number) => {
     if (adults < 1 && increment < 0) return;
     setAdults(adults + increment);
@@ -116,6 +125,12 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
     setMenuAnchorEl(null);
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      setOpenSnackbar(false);
+    }, 6000);
+  }, [openSnackbar]);
+
   // const textSearchHandler = (
   //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | undefined
   // ) => {
@@ -136,23 +151,42 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
   useEffect(() => {
     console.log("INSIDE HERE");
     const timer = setTimeout(() => {
-      searchHotel(searchText);
+      searchHotel(searchQuery);
     }, 500);
     return () => clearTimeout(timer);
-  }, [searchText]);
+  }, [searchQuery]);
 
   const formSubmitHandler = (e: React.FormEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (!selectedCheckInDate || !selectedCheckOutDate) {
+      setOpenSnackbar(true);
+      setErrorMessage("Please select check in and check out dates");
+      return;
+    }
+    if (selectedCheckInDate < selectedCheckOutDate) {
+      setOpenSnackbar(true);
+      setErrorMessage("Check out date must be greater than check in date");
+      return;
+    }
+
+    if (!!searchQuery) {
+      setOpenSnackbar(true);
+      setErrorMessage("Please provide a query");
+      return;
+    }
+
     const checkInDate = selectedCheckInDate?.toString();
-    const checkOutDate = selectedCheckOutDate;
-    console.log({
+    const checkOutDate = selectedCheckOutDate?.toString();
+    const queryData = {
       checkInDate,
       checkOutDate,
       adults,
       childrenNum,
+      searchQuery,
       rooms,
-    });
+    };
 
-    e.preventDefault();
+    onSearch(queryData);
   };
 
   return (
@@ -168,12 +202,21 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
       justifyContent="space-between"
       alignItems="center"
     >
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <Alert onClose={() => setOpenSnackbar(false)} severity="error">
+          Check out date must be greater than check in date
+        </Alert>
+      </Snackbar>
       <Search>
         <Icon>
           <SearchIcon />
         </Icon>
         <Autocomplete
-          id="combo-box-country"
+          freeSolo
           fullWidth={true}
           options={hotels}
           disableClearable={true}
@@ -203,9 +246,11 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
             return selectedValue.name === optionValue.name;
           }}
           autoHighlight={true}
-          getOptionLabel={(option) => option.name}
+          getOptionLabel={(option) =>
+            typeof option === "string" ? option : option.name
+          }
           onInputChange={(event, newValue) => {
-            setSearchText(newValue);
+            setSearchQuery(newValue);
           }}
           renderInput={(params) => <TextField {...params} />}
         />
@@ -221,7 +266,7 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
               flexWrap: "nowrap",
             }}
           > */}
-          <DateTimePicker
+          <DatePicker
             renderInput={(props) => (
               <TextField
                 {...props}
@@ -238,7 +283,7 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
               setSelectedCheckInDate(newValue);
             }}
           />
-          <DateTimePicker
+          <DatePicker
             renderInput={(props) => (
               <TextField
                 {...props}

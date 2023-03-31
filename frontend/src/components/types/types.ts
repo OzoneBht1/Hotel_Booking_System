@@ -84,3 +84,12 @@ export interface ISearchResponse {
 }
 
 export interface IHomePageItems extends IHotelData {}
+
+export interface IQuery {
+  checkInDate: string;
+  checkOutDate: string;
+  searchQuery: string;
+  adults: number;
+  childrenNum: number;
+  rooms: number;
+}
