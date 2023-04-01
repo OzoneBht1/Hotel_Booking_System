@@ -26,15 +26,18 @@ import { IHotelData, IQuery } from "../types/types";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import { useTheme } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
-interface ISearchFormProps {
+interface IFilteredListSearchForm {
   onSearch: (query: IQuery) => void;
 }
 
-const Search = styled(Toolbar)(({ theme }) => ({
+const Search = styled(Box)(({ theme }) => ({
   display: "flex",
   backgroundColor: "white",
+
   // padding: "0 10px",
-  marginBottom: "12px",
+  alignItems: "center",
+  paddingLeft: 14,
+  justifyContent: "center",
   // padding: "0px 14px",
   border: "1px solid #ccc",
   borderRadius: theme.shape.borderRadius,
@@ -43,7 +46,7 @@ const Search = styled(Toolbar)(({ theme }) => ({
 
   width: "95%",
 
-  height: "40px",
+  height: "56px",
   // [theme.breakpoints.up("xs")]: {
   //   width: "80%",
   // },
@@ -64,10 +67,10 @@ const PlusMinusIcon = styled(Box)(({ theme }) => ({
 const BookingDetails = styled(Box)(({ theme }) => ({
   display: "flex",
   width: "100%",
-  paddingLeft: "10px",
+  alignItems: "center",
   justifyContent: "center",
   gap: 10,
-  flexWrap: "wrap",
+  // flexWrap: "wrap",
   paddingRight: "10px",
   [theme.breakpoints.up("md")]: {
     flexWrap: "nowrap",
@@ -87,7 +90,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   justifyContent: "space-between",
 }));
 
-const SearchForm = ({ onSearch }: ISearchFormProps) => {
+const FilteredListSearch = ({ onSearch }: IFilteredListSearchForm) => {
   const [selectedCheckInDate, setSelectedCheckInDate] = useState<Date | null>(
     null
   );
@@ -198,12 +201,9 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
       component="form"
       onSubmit={formSubmitHandler}
       display="flex"
-      flexDirection="column"
-      flexGrow={1}
+      width="80%"
       padding={2}
-      height="100%"
-      // flexWrap="wrap"
-      justifyContent="space-between"
+      gap={1}
       alignItems="center"
     >
       <Snackbar
@@ -256,7 +256,9 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
           onInputChange={(event, newValue) => {
             setSearchQuery(newValue);
           }}
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={(params) => (
+            <TextField sx={{ height: "24px" }} {...params} />
+          )}
         />
       </Search>
 
@@ -274,9 +276,11 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
             renderInput={(props) => (
               <TextField
                 {...props}
+                variant="filled"
                 sx={{
                   marginRight: 0.5,
                   width: { xs: "48%", md: "30%" },
+                  backgroundColor: "white",
                   flexShrink: 1,
                 }}
               />
@@ -292,9 +296,11 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
             renderInput={(props) => (
               <TextField
                 {...props}
+                variant="filled"
                 sx={{
                   width: { xs: "45%", sm: "48%", md: "30%" },
                   flexShrink: 1,
+                  backgroundColor: "white",
                 }}
               />
             )}
@@ -313,6 +319,7 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
           sx={{
             border: "1px solid",
             borderColor: grey[400],
+            backgroundColor: "white",
             justifyContent: "flex-start",
             width: { xs: "98%", md: "35%" },
             height: "56px",
@@ -397,10 +404,12 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
         type="submit"
         variant="contained"
         sx={{
-          bottom: -10,
-          width: "30%",
-          height: "45px",
+          // bottom: -10,
+          width: "40%",
+          height: "56px",
           borderRadius: "10px",
+          backgroundColor: "primary.light",
+          color: "white",
         }}
       >
         Search
@@ -409,4 +418,4 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
   );
 };
 
-export default SearchForm;
+export default FilteredListSearch;

@@ -23,7 +23,7 @@ function App() {
         <Route path="/add-property" element={<ListProperties />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/hotel/search" element={<SearchedResults />} />
+        <Route path="/hotels/find" element={<SearchedResults />} />
         <Route element={<RequireAuth />}>
           <Route path="/profile" element={<Profile />} />
         </Route>

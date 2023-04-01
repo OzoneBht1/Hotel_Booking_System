@@ -89,7 +89,6 @@ export interface IQuery {
   checkInDate: string;
   checkOutDate: string;
   searchQuery: string;
-  adults: number;
-  childrenNum: number;
+  people: number;
   rooms: number;
 }

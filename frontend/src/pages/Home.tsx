@@ -24,7 +24,7 @@ const Home = () => {
 
   const searchHandler = (searchQuery: IQuery) => {
     nav(
-      `/hotels/search?term=${searchQuery.searchQuery}&checkInDate=${searchQuery.checkInDate}&checkOutDate=${searchQuery.checkOutDate}&childrenNum=${searchQuery.childrenNum}&adults=${searchQuery.adults}&rooms=${searchQuery.rooms}`
+      `/hotels/find?term=${searchQuery.searchQuery}&checkInDate=${searchQuery.checkInDate}&checkOutDate=${searchQuery.checkOutDate}&people=${searchQuery.people}&rooms=${searchQuery.rooms}`
     );
   };
 
