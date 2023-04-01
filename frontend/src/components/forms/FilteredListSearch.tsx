@@ -201,7 +201,7 @@ const FilteredListSearch = ({ onSearch }: IFilteredListSearchForm) => {
       component="form"
       onSubmit={formSubmitHandler}
       display="flex"
-      width="80%"
+      width="70%"
       padding={2}
       gap={1}
       alignItems="center"
