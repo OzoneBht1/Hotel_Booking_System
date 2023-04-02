@@ -1,5 +1,9 @@
 import { apiSlice } from "./apiSlice";
-import { ISearchResponse, IHotelData } from "../../components/types/types";
+import {
+  ISearchResponse,
+  IHotelData,
+  IQuery,
+} from "../../components/types/types";
 
 export const hotelApiSlice = apiSlice.injectEndpoints({
   endpoints: (build) => ({
@@ -23,6 +27,19 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
     getHotelDetails: build.query<IHotelData, { id?: string }>({
       query: ({ id }) => ({
         url: `/hotels/${id}`,
+        method: "GET",
+      }),
+    }),
+    getSearchedResults: build.query<any, IQuery>({
+      query: ({
+        searchQuery,
+        checkInDate,
+        checkOutDate,
+        childrenNum = 0,
+        adults = 0,
+        rooms = 0,
+      }) => ({
+        url: `/hotels/search?term=${searchQuery}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&childrenNum=${childrenNum}&adults=${adults}&rooms=${rooms}`,
         method: "GET",
       }),
     }),

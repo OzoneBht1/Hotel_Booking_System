@@ -10,7 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useGetHotelDetailsQuery } from "../store/api/hotelSlice";
 import Loading from "../components/Loading";
 import { BASEURL } from "../store/api/apiSlice";
-import { Button, Tab, Tabs } from "@mui/material";
+import { Button, Rating, Tab, Tabs } from "@mui/material";
 import { ScoreBadge } from "../components/HomePageItem";
 import getHotelRating from "../utils/GetScoreRating";
 import getBookingRating from "../utils/GetScoreRating";
@@ -30,7 +30,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useTheme } from "@mui/material/styles";
-import { useGetLocationDetailQuery } from "../store/api/postitionStackSlice";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -48,7 +47,14 @@ import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 //   StayCurrentPortraitRounded,
 // } from "@material-ui/icons";
 import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-import { Dining, Sanitizer, StorefrontSharp } from "@mui/icons-material";
+import {
+  AccountCircle,
+  Bed,
+  CalendarMonth,
+  Dining,
+  Sanitizer,
+  StorefrontSharp,
+} from "@mui/icons-material";
 import SocialDistanceIcon from "@mui/icons-material/SocialDistance";
 const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -66,6 +72,7 @@ const HotelPage = () => {
   const [value, setValue] = useState(0);
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<any>(null);
+  const [rating, setRating] = useState(3);
   const { id } = useParams();
   const theme = useTheme();
   const nav = useNavigate();
@@ -76,13 +83,6 @@ const HotelPage = () => {
   } = useGetHotelDetailsQuery({ id });
 
   console.log(hotel);
-
-  const { data, isLoading, isError, error } = useGetLocationDetailQuery({
-    lat: 48.874707,
-    lng: 2.2936761,
-  });
-  console.log(data);
-  console.log(error);
 
   const overviewRef = React.useRef<HTMLDivElement>(null);
   const roomsRef = React.useRef<HTMLDivElement>(null);
@@ -479,22 +479,133 @@ const HotelPage = () => {
         alignItems="flex-start"
         gap={2}
       >
-        <Box display="flex" flexDirection="column" gap={2}>
+        <Box display="flex" flexDirection="column" gap={1}>
           <Box>
             <Typography component="h4" variant="h5">
               Reviews
             </Typography>
-            <Box>
+            <Box display="flex" width="100%">
               <List>
-                <ListItem>
-                  <Typography component="span" variant="h5">
-                    10.0
-                  </Typography>
+                <ListItem sx={{ display: "flex", gap: 3 }}>
+                  <ScoreBadge
+                    score={hotel && hotel?.hotel_score && hotel.hotel_score}
+                  />
                   <Typography component="span" variant="h6">
-                    Excellent
+                    {hotel?.hotel_score && getBookingRating(hotel.hotel_score)}
                   </Typography>
                 </ListItem>
+                <ListItem sx={{ display: "flex", gap: 3 }}>
+                  <Typography component="legend">Excellent</Typography>
+                  <Rating name="disabled" value={rating} disabled max={10} />
+                </ListItem>
+                <ListItem sx={{ display: "flex", gap: 3 }}>
+                  <Typography component="legend">Excellent</Typography>
+                  <Rating name="disabled" value={rating} disabled max={10} />
+                </ListItem>
+                <ListItem sx={{ display: "flex", gap: 3 }}>
+                  <Typography component="legend">Excellent</Typography>
+                  <Rating name="disabled" value={rating} disabled max={10} />
+                </ListItem>
+                <ListItem sx={{ display: "flex", gap: 3 }}>
+                  <Typography component="legend">Excellent</Typography>
+                  <Rating name="disabled" value={rating} disabled max={10} />
+                </ListItem>
+                <ListItem sx={{ display: "flex", gap: 3 }}>
+                  <Typography component="legend">Excellent</Typography>
+                  <Rating name="disabled" value={rating} disabled max={10} />
+                </ListItem>
               </List>
+              <Box
+                display="flex"
+                alignItems="center"
+                height="fit-content"
+                width="100%"
+                padding={3}
+                border={1}
+              >
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="flex-start"
+                  width="30%"
+                >
+                  <Box display="flex" alignItems="center">
+                    <AccountCircle sx={{ mr: 1, width: 50, height: 50 }} />
+                    <Box display="flex" flexDirection="column">
+                      <Typography
+                        component="span"
+                        variant="h6"
+                        fontSize={16}
+                        color={theme.palette.text.primary}
+                      >
+                        Micheal{" "}
+                      </Typography>
+                      <Typography
+                        component="span"
+                        variant="caption"
+                        fontSize={14}
+                        color={theme.palette.text.secondary}
+                      >
+                        Nepal
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  <List>
+                    <ListItem>
+                      <ListItemIcon>
+                        <Bed />
+                      </ListItemIcon>
+                      <ListItemText>
+                        <Typography
+                          component="span"
+                          variant="caption"
+                          fontSize={14}
+                        >
+                          Duplex Suite
+                        </Typography>
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon>
+                        <CalendarMonth />
+                      </ListItemIcon>
+                      <ListItemText>
+                        <Typography
+                          component="span"
+                          variant="caption"
+                          fontSize={14}
+                        >
+                          Stayed 3 nights
+                        </Typography>
+                      </ListItemText>
+                    </ListItem>
+                  </List>
+                </Box>
+                <Box width="60%" display="flex" gap={3} flexDirection="column">
+                  <Typography component="span" variant="caption">
+                    Reviewed : NOvember 7, 2022
+                  </Typography>
+                  <Typography component="span" variant="body1">
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                    Itaque ipsam optio unde tempore deserunt animi officia in
+                    consectetur, nemo sed, accusamus assumenda! Sunt accusamus
+                    fugit eligendi libero eius cupiditate atque!
+                  </Typography>
+                </Box>
+                <Box
+                  height="50%"
+                  display="flex"
+                  justifyContent="flex-end"
+                  padding={1}
+                  alignItems="center"
+                  width="10%"
+                >
+                  <ScoreBadge
+                    score={hotel && hotel?.hotel_score && hotel.hotel_score}
+                  />
+                </Box>
+              </Box>
             </Box>
           </Box>
         </Box>

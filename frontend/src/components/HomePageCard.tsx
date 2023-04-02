@@ -3,6 +3,11 @@ import React from "react";
 import { styled } from "@mui/system";
 import SearchForm from "./forms/SearchForm";
 import { green } from "@mui/material/colors";
+import { IQuery } from "./types/types";
+
+interface IHomePageCardProps {
+  onSearch: (searchQuery: IQuery) => void;
+}
 
 const StyledCard = styled(Box)(({ theme }) => ({
   height: "280px",
@@ -29,14 +34,10 @@ const StyledCard = styled(Box)(({ theme }) => ({
   },
 }));
 
-const HomePageCard = () => {
-  const searchHandler = (searchTerm: string) => {
-    console.log(searchTerm);
-  };
-
+const HomePageCard = ({ onSearch }: IHomePageCardProps) => {
   return (
     <StyledCard>
-      <SearchForm onSearch={searchHandler} />
+      <SearchForm onSearch={onSearch} />
     </StyledCard>
   );
 };

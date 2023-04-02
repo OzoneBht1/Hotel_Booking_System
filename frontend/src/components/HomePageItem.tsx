@@ -29,7 +29,7 @@ const HomePageItem = (props: IHomePageItems) => {
           component="img"
           height="190"
           image={
-            props.hotel_images
+            props.hotel_images && props.hotel_images.length > 0
               ? `${BASEURL}${props.hotel_images[0].image}`
               : DefaultImage
           }
@@ -99,6 +99,7 @@ export const ScoreBadge = ({ score }: { score: number }) => {
         width: "1.5rem",
         height: "1.5rem",
         borderRadius: "10%",
+        padding: 2,
         backgroundColor:
           score >= 7 ? theme.palette.primary.dark : theme.palette.grey[600],
       }}

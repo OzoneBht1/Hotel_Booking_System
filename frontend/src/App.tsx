@@ -11,6 +11,7 @@ import RequireAuth from "./utils/RequireAuth";
 import Error from "./pages/404";
 import HotelPage from "./pages/HotelPage";
 import "./App.css";
+import SearchedResults from "./pages/SearchedResults";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/add-property" element={<ListProperties />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/hotels/find" element={<SearchedResults />} />
         <Route element={<RequireAuth />}>
           <Route path="/profile" element={<Profile />} />
         </Route>
