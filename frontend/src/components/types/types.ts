@@ -96,6 +96,8 @@ export interface IQuery {
 export interface IListProperty{
   email : string;
   hotel_name : string;
+  hotel_address : string;
+  amenities : string[];
   // rooms : []; 
   
 }
