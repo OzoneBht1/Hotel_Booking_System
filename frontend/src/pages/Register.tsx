@@ -103,6 +103,7 @@ const Register = () => {
   const { steps, currentStepIndex, next, prev } = useMultistepForm([
     <RegisterForm onReceiveData={formReceiveHandler} data={data} />,
     <ImageForm
+
       onReceiveImage={imageReceiveHandler}
       loading={isLoading}
       onBack={backHandler}

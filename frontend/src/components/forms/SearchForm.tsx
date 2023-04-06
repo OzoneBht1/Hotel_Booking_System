@@ -4,7 +4,6 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { Box, styled } from "@mui/system";
 import React, { useCallback, useEffect, useState } from "react";
-import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
@@ -23,7 +22,6 @@ import MenuItem from "@mui/material/MenuItem";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import { useHotelSearchMutation } from "../../store/api/hotelSlice";
 import { IHotelData, IQuery } from "../types/types";
-import PersonAdd from "@mui/icons-material/PersonAdd";
 import { useTheme } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
 interface ISearchFormProps {
@@ -155,6 +153,7 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
   const formSubmitHandler = (e: React.FormEvent<HTMLDivElement>) => {
     e.preventDefault();
     setErrorMessage("");
+    setOpenSnackbar(false)
     if (!selectedCheckInDate || !selectedCheckOutDate) {
       setOpenSnackbar(true);
       setErrorMessage("Please select check in and check out dates");
@@ -171,13 +170,15 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
     const dateFormatCheckOut = new Date(checkOutISO);
     console.log(dateFormatCheckIn, dateFormatCheckOut);
     console.log(dateFormatCheckIn > dateFormatCheckOut);
+
     if (dateFormatCheckIn > dateFormatCheckOut) {
+      console.log("hi im here somehow")
       setOpenSnackbar(true);
       setErrorMessage("Check out date must be greater than check in date");
       return;
     }
 
-    if (!!searchQuery) {
+    if (searchQuery.trim().length === 0 ) {
       setOpenSnackbar(true);
       setErrorMessage("Please provide a query");
       return;
@@ -212,7 +213,7 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
         onClose={() => setOpenSnackbar(false)}
       >
         <Alert onClose={() => setOpenSnackbar(false)} severity="error">
-          Check out date must be greater than check in date
+          {errorMessage}
         </Alert>
       </Snackbar>
       <Search>

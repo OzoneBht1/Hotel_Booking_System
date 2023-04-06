@@ -77,7 +77,8 @@ const Home = () => {
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "100% 60%",
-            height: "100%",
+                      height: "100%",
+
             width: "100%",
           }}
         >

@@ -20,12 +20,13 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/hotel/:id" element={<HotelPage />} />
-        <Route path="/add-property" element={<ListProperties />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/hotels/find" element={<SearchedResults />} />
         <Route element={<RequireAuth />}>
           <Route path="/profile" element={<Profile />} />
+
+        <Route path="/add-property" element={<ListProperties />} />
         </Route>
         <Route path="*" element={<Error />} />
       </Routes>
