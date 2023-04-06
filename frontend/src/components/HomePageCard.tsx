@@ -1,5 +1,5 @@
 import { Box } from "@mui/system";
-import React from "react";
+
 import { styled } from "@mui/system";
 import SearchForm from "./forms/SearchForm";
 import { green } from "@mui/material/colors";

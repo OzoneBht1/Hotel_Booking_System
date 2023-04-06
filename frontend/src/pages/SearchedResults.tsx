@@ -9,13 +9,21 @@ import {
   CardActions,
   CardContent,
   CardMedia,
+  Pagination,
   Typography,
 } from "@mui/material";
-import SearchForm from "../components/forms/SearchForm";
-import { FilterCenterFocus } from "@mui/icons-material";
 import FilteredListSearch from "../components/forms/FilteredListSearch";
 import { BASEURL } from "../store/api/apiSlice";
 import { ScoreBadge } from "../components/HomePageItem";
+import HotelListingFilter from "../components/HotelListingFilter";
+
+let LIMIT = 4;
+interface IPaginatedData {
+  next : string;
+  prev : string;
+  count : number;
+  results : any[];
+}
 const dummyListings = [
   {
     image: `${BASEURL}/media/hotel_images/361374662.webp`,
@@ -38,6 +46,49 @@ const dummyListings = [
       "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
     address: "9101 Mountain Rd, Anytown, USA",
   },
+{
+    image: `${BASEURL}/media/hotel_images/361374662.webp`,
+    headline: "Mountain Getaway",
+    description:
+      "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
+    address: "9101 Mountain Rd, Anytown, USA",
+  },
+{
+    image: `${BASEURL}/media/hotel_images/361374662.webp`,
+    headline: "Mountain Getaway",
+    description:
+      "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
+    address: "9101 Mountain Rd, Anytown, USA",
+  },
+{
+    image: `${BASEURL}/media/hotel_images/361374662.webp`,
+    headline: "Mountain Getaway",
+    description:
+      "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
+    address: "9101 Mountain Rd, Anytown, USA",
+  },
+{
+    image: `${BASEURL}/media/hotel_images/361374662.webp`,
+    headline: "Mountain Getaway",
+    description:
+      "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
+    address: "9101 Mountain Rd, Anytown, USA",
+  },
+{
+    image: `${BASEURL}/media/hotel_images/361374662.webp`,
+    headline: "Mountain Getaway",
+    description:
+      "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
+    address: "9101 Mountain Rd, Anytown, USA",
+  },
+{
+    image: `${BASEURL}/media/hotel_images/361374662.webp`,
+    headline: "Mountain Getaway",
+    description:
+      "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
+    address: "9101 Mountain Rd, Anytown, USA",
+  },
+
 ];
 
 const SearchedResults = () => {
@@ -64,8 +115,8 @@ const SearchedResults = () => {
         <FilteredListSearch onSearch={searchHandler} />
       </Box>
       <Box padding={2} display="flex" justifyContent={"center"} width="100%">
-        <Box display="flex" width="70%" justifyContent={"center"}>
-          <Box width="40%">bla</Box>
+        <Box display="flex" width="70%" gap={4} justifyContent={"center"}>
+            <HotelListingFilter/>
 
           <Box display="flex" flexDirection="column" gap={3}>
             <Typography variant="h5" component="h2">
@@ -145,6 +196,7 @@ const SearchedResults = () => {
                 </Card>
               </Box>
             ))}
+            <Pagination count={10} color="primary" />
           </Box>
         </Box>
       </Box>

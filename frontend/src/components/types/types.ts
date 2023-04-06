@@ -92,3 +92,10 @@ export interface IQuery {
   people: number;
   rooms: number;
 }
+
+export interface IListProperty{
+  email : string;
+  hotel_name : string;
+  // rooms : []; 
+  
+}
