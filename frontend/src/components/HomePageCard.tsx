@@ -10,11 +10,11 @@ interface IHomePageCardProps {
 }
 
 const StyledCard = styled(Box)(({ theme }) => ({
-  height: "280px",
+  height: "300px;",
   backgroundColor: "#fff",
   position: "relative",
+  padding: 1,
   // bottom: "-30%",.
-  padding: "1px",
 
   borderRadius: "10px",
   boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.75)",

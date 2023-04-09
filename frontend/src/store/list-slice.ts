@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IListProperty } from "../components/types/types";
+import { IListProperty, IRoom } from "../components/types/types";
 
 const initialState: IListProperty = {
   email: "",
   hotel_name: "",
   hotel_address: "",
   amenities: [],
+  rooms: [],
 };
 const listingSlice = createSlice({
   name: "listProperty",
@@ -25,13 +26,21 @@ const listingSlice = createSlice({
     addAmenity(state, action: PayloadAction<{ amenity: string }>) {
       state.amenities.push(action.payload.amenity);
     },
-    removeAmenity(state, action : PayloadAction<{amenity : string}>){
-      const foundAmenity = state.amenities.find((existingAmenity)=>existingAmenity === action.payload.amenity);
-      if(foundAmenity){
-        const index = state.amenities.indexOf(foundAmenity)
-        state.amenities.splice(index, 1)
+    removeAmenity(state, action: PayloadAction<{ amenity: string }>) {
+      const foundAmenity = state.amenities.find(
+        (existingAmenity) => existingAmenity === action.payload.amenity
+      );
+      if (foundAmenity) {
+        const index = state.amenities.indexOf(foundAmenity);
+        state.amenities.splice(index, 1);
       }
-    }
+    },
+    addRoom(state, action: PayloadAction<{ room: IRoom }>) {
+      state.rooms.concat(action.payload.room);
+    },
+    removeRoom(state) {
+      state.rooms.pop();
+    },
   },
 });
 

@@ -45,19 +45,19 @@ class Command(BaseCommand):
                 lng = row["lng"] if type(row["lng"]) == float else 0.0,
             )
             for i in range(1, random.randint(8, 20)):
-                amenity = Amenity.objects.get(id=random.randint(1, 71))
+                amenity = Amenity.objects.get(id=random.randint(1, 70))
                 hotel.amenities.add(amenity)
 
            
             # Add hotel image
-            for i in range(7):  # create 7 hotel images
-                hotel_image_path = "hotel_photos/"
-                hotel_image_filename = random.choice(os.listdir(hotel_image_path))
-                hotel_image = HotelImages.objects.create(
-                    hotel=hotel,
-                    image=hotel_image_path + hotel_image_filename
-                )
-                hotel_image.image.save(hotel_image_filename, File(open(hotel_image_path + hotel_image_filename, 'rb')))
+           # create 7 hotel images
+            hotel_image_path = "hotel_photos/"
+            hotel_image_filename = random.choice(os.listdir(hotel_image_path))
+            hotel_image = HotelImages.objects.create(
+            hotel=hotel,
+            image=hotel_image_path + hotel_image_filename
+            )
+            hotel_image.image.save(hotel_image_filename, File(open(hotel_image_path + hotel_image_filename, 'rb')))
 
             
 

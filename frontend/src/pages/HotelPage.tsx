@@ -160,7 +160,7 @@ const HotelPage = () => {
         <ImageList
           rowHeight={100}
           variant="masonry"
-          sx={{ width: "100%" }}
+          sx={{ width: "100%", backgroundColor: "#fff" }}
           cols={4}
         >
           <ImageListItem cols={2} rows={2}>
@@ -213,6 +213,11 @@ const HotelPage = () => {
         display="flex"
         width="75%"
         padding={2}
+        sx={{
+          backgroundColor: "#fff",
+          padding: 3,
+        }}
+
         // gap={12}
         // justifyContent="space-around"
       >
@@ -360,7 +365,7 @@ const HotelPage = () => {
         ref={reviewsRef}
         display="flex"
         width="75%"
-        alignItems="flex-start"
+        justifyContent="space-between"
         gap={2}
       >
         <Box display="flex" flexDirection="column" gap={2}>
@@ -436,11 +441,15 @@ const HotelPage = () => {
             </Accordion>
           </Box>{" "}
         </Box>
-        <Box>
+        <Box display="flex" flexDirection="column" gap={2}>
           <Typography component="h4" variant="h5">
             Cleaning and Safety Practices
           </Typography>
-          <Box>
+          <Box
+            sx={{
+              backgroundColor: "#fff",
+            }}
+          >
             <List component="nav" aria-label="hotel safety measures">
               <ListItem>
                 <ListItemIcon>
@@ -450,7 +459,7 @@ const HotelPage = () => {
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <SocialDistanceIcon />
+                  <SocialDistanceIcon fill="black" />
                 </ListItemIcon>
                 <ListItemText primary="Social Distancing" />
               </ListItem>
@@ -478,6 +487,7 @@ const HotelPage = () => {
         width="75%"
         alignItems="flex-start"
         gap={2}
+        sx={{ backgroundColor: "white" }}
       >
         <Box display="flex" flexDirection="column" gap={1}>
           <Box>

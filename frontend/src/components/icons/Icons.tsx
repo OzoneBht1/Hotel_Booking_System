@@ -47,7 +47,7 @@ import SmokeFreeIcon from "@mui/icons-material/SmokeFree";
 import ACUnitIcon from "@mui/icons-material/AcUnit";
 import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
 
-type AmenityCategory = 'Accessibility' | 'Services' | 'Transportation' | 'Miscellaneous';
+type AmenityCategory = "Accessibility" | "Services" | "Transportation";
 
 type Amenity = {
   icon: React.ReactElement;
@@ -55,9 +55,7 @@ type Amenity = {
 };
 
 type AmenitiesMap = Record<string, Amenity>;
-export const amenitiesMap: AmenitiesMap 
-
- = {
+export const amenitiesMap: AmenitiesMap = {
   "Local Library": {
     icon: <LocalLibraryIcon />,
     category: "Services",
@@ -404,9 +402,7 @@ export const amenitiesMap: AmenitiesMap
 //   "Free Breakfast": <LocalDiningIcon />,
 // };
 
-
 export const getIcon = (name: string) => {
   const amenity = amenitiesMap[name];
   return amenity ? amenity.icon : <DisabledByDefaultIcon />;
 };
-

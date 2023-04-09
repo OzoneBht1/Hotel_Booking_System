@@ -26,6 +26,8 @@ import Logout from "@mui/icons-material/Logout";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import { useLogoutUserMutation } from "../../store/api/authentication-api-slice";
+import { useQuery } from "react-query";
+import { useUserDetailQuery } from "../../store/api/authorization-api-slice";
 
 const authenticatedPages = ["List your Property", "Support"];
 const unauthenticatedPages = [
@@ -50,7 +52,13 @@ const NavBar = () => {
   const [logout, { isSuccess }] = useLogoutUserMutation();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const openMenu = Boolean(anchorEl);
+  const userId = useAppSelector((state) => state.auth.user?.user_id);
+  console.log(userId);
 
+  const { data, isLoading, isError } = useUserDetailQuery(userId!, {
+    skip: !userId,
+  });
+  console.log(data);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -126,8 +134,11 @@ const NavBar = () => {
               },
             }}
           >
-            <AccountCircleIcon sx={{ mr: 1, width: 50, height: 50 }} />
-            PROFILE
+            <Avatar
+              src={data?.image ? data.image : ""}
+              sx={{ mr: 1, width: 50, height: 50 }}
+            />
+            {data && `${data.first_name} ${data.last_name} `}
           </Button>
         </Box>
       )}
