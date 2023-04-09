@@ -9,6 +9,7 @@ from .pagination import CustomHotelSearchPagination
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
+import numpy as np
 
 # Create your views here.
 from rest_framework.response import Response
@@ -107,21 +108,22 @@ class HotelsByLocationApi(generics.ListAPIView):
 
 @api_view(["GET"])
 def recommend_hotels(request):
-    hotel_name = "Hotel Arena"
+    hotel_name = request.GET.get("hotel_name", "")
 
     if hotel_name not in list(name_to_idx.keys()):
         embed = model.encode(hotel_name)
-        sim_scores = list(
-            enumerate(
-                cosine_similarity(embed.reshape(1, -1), list(idx_to_embed.values())[0])
-            )
-        )
+        print(embed.shape)
+        embeds = np.array(list(idx_to_embed.values()))
+        print(embeds.shape)
+        # Cosine similarity
+
+        sim_scores = list(enumerate(cosine_similarity(embed.reshape(1, -1), embeds)[0]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
         sim_scores = sim_scores[1:11]
         hotel_indices = [i[0] for i in sim_scores]
         hotel_names = [idx_to_name[i] for i in hotel_indices]
 
-        return hotel_names
+        return Response(hotel_names)
 
     idx = name_to_idx[hotel_name]
     sim_scores = list(enumerate(sim_matrix[idx]))
@@ -129,7 +131,4 @@ def recommend_hotels(request):
     sim_scores = sim_scores[1:11]
     hotel_indices = [i[0] for i in sim_scores]
     hotel_names = [idx_to_name[i] for i in hotel_indices]
-    return Response({"data": hotel_names})
-
-
-# class SearchedHotelApi(generics.ListAPIView):
+    return Response(hotel_names)
