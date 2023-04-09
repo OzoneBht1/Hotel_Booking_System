@@ -93,9 +93,16 @@ export interface IQuery {
   rooms: number;
 }
 
-export interface IListProperty{
-  email : string;
-  hotel_name : string;
-  // rooms : []; 
-  
+export interface IRoom {
+  roomType: string;
+  price: number;
+  numberOfRooms: number;
+}
+
+export interface IListProperty {
+  email: string;
+  hotel_name: string;
+  hotel_address: string;
+  amenities: string[];
+  rooms: IRoom[];
 }

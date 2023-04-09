@@ -8,7 +8,6 @@ import {
   FormControlLabel,
   FormGroup,
   Grid,
-  ListItemText,
   Snackbar,
   TextField,
   Typography,
@@ -16,7 +15,6 @@ import {
 import React, { useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { styled } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
 import { amenitiesMap } from "../icons/Icons";
 import { listActions } from "../../store/list-slice";
 
@@ -33,31 +31,16 @@ const Item = styled(Box)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-const ListPropertiesNameAmenities = ({
+const ListPropertiesServices = ({
   onClickNext,
 }: IListPropertiesAmenitiesProps) => {
   const dispatch = useAppDispatch();
   const hotelNameRef = useRef<HTMLInputElement>(null);
   const amenities = useAppSelector((state) => state.list.amenities);
-  const hotelAddressRef = useRef<HTMLInputElement>(null);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const nextClickHandler = () => {
-    const hotelName = hotelNameRef!.current!.value;
-    const hotelAddress = hotelAddressRef!.current!.value;
-    console.log(hotelName);
-    if (hotelName.trim().length === 0 || hotelAddress.trim().length === 0) {
-      setError("Please fill out the hotel name and address");
-      setShowSnackbar(true);
-      return;
-    }
 
-    dispatch(
-      listActions.setHotelNameAndAddress({
-        hotel_name: hotelName,
-        hotel_address: hotelAddress,
-      })
-    );
+  const nextClickHandler = () => {
     onClickNext();
   };
 
@@ -102,42 +85,23 @@ const ListPropertiesNameAmenities = ({
           marginTop: 8,
           display: "flex",
           flexDirection: "column",
-
           alignItems: "left",
           width: "100%",
           gap: 5,
         }}
       >
-        <Box display="flex" sx={{}} flexDirection="row" gap={5} width="100%">
-          <TextField
-            required
-            id="outlined-required"
-            label="Hotel Name"
-            fullWidth
-            inputRef={hotelNameRef}
-          />
-
-          <TextField
-            required
-            id="outlined-required"
-            multiline
-            fullWidth
-            label="Hotel Address"
-            inputRef={hotelAddressRef}
-          />
-        </Box>
         <Box display="flex" flexDirection="column" gap={3}>
           <Typography variant="h4" component="h4">
-            Accessibility Features
+            Services Provided
           </Typography>
           <Typography variant="body2">Select all that apply*</Typography>
         </Box>
         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           {Object.keys(amenitiesMap).map((amenity) => {
             const amenityObj = amenitiesMap[amenity];
-            if (amenityObj.category === "Accessibility") {
+            if (amenityObj.category === "Services") {
               return (
-                <Grid item xs={6} key={amenity}>
+                <Grid item xs={4} key={amenity}>
                   <Box display="flex" alignItems="center">
                     <FormGroup>
                       <FormControlLabel
@@ -165,7 +129,7 @@ const ListPropertiesNameAmenities = ({
       </Box>
       <Box
         display="flex"
-        width="70%"
+        width="100%"
         alignItems="flex-end"
         justifyContent="flex-end"
       >
@@ -182,4 +146,4 @@ const ListPropertiesNameAmenities = ({
   );
 };
 
-export default ListPropertiesNameAmenities;
+export default ListPropertiesServices;

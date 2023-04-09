@@ -4,3 +4,15 @@
   margin: 0;
   font-family: "Roboto", sans-serif;
 }
+
+.react-multi-carousel-list {
+  margin-left: 20px;
+}
+
+/* Target the arrow buttons and adjust their position */
+.react-multiple-carousel__arrow {
+  position: absolute;
+  top: 90px; /* Adjust this value to push the arrows up or down */
+  margin-left: -50px;
+  margin-right: 10px;
+}

@@ -116,7 +116,6 @@ const Register = () => {
   ]);
 
   const submitData = (data: IRegistration) => {
-    console.log("HERE");
     const formData = new FormData();
     formData.append("first_name", data.first_name);
     formData.append("last_name", data.last_name);
