@@ -236,7 +236,7 @@ const HotelPage = () => {
           </Box>
 
           <Typography component="span" fontSize={"1rem"} color="blue">
-            See all 1,234 reviews
+            See all {hotel?.review_count} reviews 
           </Typography>
           <Box>
             <Box display="flex" flexDirection="column" gap={1}>
@@ -459,7 +459,7 @@ const HotelPage = () => {
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <SocialDistanceIcon fill="black" />
+                  <AutoAwesomeIcon fill="black" />
                 </ListItemIcon>
                 <ListItemText primary="Social Distancing" />
               </ListItem>

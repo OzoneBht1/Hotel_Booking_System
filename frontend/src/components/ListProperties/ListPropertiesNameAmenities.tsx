@@ -14,15 +14,22 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useRef, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useAppDispatch } from "../../store/hooks";
 import { styled } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
 import { amenitiesMap } from "../icons/Icons";
 import { listActions } from "../../store/list-slice";
+import { SubmitHandler, useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 interface IListPropertiesAmenitiesProps {
   onClickNext: () => void;
 }
+
+const nameAddressSchema = yup.object().shape({
+  hotelName: yup.string().required("Name is Required"),
+  hotelAddress: yup.string().required("This is required"),
+});
 
 const Item = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -37,25 +44,23 @@ const ListPropertiesNameAmenities = ({
   onClickNext,
 }: IListPropertiesAmenitiesProps) => {
   const dispatch = useAppDispatch();
-  const hotelNameRef = useRef<HTMLInputElement>(null);
-  const amenities = useAppSelector((state) => state.list.amenities);
-  const hotelAddressRef = useRef<HTMLInputElement>(null);
-  const [showSnackbar, setShowSnackbar] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const nextClickHandler = () => {
-    const hotelName = hotelNameRef!.current!.value;
-    const hotelAddress = hotelAddressRef!.current!.value;
-    console.log(hotelName);
-    if (hotelName.trim().length === 0 || hotelAddress.trim().length === 0) {
-      setError("Please fill out the hotel name and address");
-      setShowSnackbar(true);
-      return;
-    }
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{ hotelName: string; hotelAddress: string }>({
+    resolver: yupResolver(nameAddressSchema),
+  });
+
+  const onSubmit: SubmitHandler<{ hotelName: string; hotelAddress: string }> = (
+    data
+  ) => {
+    console.log(data);
     dispatch(
       listActions.setHotelNameAndAddress({
-        hotel_name: hotelName,
-        hotel_address: hotelAddress,
+        hotel_name: data.hotelName,
+        hotel_address: data.hotelAddress,
       })
     );
     onClickNext();
@@ -80,24 +85,10 @@ const ListPropertiesNameAmenities = ({
   };
   return (
     <Container component="main">
-      {error && showSnackbar && (
-        <Snackbar
-          open={showSnackbar}
-          autoHideDuration={6000}
-          onClose={() => setShowSnackbar(false)}
-        >
-          <Alert
-            onClose={() => setShowSnackbar(false)}
-            severity="error"
-            sx={{ width: "100%" }}
-          >
-            {error}
-          </Alert>
-        </Snackbar>
-      )}
-
       <CssBaseline />
       <Box
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
         sx={{
           marginTop: 8,
           display: "flex",
@@ -108,22 +99,31 @@ const ListPropertiesNameAmenities = ({
           gap: 5,
         }}
       >
-        <Box display="flex" sx={{}} flexDirection="row" gap={5} width="100%">
+        <Box display="flex" flexDirection="row" gap={5} width="100%">
           <TextField
             required
             id="outlined-required"
             label="Hotel Name"
             fullWidth
-            inputRef={hotelNameRef}
+            // helperText={errors?.hotelName ? errors!.hotelName!.message : ""}
+
+            error={errors?.hotelName ? true : false}
+            {...register("hotelName")}
           />
 
           <TextField
             required
             id="outlined-required"
+            helperText={
+              errors?.hotelAddress
+                ? (errors?.hotelAddress?.message as string)
+                : ""
+            }
+            error={errors?.hotelAddress ? true : false}
             multiline
             fullWidth
             label="Hotel Address"
-            inputRef={hotelAddressRef}
+            {...register("hotelAddress")}
           />
         </Box>
         <Box display="flex" flexDirection="column" gap={3}>
@@ -162,21 +162,16 @@ const ListPropertiesNameAmenities = ({
             }
           })}
         </Grid>
-      </Box>
-      <Box
-        display="flex"
-        width="70%"
-        alignItems="flex-end"
-        justifyContent="flex-end"
-      >
-        <Button
-          sx={{ width: "20%", mt: 2 }}
-          variant="contained"
-          onClick={nextClickHandler}
-          type="button"
+        <Box
+          display="flex"
+          width="70%"
+          alignItems="flex-end"
+          justifyContent="flex-end"
         >
-          Next
-        </Button>
+          <Button sx={{ width: "20%" }} variant="contained" type="submit">
+            Next
+          </Button>
+        </Box>
       </Box>
     </Container>
   );

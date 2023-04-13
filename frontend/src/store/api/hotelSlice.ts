@@ -35,11 +35,10 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         searchQuery,
         checkInDate,
         checkOutDate,
-        childrenNum = 0,
-        adults = 0,
+        people = 0,
         rooms = 0,
       }) => ({
-        url: `/hotels/search?term=${searchQuery}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&childrenNum=${childrenNum}&adults=${adults}&rooms=${rooms}`,
+        url: `/hotels/hotels-by-name-location?term=${searchQuery}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&people=${people}&rooms=${rooms}`,
         method: "GET",
       }),
     }),
@@ -50,4 +49,5 @@ export const {
   useHotelSearchMutation,
   useGetHomePageItemsQuery,
   useGetHotelDetailsQuery,
+  useGetSearchedResultsQuery,
 } = hotelApiSlice;

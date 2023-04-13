@@ -70,7 +70,7 @@ export interface IHotelData {
   hotel_score: number;
   //images? : string[];
   rating: number;
-  numReviews: number;
+  review_count: number;
   countInStock: number;
   lat: number;
   lng: number;

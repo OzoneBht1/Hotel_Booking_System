@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams, useSearchParams } from "react-router-dom";
 
 import {
   Box,
@@ -16,13 +16,15 @@ import FilteredListSearch from "../components/forms/FilteredListSearch";
 import { BASEURL } from "../store/api/apiSlice";
 import { ScoreBadge } from "../components/HomePageItem";
 import HotelListingFilter from "../components/HotelListingFilter";
+import { useGetSearchedResultsQuery } from "../store/api/hotelSlice";
+import { IQuery } from "../components/types/types";
 
 let LIMIT = 4;
 interface IPaginatedData {
-  next : string;
-  prev : string;
-  count : number;
-  results : any[];
+  next: string;
+  prev: string;
+  count: number;
+  results: any[];
 }
 const dummyListings = [
   {
@@ -46,57 +48,77 @@ const dummyListings = [
       "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
     address: "9101 Mountain Rd, Anytown, USA",
   },
-{
+  {
     image: `${BASEURL}/media/hotel_images/361374662.webp`,
     headline: "Mountain Getaway",
     description:
       "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
     address: "9101 Mountain Rd, Anytown, USA",
   },
-{
+  {
     image: `${BASEURL}/media/hotel_images/361374662.webp`,
     headline: "Mountain Getaway",
     description:
       "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
     address: "9101 Mountain Rd, Anytown, USA",
   },
-{
+  {
     image: `${BASEURL}/media/hotel_images/361374662.webp`,
     headline: "Mountain Getaway",
     description:
       "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
     address: "9101 Mountain Rd, Anytown, USA",
   },
-{
+  {
     image: `${BASEURL}/media/hotel_images/361374662.webp`,
     headline: "Mountain Getaway",
     description:
       "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
     address: "9101 Mountain Rd, Anytown, USA",
   },
-{
+  {
     image: `${BASEURL}/media/hotel_images/361374662.webp`,
     headline: "Mountain Getaway",
     description:
       "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
     address: "9101 Mountain Rd, Anytown, USA",
   },
-{
+  {
     image: `${BASEURL}/media/hotel_images/361374662.webp`,
     headline: "Mountain Getaway",
     description:
       "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
     address: "9101 Mountain Rd, Anytown, USA",
   },
-
 ];
 
 const SearchedResults = () => {
-  const location = useLocation();
+  const [params, setSearchParams] = useSearchParams();
+  const searchQuery = params.get("term") || "";
+  const checkInDate = params.get("checkInDate") || "";
+
+  const checkOutDate = params.get("checkOutDate") || "";
+  const people =
+    params && params.get("people")
+      ? parseInt(params.get("people") as string)
+      : 0;
+
+  const rooms =
+    params && params.get("rooms") ? parseInt(params.get("rooms") as string) : 0;
+
+  const { data, isLoading, isError } = useGetSearchedResultsQuery({
+    searchQuery,
+    checkInDate,
+    checkOutDate,
+    people,
+    rooms,
+  } as IQuery);
+
+  console.log(data);
+
   const searchHandler = () => {
     console.log("something");
   };
-  console.log(location.search);
   return (
     <>
       <Box
@@ -116,7 +138,7 @@ const SearchedResults = () => {
       </Box>
       <Box padding={2} display="flex" justifyContent={"center"} width="100%">
         <Box display="flex" width="70%" gap={4} justifyContent={"center"}>
-            <HotelListingFilter/>
+          <HotelListingFilter />
 
           <Box display="flex" flexDirection="column" gap={3}>
             <Typography variant="h5" component="h2">

@@ -6,7 +6,7 @@ const initialState: IListProperty = {
   hotel_name: "",
   hotel_address: "",
   amenities: [],
-  rooms: [],
+  rooms: [{roomType: "", price : 0, numberOfRooms:0}],
 };
 const listingSlice = createSlice({
   name: "listProperty",
@@ -36,7 +36,7 @@ const listingSlice = createSlice({
       }
     },
     addRoom(state, action: PayloadAction<{ room: IRoom }>) {
-      state.rooms.concat(action.payload.room);
+      state.rooms.push(action.payload.room);
     },
     removeRoom(state) {
       state.rooms.pop();
