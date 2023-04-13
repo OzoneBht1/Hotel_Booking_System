@@ -6,22 +6,27 @@ import os
 from django.core.files import File
 from account_manager.models import User
 
+
 class Command(BaseCommand):
     help = "Import data from CSV file"
 
     def add_arguments(self, parser):
-        parser.add_argument('path', type=str, help='Path to CSV file')
+        parser.add_argument("path", type=str, help="Path to CSV file")
 
     def handle(self, *args, **kwargs):
-        path = kwargs['path']
+        path = kwargs["path"]
         room_types = set()
         df = pd.read_csv(path)
-        hotel_names = set()  # set to keep track of hotel names already added
+        hotel_names = set()
 
-        for index, row in df.iterrows():
-            room_type = [room for room in str(row["Tags"]).strip("[]").split(",") if "Room" in room]
+        for _, row in df.iterrows():
+            room_type = [
+                room
+                for room in str(row["Tags"]).strip("[]").split(",")
+                if "Room" in room
+            ]
 
-            if (len(room_type) > 0):
+            if len(room_type) > 0:
                 if room_type[0] not in room_types:
                     # the room_type[0] is of the form ' 'Room' '
                     room_type = room_type[0].strip("' ")
@@ -30,10 +35,12 @@ class Command(BaseCommand):
         price_map = {}
 
         for each in room_types:
-            price_map[each] = random.randint(1000, 10000)
+            price_map[each] = random.randint(300, 1500)
 
-        for index, row in df.iterrows():
-            if row["Hotel_Name"] in hotel_names:  # check if the hotel name already exists
+        for _, row in df.iterrows():
+            if (
+                row["Hotel_Name"] in hotel_names
+            ):  # check if the hotel name already exists
                 continue
             hotel_names.add(row["Hotel_Name"])  # add the hotel name to the set
             hotel = Hotel.objects.create(
@@ -41,25 +48,22 @@ class Command(BaseCommand):
                 address=row["Hotel_Address"],
                 room_count=random.randint(0, 11),
                 hotel_score=row["Average_Score"],
-                lat = row["lat"] if type(row["lat"]) == float else 0.0,
-                lng = row["lng"] if type(row["lng"]) == float else 0.0,
+                lat=row["lat"] if type(row["lat"]) == float else 0.0,
+                lng=row["lng"] if type(row["lng"]) == float else 0.0,
             )
             for i in range(1, random.randint(8, 20)):
                 amenity = Amenity.objects.get(id=random.randint(1, 70))
                 hotel.amenities.add(amenity)
 
-           
-            # Add hotel image
-           # create 7 hotel images
             hotel_image_path = "hotel_photos/"
             hotel_image_filename = random.choice(os.listdir(hotel_image_path))
             hotel_image = HotelImages.objects.create(
-            hotel=hotel,
-            image=hotel_image_path + hotel_image_filename
+                hotel=hotel, image=hotel_image_path + hotel_image_filename
             )
-            hotel_image.image.save(hotel_image_filename, File(open(hotel_image_path + hotel_image_filename, 'rb')))
-
-            
+            hotel_image.image.save(
+                hotel_image_filename,
+                File(open(hotel_image_path + hotel_image_filename, "rb")),
+            )
 
             hotel.save()
             for i in range(1, hotel.room_count + 1):
@@ -68,7 +72,7 @@ class Command(BaseCommand):
                     hotel=hotel,
                     room_number=i,
                     room_type=random_room_type,
-                    price=price_map[random_room_type]
+                    price=price_map[random_room_type],
                 )
         users = []
         for i in range(1, 51):
@@ -76,8 +80,8 @@ class Command(BaseCommand):
             last_name = "Test"
             email = f"user{i}@example.com"
             password = "user123"
-            gender = random.choice(['Male', 'Female', 'Others'])
-            country = random.choice(df['Reviewer_Nationality'].unique())
+            gender = random.choice(["Male", "Female", "Others"])
+            country = random.choice(df["Reviewer_Nationality"].unique())
             user = User.objects.create(
                 first_name=first_name,
                 last_name=last_name,
@@ -85,34 +89,30 @@ class Command(BaseCommand):
                 password=password,
                 gender=gender,
                 country=country,
-                is_active=True
+                is_active=True,
             )
             user.save()
             users.append(user)
 
         for user in users:
-            for i in range(random.randint(1, 5)):
-                hotel = Hotel.objects.get(id=random.randint(1, 1492))
-                room = Room.objects.get(hotel=hotel, id=random.randint(1, hotel.room_count))
-                Booking.objects.create(
-                    user=user,
-                    hotel=hotel,
-                    room=room,
-                    check_in_date="2021-10-10",
-                    check_out_date="2021-10-11",
-                    booking_date="2021-10-10",
-                    total_price=room.price,
-                    status=random.choice(['Booked', 'Cancelled'])
-                )    
-
+            hotels = set()
             for i in range(random.randint(1, 12)):
-                hotel = Hotel.objects.get(id=random.randint(1, 1492))
-                room = Room.objects.get(hotel=hotel, id=random.randint(1, hotel.room_count))
-                found_hotel = df.loc[df['hotel_name'] == hotel.name]
-                Review.objects.create(
-                    user=user,
-                    hotel=hotel,
-                    room=room,
-                    rating= found_hotel["Reviewer_Score"],
-                    review= found_hotel["Positive_Review"] + found_hotel["Negative_Review"]
-                )
+                hotel = Hotel.objects.order_by("?").first()
+                if not hotel or hotel in hotels:
+                    break
+                rooms = Room.objects.filter(hotel=hotel)
+                if rooms:
+                    room = random.choice(rooms)
+                    found_hotel = df.loc[df["Hotel_Name"] == hotel.name]
+
+                    Review.objects.create(
+                        user=user,
+                        hotel=hotel,
+                        room=room,
+                        score=found_hotel["Reviewer_Score"].iloc[0],
+                        review=found_hotel["Positive_Review"].iloc[0]
+                        + found_hotel["Negative_Review"].iloc[0],
+                    )
+                    hotels.add(hotel)
+                else:
+                    pass

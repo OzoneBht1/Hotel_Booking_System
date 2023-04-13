@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -10,10 +11,9 @@ import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 import numpy as np
-
-# Create your views here.
 from rest_framework.response import Response
-from django.db.models import Value, CharField
+from django.db.models.query import QuerySet
+from django.db.models import Q
 
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -46,9 +46,6 @@ class HotelCreateApi(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
 
 class HotelListApi(generics.ListAPIView):
     queryset = Hotel.objects.all()
@@ -75,6 +72,31 @@ class HotelSearchApi(generics.ListAPIView):
         name = self.request.query_params.get("q", None)
         if name is not None:
             queryset = queryset.filter(name__icontains=name)
+        return queryset
+
+
+class HotelByLocationAndNameApi(generics.ListAPIView):
+    serializer_class = HotelSerializer
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = Hotel.objects.all()
+        search_query = self.request.query_params.get("term", None)
+        checkInDate = self.request.query_params.get("checkInDate", None)
+
+        checkOutDate = self.request.query_params.get("checkOutDate", None)
+
+        people = self.request.query_params.get("people", None)
+        rooms = self.request.query_params.get("rooms", None)
+
+        if search_query is not None:
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) | Q(address__icontains=search_query)
+            )
         return queryset
 
 
@@ -112,12 +134,8 @@ def recommend_hotels(request):
 
     if hotel_name not in list(name_to_idx.keys()):
         embed = model.encode(hotel_name)
-        print(embed.shape)
         embeds = np.array(list(idx_to_embed.values()))
-        print(embeds.shape)
-        # Cosine similarity
-
-        sim_scores = list(enumerate(cosine_similarity(embed.reshape(1, -1), embeds)[0]))
+        sim_scores = list(enumerate(cosine_similarity(embed.reshape(1, -1), embeds)[0]))  # type: ignore
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
         sim_scores = sim_scores[1:11]
         hotel_indices = [i[0] for i in sim_scores]
