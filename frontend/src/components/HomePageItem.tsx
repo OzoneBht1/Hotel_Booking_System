@@ -65,7 +65,7 @@ const HomePageItem = (props: IHomePageItems) => {
               <Typography component="span" color="text.secondary">
                 Starting From
               </Typography>
-              <Typography variant="body2">${props.price}</Typography>
+              <Typography variant="body2">${props.cheapest_price}</Typography>
             </Stack>
             <Stack direction="row" alignItems="center" spacing={1}>
               <ScoreBadge score={props.hotel_score} />

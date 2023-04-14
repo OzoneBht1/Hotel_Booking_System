@@ -7,10 +7,10 @@ import ImageListItem from "@mui/material/ImageListItem";
 import { IHotelData } from "../components/types/types";
 import Typography from "@mui/material/Typography";
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetHotelDetailsQuery } from "../store/api/hotelSlice";
+import { useGetHotelDetailsQuery, useGetReviewsQuery } from "../store/api/hotelSlice";
 import Loading from "../components/Loading";
 import { BASEURL } from "../store/api/apiSlice";
-import { Button, Rating, Tab, Tabs } from "@mui/material";
+import { Avatar, Button, Rating, Tab, Tabs } from "@mui/material";
 import { ScoreBadge } from "../components/HomePageItem";
 import getHotelRating from "../utils/GetScoreRating";
 import getBookingRating from "../utils/GetScoreRating";
@@ -56,6 +56,8 @@ import {
   StorefrontSharp,
 } from "@mui/icons-material";
 import SocialDistanceIcon from "@mui/icons-material/SocialDistance";
+import noReview from "../assets/noReviewVector.webp";
+
 const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -82,15 +84,23 @@ const HotelPage = () => {
     isError: hotelHasError,
   } = useGetHotelDetailsQuery({ id });
 
-  console.log(hotel);
+const {
+    data: reviews,
+    isLoading: reviewsIsLoading,
+    isError: reviewsIsError,
+  } = useGetReviewsQuery({ id });
+
+  console.log(reviews);
 
   const overviewRef = React.useRef<HTMLDivElement>(null);
   const roomsRef = React.useRef<HTMLDivElement>(null);
   const reviewsRef = React.useRef<HTMLDivElement>(null);
   console.log(hotel);
   useEffect(() => {
-    if (hotelHasError) {
-      nav("/404");
+    if (hotelHasError || reviewsIsError) {
+      // nav("/404");
+      console.log(hotelHasError);
+      console.log(reviewsIsError)
     }
   }, [hotelHasError]);
 
@@ -236,7 +246,7 @@ const HotelPage = () => {
           </Box>
 
           <Typography component="span" fontSize={"1rem"} color="blue">
-            See all {hotel?.review_count} reviews 
+            See all {hotel?.review_count} reviews
           </Typography>
           <Box>
             <Box display="flex" flexDirection="column" gap={1}>
@@ -533,88 +543,126 @@ const HotelPage = () => {
                 padding={3}
                 border={1}
               >
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="flex-start"
-                  width="30%"
-                >
-                  <Box display="flex" alignItems="center">
-                    <AccountCircle sx={{ mr: 1, width: 50, height: 50 }} />
-                    <Box display="flex" flexDirection="column">
-                      <Typography
-                        component="span"
-                        variant="h6"
-                        fontSize={16}
-                        color={theme.palette.text.primary}
-                      >
-                        Micheal{" "}
-                      </Typography>
-                      <Typography
-                        component="span"
-                        variant="caption"
-                        fontSize={14}
-                        color={theme.palette.text.secondary}
-                      >
-                        Nepal
-                      </Typography>
-                    </Box>
-                  </Box>
+                {reviews && reviews.results?.length > 0 ? (
+                  reviews?.results?.map((review) => {
+                    return (
+                      <>
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                          alignItems="flex-start"
+                          width="30%"
+                        >
+                          <Box display="flex" alignItems="center">
+                            <Avatar
+                              src={review?.user_image}
+                              sx={{ mr: 1, width: 50, height: 50 }}
+                            />
+                            <Box display="flex" flexDirection="column">
+                              <Typography
+                                component="span"
+                                variant="h6"
+                                fontSize={16}
+                                color={theme.palette.text.primary}
+                              >
+                                Micheal{" "}
+                              </Typography>
+                              <Typography
+                                component="span"
+                                variant="caption"
+                                fontSize={14}
+                                color={theme.palette.text.secondary}
+                              >
+                                Nepal
+                              </Typography>
+                            </Box>
+                          </Box>
 
-                  <List>
-                    <ListItem>
-                      <ListItemIcon>
-                        <Bed />
-                      </ListItemIcon>
-                      <ListItemText>
-                        <Typography
-                          component="span"
-                          variant="caption"
-                          fontSize={14}
+                          <List>
+                            <ListItem>
+                              <ListItemIcon>
+                                <Bed />
+                              </ListItemIcon>
+                              <ListItemText>
+                                <Typography
+                                  component="span"
+                                  variant="caption"
+                                  fontSize={14}
+                                >
+                                  Duplex Suite
+                                </Typography>
+                              </ListItemText>
+                            </ListItem>
+                            <ListItem>
+                              <ListItemIcon>
+                                <CalendarMonth />
+                              </ListItemIcon>
+                              <ListItemText>
+                                <Typography
+                                  component="span"
+                                  variant="caption"
+                                  fontSize={14}
+                                >
+                                  Stayed 3 nights
+                                </Typography>
+                              </ListItemText>
+                            </ListItem>
+                          </List>
+                        </Box>
+                        <Box
+                          width="60%"
+                          display="flex"
+                          gap={3}
+                          flexDirection="column"
                         >
-                          Duplex Suite
-                        </Typography>
-                      </ListItemText>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemIcon>
-                        <CalendarMonth />
-                      </ListItemIcon>
-                      <ListItemText>
-                        <Typography
-                          component="span"
-                          variant="caption"
-                          fontSize={14}
+                          <Typography component="span" variant="caption">
+                            Reviewed: November 7, 2022
+                          </Typography>
+                          <Typography component="span" variant="body1">
+                            Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit. Itaque ipsam optio unde tempore deserunt animi
+                            officia in consectetur, nemo sed, accusamus
+                            assumenda! Sunt accusamus fugit eligendi libero eius
+                            cupiditate atque!
+                          </Typography>
+                        </Box>
+                        <Box
+                          height="50%"
+                          display="flex"
+                          justifyContent="flex-end"
+                          padding={1}
+                          alignItems="center"
+                          width="10%"
                         >
-                          Stayed 3 nights
-                        </Typography>
-                      </ListItemText>
-                    </ListItem>
-                  </List>
-                </Box>
-                <Box width="60%" display="flex" gap={3} flexDirection="column">
-                  <Typography component="span" variant="caption">
-                    Reviewed : NOvember 7, 2022
-                  </Typography>
-                  <Typography component="span" variant="body1">
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                    Itaque ipsam optio unde tempore deserunt animi officia in
-                    consectetur, nemo sed, accusamus assumenda! Sunt accusamus
-                    fugit eligendi libero eius cupiditate atque!
-                  </Typography>
-                </Box>
-                <Box
-                  height="50%"
-                  display="flex"
-                  justifyContent="flex-end"
-                  padding={1}
-                  alignItems="center"
-                  width="10%"
-                >
-                  <ScoreBadge
-                    score={hotel && hotel?.hotel_score && hotel.hotel_score}
-                  />
-                </Box>
+                          <ScoreBadge
+                            score={
+                              hotel && hotel?.hotel_score && hotel.hotel_score
+                            }
+                          />
+                        </Box>
+                      </>
+                    );
+                  })
+                ) : (
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Box
+                      component="img"
+                      src={noReview}
+                      width="350px"
+                      height="250px"
+                    />
+                    <Typography variant="body2">
+                      There are currently no reviews for the hotel at the
+                      moment! You can leave a review if you have previously
+                      booked the hotel from us!
+                    </Typography>
+                  </Box>
+                )}
               </Box>
             </Box>
           </Box>

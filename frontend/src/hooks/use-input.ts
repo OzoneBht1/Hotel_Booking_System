@@ -11,7 +11,7 @@ const useInput = (validateInput: (value: string) => boolean) => {
     setEnteredValue(event.target.value);
   };
 
-  const inputBlurHandler = (event: React.FocusEvent<HTMLInputElement>) => {
+  const   inputBlurHandler = (event: React.FocusEvent<HTMLInputElement>) => {
     setIsTouched(true);
   };
 

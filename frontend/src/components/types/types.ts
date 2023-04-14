@@ -65,7 +65,7 @@ export interface IHotelData {
     image: string;
     hotel: number;
   }[];
-  price: number;
+  cheapest_price: number;
   category: string;
   hotel_score: number;
   //images? : string[];
@@ -76,6 +76,24 @@ export interface IHotelData {
   lng: number;
 }
 
+export interface IPaginatedReviews {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: IHotelReview[];
+}
+
+export interface IHotelReview {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  review: string;
+  score: number;
+  user: number;
+  hotel: number;
+  room: number;
+  user_image: string;
+}
 export interface ISearchResponse {
   count: number;
   next: string;

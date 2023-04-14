@@ -2,7 +2,7 @@ from django.db import models
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from .serializers import HotelSerializer, BookingSerializer, HomepageHotelSerializer
+from .serializers import HotelSerializer, BookingSerializer, ReviewSerializer
 from rest_framework.decorators import api_view
 from .models import Hotel
 from .permissions import IsPartnerPermission
@@ -12,8 +12,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from rest_framework.response import Response
-from django.db.models.query import QuerySet
 from django.db.models import Q
+from .models import Review
 
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -108,10 +108,9 @@ class BookingCreateApi(generics.CreateAPIView):
 
 
 class HotelsByLocationApi(generics.ListAPIView):
-    serializer_class = HomepageHotelSerializer
+    serializer_class = HotelSerializer
     authentication_classes = []
     permission_classes = []
-    # pagination_class = CustomHotelSearchPagination
     pagination_class = None
 
     def get(self, request, *args, **kwargs):
@@ -126,6 +125,19 @@ class HotelsByLocationApi(generics.ListAPIView):
             hotels.extend(country_hotels)
 
         return hotels
+
+
+class ReviewByHotelApi(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    pagination_class = CustomHotelSearchPagination
+    lookup_field = "id"
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        hotel_id = self.kwargs.get("id")
+        return Review.objects.filter(hotel=hotel_id)
 
 
 @api_view(["GET"])
