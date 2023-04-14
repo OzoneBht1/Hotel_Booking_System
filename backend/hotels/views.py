@@ -1,7 +1,8 @@
+from django.db import models
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from .serializers import HotelSerializer, BookingSerializer, HomepageHotelSerializer
+from .serializers import HotelSerializer, BookingSerializer, ReviewSerializer
 from rest_framework.decorators import api_view
 from .models import Hotel
 from .permissions import IsPartnerPermission
@@ -9,10 +10,10 @@ from .pagination import CustomHotelSearchPagination
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
-
-# Create your views here.
+import numpy as np
 from rest_framework.response import Response
-from django.db.models import Value, CharField
+from django.db.models import Q
+from .models import Review
 
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -45,9 +46,6 @@ class HotelCreateApi(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
 
 class HotelListApi(generics.ListAPIView):
     queryset = Hotel.objects.all()
@@ -77,6 +75,31 @@ class HotelSearchApi(generics.ListAPIView):
         return queryset
 
 
+class HotelByLocationAndNameApi(generics.ListAPIView):
+    serializer_class = HotelSerializer
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = Hotel.objects.all()
+        search_query = self.request.query_params.get("term", None)
+        checkInDate = self.request.query_params.get("checkInDate", None)
+
+        checkOutDate = self.request.query_params.get("checkOutDate", None)
+
+        people = self.request.query_params.get("people", None)
+        rooms = self.request.query_params.get("rooms", None)
+
+        if search_query is not None:
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) | Q(address__icontains=search_query)
+            )
+        return queryset
+
+
 class BookingCreateApi(generics.CreateAPIView):
     queryset = Hotel.objects.all()
     serializer_class = BookingSerializer
@@ -85,10 +108,9 @@ class BookingCreateApi(generics.CreateAPIView):
 
 
 class HotelsByLocationApi(generics.ListAPIView):
-    serializer_class = HomepageHotelSerializer
+    serializer_class = HotelSerializer
     authentication_classes = []
     permission_classes = []
-    # pagination_class = CustomHotelSearchPagination
     pagination_class = None
 
     def get(self, request, *args, **kwargs):
@@ -105,23 +127,33 @@ class HotelsByLocationApi(generics.ListAPIView):
         return hotels
 
 
+class ReviewByHotelApi(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    pagination_class = CustomHotelSearchPagination
+    lookup_field = "id"
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        hotel_id = self.kwargs.get("id")
+        return Review.objects.filter(hotel=hotel_id)
+
+
 @api_view(["GET"])
 def recommend_hotels(request):
-    hotel_name = "Hotel Arena"
+    hotel_name = request.GET.get("hotel_name", "")
 
     if hotel_name not in list(name_to_idx.keys()):
         embed = model.encode(hotel_name)
-        sim_scores = list(
-            enumerate(
-                cosine_similarity(embed.reshape(1, -1), list(idx_to_embed.values())[0])
-            )
-        )
+        embeds = np.array(list(idx_to_embed.values()))
+        sim_scores = list(enumerate(cosine_similarity(embed.reshape(1, -1), embeds)[0]))  # type: ignore
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
         sim_scores = sim_scores[1:11]
         hotel_indices = [i[0] for i in sim_scores]
         hotel_names = [idx_to_name[i] for i in hotel_indices]
 
-        return hotel_names
+        return Response(hotel_names)
 
     idx = name_to_idx[hotel_name]
     sim_scores = list(enumerate(sim_matrix[idx]))
@@ -129,7 +161,4 @@ def recommend_hotels(request):
     sim_scores = sim_scores[1:11]
     hotel_indices = [i[0] for i in sim_scores]
     hotel_names = [idx_to_name[i] for i in hotel_indices]
-    return Response({"data": hotel_names})
-
-
-# class SearchedHotelApi(generics.ListAPIView):
+    return Response(hotel_names)

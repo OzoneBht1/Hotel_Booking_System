@@ -18,9 +18,9 @@ import VerifyEmail from "../components/VerifyEmail";
 let HEIGHT_OF_NAVBAR = 68;
 
 const Login = () => {
-  const { state } = useLocation();
+  const {state} = useLocation();
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(
-    state ? true : false
+    state?.from?.state ? true : false
   );
   const nav = useNavigate();
   const [open, setOpen] = useState(false);

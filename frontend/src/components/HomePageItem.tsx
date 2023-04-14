@@ -13,7 +13,7 @@ import { IHomePageItems } from "./types/types";
 import { BASEURL } from "../store/api/apiSlice";
 import DefaultImage from "../assets/default-hotel-image.jpg";
 import { useNavigate } from "react-router-dom";
-
+import { grey } from "@mui/material/colors";
 const HomePageItem = (props: IHomePageItems) => {
   const nav = useNavigate();
   const cardClickHandler = () => {
@@ -23,7 +23,11 @@ const HomePageItem = (props: IHomePageItems) => {
   };
 
   return (
-    <Card sx={{ maxWidth: 300 }} elevation={0} onClick={cardClickHandler}>
+    <Card
+      sx={{ maxWidth: 300, border: `1px solid ${grey[300]}` }}
+      elevation={1}
+      onClick={cardClickHandler}
+    >
       <CardActionArea>
         <CardMedia
           component="img"
@@ -36,13 +40,14 @@ const HomePageItem = (props: IHomePageItems) => {
           alt="green iguana"
         />
         <CardContent>
-          <Stack direction={"column"}>
+          <Stack direction={"column"} gap={1}>
             <Typography
-              gutterBottom
               variant="h6"
               lineHeight={1.2}
               marginBottom={0.5}
               component="div"
+              width ="90%"
+              noWrap
               sx={{ opacity: 0.8 }}
             >
               {props.name}
@@ -60,7 +65,7 @@ const HomePageItem = (props: IHomePageItems) => {
               <Typography component="span" color="text.secondary">
                 Starting From
               </Typography>
-              <Typography variant="body2">₹ 1000</Typography>
+              <Typography variant="body2">${props.cheapest_price}</Typography>
             </Stack>
             <Stack direction="row" alignItems="center" spacing={1}>
               <ScoreBadge score={props.hotel_score} />
@@ -76,7 +81,7 @@ const HomePageItem = (props: IHomePageItems) => {
                 fontSize={"0.8rem"}
                 color="text.secondary"
               >
-                {props.numReviews} Reviews
+                {props && props.review_count} Reviews
               </Typography>
             </Stack>
           </Stack>

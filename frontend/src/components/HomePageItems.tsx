@@ -57,10 +57,6 @@ const HomePageItems = () => {
     isLoading,
   } = useGetHomePageItemsQuery();
 
-  useEffect(() => {
-    console.log(countryApiData);
-  }, [countryApiData]);
-
   // if (isError) {
   //   return <Error />;
   // }
@@ -74,7 +70,7 @@ const HomePageItems = () => {
         <StyledBox>
           {countryApiData &&
             countries.map((country) => (
-              <React.Fragment key={country}>
+              <Stack gap={4} marginBottom={8} key={country}>
                 <Typography
                   variant="h4"
                   component="h4"
@@ -102,7 +98,7 @@ const HomePageItems = () => {
                       )
                   )}
                 </Carousel>
-              </React.Fragment>
+              </Stack>
             ))}
         </StyledBox>
       )}

@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import AddIcon from "@mui/icons-material/Add";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -41,18 +41,17 @@ const ListPropertiesRoomInfo = ({
   onClickNext,
 }: IListPropertiesAmenitiesProps) => {
   const dispatch = useAppDispatch();
-  const [rooms, setRooms] = useState<IRoom[]>([
-    { roomType: "", price: 0, numberOfRooms: 0 },
-  ]);
-  console.log(rooms);
+
+  
+  const rooms = useAppSelector(state=>state.list.rooms)
+
   const nextClickHandler = () => {
     onClickNext();
   };
 
   const addHandler = (roomData: IRoom) => {
-    console.log("addhandler");
-    setRooms((rooms) => [...rooms, roomData]);
-    dispatch(listActions.addAmenity(roomData))
+    console.log(roomData)
+    dispatch(listActions.addRoom({room : roomData}))
   };
   return (
     <Container component="main">
@@ -74,6 +73,7 @@ const ListPropertiesRoomInfo = ({
           <RoomInfo
             key={index}
             showAddButton={rooms.length - 1 === index ? true : false}
+            showRemoveButton={rooms.length -2 === index ? true : false}
             disabledForm={rooms.length - 1 !== index ? true : false}
             onClickAdd={addHandler}
           />
@@ -100,13 +100,16 @@ const ListPropertiesRoomInfo = ({
 
 export default ListPropertiesRoomInfo;
 
+
 export const RoomInfo = ({
   onClickAdd,
   showAddButton,
+  showRemoveButton,
   disabledForm,
 }: {
   onClickAdd: (data: IRoom) => void;
   showAddButton: boolean;
+    showRemoveButton : boolean;
   disabledForm: boolean;
 }) => {
   const {
@@ -116,9 +119,16 @@ export const RoomInfo = ({
   } = useForm<IRoom>({
     resolver: yupResolver(roomSchema),
   });
+  const dispatch = useAppDispatch();
   const onSubmit = (data: IRoom) => {
+    console.log("submit handler")
     onClickAdd(data);
   };
+
+  const removeHandler = ()=>{
+    dispatch(listActions.removeRoom());
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box display="flex" gap={3} alignItems="center">
@@ -167,8 +177,8 @@ export const RoomInfo = ({
           }}
           {...register("numberOfRooms")}
         />
-        {disabledForm ? (
-          <Box padding={0}>
+        {showRemoveButton ? (
+          <Box padding={0} onClick={removeHandler}>
             <CloseIcon sx={{ color: "purple" }} />
           </Box>
         ) : (
