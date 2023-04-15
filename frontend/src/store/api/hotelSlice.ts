@@ -3,7 +3,8 @@ import {
   ISearchResponse,
   IHotelData,
   IQuery,
-  IPaginatedReviews,
+  IPaginated,
+  IHotelRoom,
 } from "../../components/types/types";
 import { IHotelReview } from "../../components/types/types";
 
@@ -44,9 +45,15 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
-    getReviews: build.query<IPaginatedReviews, { id?: string }>({
+    getReviews: build.query<IPaginated<IHotelReview>, { id?: string }>({
       query: ({ id }) => ({
         url: `/hotels/${id}/reviews`,
+        method: "GET",
+      }),
+    }),
+    getRooms: build.query<IPaginated<IHotelRoom>, { id?: string }>({
+      query: ({ id }) => ({
+        url: `/hotels/${id}/rooms`,
         method: "GET",
       }),
     }),
@@ -58,5 +65,6 @@ export const {
   useGetHomePageItemsQuery,
   useGetHotelDetailsQuery,
   useGetSearchedResultsQuery,
-  useGetReviewsQuery
+  useGetReviewsQuery,
+  useGetRoomsQuery,
 } = hotelApiSlice;

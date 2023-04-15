@@ -7,7 +7,11 @@ import ImageListItem from "@mui/material/ImageListItem";
 import { IHotelData } from "../components/types/types";
 import Typography from "@mui/material/Typography";
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetHotelDetailsQuery, useGetReviewsQuery } from "../store/api/hotelSlice";
+import {
+  useGetHotelDetailsQuery,
+  useGetReviewsQuery,
+  useGetRoomsQuery,
+} from "../store/api/hotelSlice";
 import Loading from "../components/Loading";
 import { BASEURL } from "../store/api/apiSlice";
 import { Avatar, Button, Rating, Tab, Tabs } from "@mui/material";
@@ -84,11 +88,17 @@ const HotelPage = () => {
     isError: hotelHasError,
   } = useGetHotelDetailsQuery({ id });
 
-const {
+  const {
     data: reviews,
     isLoading: reviewsIsLoading,
     isError: reviewsIsError,
   } = useGetReviewsQuery({ id });
+
+  const {
+    data: rooms,
+    isLoading: roomsIsLoading,
+    isError: roomsIsError,
+  } = useGetRoomsQuery({ id });
 
   console.log(reviews);
 
@@ -100,7 +110,7 @@ const {
     if (hotelHasError || reviewsIsError) {
       // nav("/404");
       console.log(hotelHasError);
-      console.log(reviewsIsError)
+      console.log(reviewsIsError);
     }
   }, [hotelHasError]);
 
@@ -310,62 +320,60 @@ const {
             >
               <TableRow>
                 <TableCell sx={{ color: theme.palette.primary.contrastText }}>
-                  Dessert (100g serving)
+                  Room Type
                 </TableCell>
                 <TableCell
                   sx={{ color: theme.palette.primary.contrastText }}
                   align="right"
                 >
-                  Calories
+                  Amount Available
                 </TableCell>
                 <TableCell
                   sx={{ color: theme.palette.primary.contrastText }}
                   align="right"
                 >
-                  Fat&nbsp;(g)
+                  Price Per Room
                 </TableCell>
 
                 <TableCell
                   sx={{ color: theme.palette.primary.contrastText }}
                   align="right"
-                >
-                  Protein&nbsp;(g)
-                </TableCell>
+                ></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <TableRow
-                  key={row.name}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    <Box display="flex" flexDirection={"column"} gap={1}>
-                      <Typography
-                        component="span"
-                        variant="h6"
-                        fontSize={14}
-                        fontWeight="700px"
-                        color="primary"
-                        sx={{ cursor: "pointer" }}
-                        onClick={() => setOpen(true)}
-                      >
-                        {row.name}
-                      </Typography>
-                      <Typography component="span" variant="caption">
-                        {"1 bed"}
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell align="right">{row.calories}</TableCell>
-                  <TableCell align="right">{row.fat}</TableCell>
-                  <TableCell align="right">
-                    <Button sx={{ width: "80%" }} variant="contained">
-                      Book
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {rooms &&
+                rooms?.results?.map((room, index) => (
+                  <TableRow
+                    key={index}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      <Box display="flex" flexDirection={"column"} gap={1}>
+                        <Typography
+                          component="span"
+                          variant="h6"
+                          fontSize={14}
+                          fontWeight="700px"
+                          color="primary"
+                          sx={{ cursor: "pointer" }}
+                        >
+                          {room.room_type}
+                        </Typography>
+                        <Typography component="span" variant="caption">
+                          {"1 bed"}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell align="right">{room.amount}</TableCell>
+                    <TableCell align="right">${room.price}</TableCell>
+                    <TableCell align="right">
+                      <Button sx={{ width: "80%" }} variant="contained">
+                        Book
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -537,7 +545,7 @@ const {
               </List>
               <Box
                 display="flex"
-                alignItems="center"
+                alignItems="flex-start"
                 height="fit-content"
                 width="100%"
                 padding={3}
@@ -564,16 +572,14 @@ const {
                                 variant="h6"
                                 fontSize={16}
                                 color={theme.palette.text.primary}
-                              >
-                                Micheal{" "}
-                              </Typography>
+                              ></Typography>
                               <Typography
                                 component="span"
                                 variant="caption"
                                 fontSize={14}
                                 color={theme.palette.text.secondary}
                               >
-                                Nepal
+                                // {review.user.country}
                               </Typography>
                             </Box>
                           </Box>
@@ -616,14 +622,11 @@ const {
                           flexDirection="column"
                         >
                           <Typography component="span" variant="caption">
-                            Reviewed: November 7, 2022
+                            Reviewed:{" "}
+                            {new Date(review.created_at).toLocaleString()}
                           </Typography>
                           <Typography component="span" variant="body1">
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Itaque ipsam optio unde tempore deserunt animi
-                            officia in consectetur, nemo sed, accusamus
-                            assumenda! Sunt accusamus fugit eligendi libero eius
-                            cupiditate atque!
+                            {review.review}
                           </Typography>
                         </Box>
                         <Box

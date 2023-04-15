@@ -12,23 +12,15 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from datetime import timedelta
 from pathlib import Path
+from dotenv import load_dotenv
 import os
-from .config import *
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-
-
-# SECURITY WARNING: don't run with debug turned on in production!
-
-
-# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -114,6 +106,28 @@ USE_I18N = True
 USE_TZ = True
 
 
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": os.getenv("DATABASE_NAME"),
+        "USER": os.getenv("DATABASE_USER"),
+        "PASSWORD": os.getenv("DATABASE_PASSWORD"),
+        "HOST": os.getenv("DATABASE_HOST"),
+        "PORT": os.getenv("DATABASE_PORT"),
+    }
+}
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 

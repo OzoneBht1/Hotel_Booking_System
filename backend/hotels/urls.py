@@ -8,6 +8,7 @@ from .views import (
     HotelByLocationAndNameApi,
     ReviewByHotelApi,
     recommend_hotels,
+    RoomByHotelApi,
 )
 
 
@@ -18,6 +19,11 @@ urlpatterns = [
         "hotels/<int:id>/reviews",
         ReviewByHotelApi.as_view(),
         name="hotel_review",
+    ),
+    path(
+        "hotels/<int:id>/rooms",
+        RoomByHotelApi.as_view(),
+        name="hotel_rooms",
     ),
     path("hotels/search/", HotelSearchApi.as_view(), name="hotel_search"),
     path("add-hotel/", HotelCreateApi.as_view(), name="hotels"),

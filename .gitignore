@@ -4,7 +4,6 @@ env
 media
 *.sqlite3
 __pycache__
-config.py
 hotels.csv
 hotel_photos
 secret
@@ -12,3 +11,4 @@ bin
 lib64
 pyvenv.cfg
 *.pkl
+.env
