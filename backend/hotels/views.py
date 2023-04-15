@@ -2,7 +2,13 @@ from django.db import models
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from .serializers import HotelSerializer, BookingSerializer, ReviewSerializer
+from .serializers import (
+    HotelSerializer,
+    BookingSerializer,
+    ReviewSerializer,
+    Room,
+    RoomSerializer,
+)
 from rest_framework.decorators import api_view
 from .models import Hotel
 from .permissions import IsPartnerPermission
@@ -138,6 +144,19 @@ class ReviewByHotelApi(generics.ListAPIView):
     def get_queryset(self):
         hotel_id = self.kwargs.get("id")
         return Review.objects.filter(hotel=hotel_id)
+
+
+class RoomByHotelApi(generics.ListAPIView):
+    serializer_class = RoomSerializer
+    pagination_class = CustomHotelSearchPagination
+    lookup_field = "id"
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        hotel_id = self.kwargs.get("id")
+        return Room.objects.filter(hotel=hotel_id)
 
 
 @api_view(["GET"])

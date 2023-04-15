@@ -76,11 +76,11 @@ export interface IHotelData {
   lng: number;
 }
 
-export interface IPaginatedReviews {
+export interface IPaginated<T> {
   count: number;
   next: string | null;
   previous: string | null;
-  results: IHotelReview[];
+  results: T[];
 }
 
 export interface IHotelReview {
@@ -111,10 +111,10 @@ export interface IQuery {
   rooms: number;
 }
 
-export interface IRoom {
-  roomType: string;
+export interface IHotelRoom {
+  room_type: string;
   price: number;
-  numberOfRooms: number;
+  amount: number;
 }
 
 export interface IListProperty {
@@ -122,5 +122,5 @@ export interface IListProperty {
   hotel_name: string;
   hotel_address: string;
   amenities: string[];
-  rooms: IRoom[];
+  rooms: IHotelRoom[];
 }

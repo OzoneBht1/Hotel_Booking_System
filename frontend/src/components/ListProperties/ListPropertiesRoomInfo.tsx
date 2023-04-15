@@ -134,18 +134,18 @@ export const RoomInfo = ({
       <Box display="flex" gap={3} alignItems="center">
         <TextField
           helperText={
-            !errors?.roomType
+            !errors?.room_type
               ? "Ex : Double Room XL"
-              : (errors!.roomType!.message as string)
+              : (errors!.room_type!.message as string)
           }
           id="demo-helper-text-misaligned"
           label="Room Type"
           disabled={disabledForm}
-          error={errors.roomType ? true : false}
+          error={errors.room_type ? true : false}
           sx={{
             width: "32%",
           }}
-          {...register("roomType")}
+          {...register("room_type")}
         />
         <TextField
           helperText={
@@ -163,19 +163,19 @@ export const RoomInfo = ({
         />
         <TextField
           helperText={
-            !errors?.numberOfRooms
+            !errors?.amount
               ? "Ex : 5"
-              : (errors!.numberOfRooms!.message as string)
+              : (errors!.amount.message as string)
           }
           id="demo-helper-text-misaligned"
           label="Number of Rooms"
           type="number"
           disabled={disabledForm}
-          error={errors?.numberOfRooms ? true : false}
+          error={errors?.amount ? true : false}
           sx={{
             width: "32%",
           }}
-          {...register("numberOfRooms")}
+          {...register("amount")}
         />
         {showRemoveButton ? (
           <Box padding={0} onClick={removeHandler}>
