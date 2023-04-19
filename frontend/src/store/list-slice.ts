@@ -14,7 +14,7 @@ const listingSlice = createSlice({
   reducers: {
     setEmail(state, action: PayloadAction<{ email: string }>) {
       const { email } = action.payload;
-      state.email = email;
+      state .email = email;
     },
     setHotelNameAndAddress(
       state,

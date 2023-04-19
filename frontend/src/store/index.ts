@@ -1,16 +1,23 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./auth-slice";
-import listReducer from "./list-slice"
+import listReducer from "./list-slice";
+import roomReducer from "./roomSlice";
 import { apiSlice } from "./api/apiSlice";
+import { paymentSlice } from "./api/payment-slice";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    list : listReducer,
+    list: listReducer,
+    room: roomReducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
+    [paymentSlice.reducerPath]: paymentSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat([apiSlice.middleware]),
+    getDefaultMiddleware().concat([
+      apiSlice.middleware,
+      paymentSlice.middleware,
+    ]),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

@@ -19,7 +19,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   alignItems: "center",
   overflow: "hidden",
   margin: "1rem",
-  marginTop: "7rem",
+  marginTop:      "7rem",
 
   [theme.breakpoints.down("sm")]: {
     width: "100%",

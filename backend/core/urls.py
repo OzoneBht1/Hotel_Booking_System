@@ -24,6 +24,7 @@ urlpatterns: List[Union[URLPattern, URLResolver]] = [
     path("admin/", admin.site.urls),
     path("api/", include("account_manager.urls")),
     path("api/", include("hotels.urls")),
+    path("payment/", include("payments.urls")),
 ]
 
 if settings.DEBUG is True:
