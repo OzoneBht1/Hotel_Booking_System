@@ -159,6 +159,20 @@ class RoomByHotelApi(generics.ListAPIView):
         return Room.objects.filter(hotel=hotel_id)
 
 
+class SingleRoomByHotelApi(generics.RetrieveAPIView):
+    serializer_class = RoomSerializer
+    lookup_field = "id"
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def get_queryset(self):
+        hotel_id = self.kwargs.get("hotel_id")
+        room_id = self.kwargs.get("id")
+
+        return Room.objects.filter(hotel=hotel_id, id=room_id)
+
+
 @api_view(["GET"])
 def recommend_hotels(request):
     hotel_name = request.GET.get("hotel_name", "")

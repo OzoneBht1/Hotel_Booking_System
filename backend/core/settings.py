@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "account_manager",
     "hotels",
+    "payments",
     "rest_framework",
     "corsheaders",
 ]
