@@ -58,7 +58,6 @@ const NavBar = () => {
   const { data, isLoading, isError } = useUserDetailQuery(userId!, {
     skip: !userId,
   });
-  console.log(data);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };

@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
-import { IHotelData } from "../components/types/types";
 import Typography from "@mui/material/Typography";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -14,7 +13,7 @@ import {
 } from "../store/api/hotelSlice";
 import Loading from "../components/Loading";
 import { BASEURL } from "../store/api/apiSlice";
-import { Avatar, Button, Rating, Tab, Tabs } from "@mui/material";
+import {  Rating, Tab, Tabs } from "@mui/material";
 import { ScoreBadge } from "../components/HomePageItem";
 import getHotelRating from "../utils/GetScoreRating";
 import getBookingRating from "../utils/GetScoreRating";
@@ -26,30 +25,12 @@ import Room4 from "../assets/rooms/room4.jpg";
 import Room5 from "../assets/rooms/room5.jpg";
 import Room6 from "../assets/rooms/room6.jpg";
 import Room7 from "../assets/rooms/room7.jpg";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { useTheme } from "@mui/material/styles";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-// import {
-//   CleanHandsRounded,
-//   LocalLaundryServiceRounded,
-//   SanitizerRounded,
-//   CheckCircleRounded,
-//   LocalDiningRounded,
-//   RoomServiceRounded,
-//   VerifiedUserRounded,
-//   DirectionsRunRounded,
-//   StayCurrentPortraitRounded,
-// } from "@material-ui/icons";
+import { useTheme } from "@mui/material/styles";
 import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import {
   AccountCircle,
@@ -60,7 +41,8 @@ import {
   StorefrontSharp,
 } from "@mui/icons-material";
 import SocialDistanceIcon from "@mui/icons-material/SocialDistance";
-import noReview from "../assets/noReviewVector.webp";
+import Reviews from "../components/HotelPage/Reviews";
+import Rooms from "../components/HotelPage/Rooms";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -82,6 +64,8 @@ const HotelPage = () => {
   const { id } = useParams();
   const theme = useTheme();
   const nav = useNavigate();
+  const [roomQuantity, setRoomQuantity] = useState(0);
+
   const {
     data: hotel,
     isLoading: hotelIsLoading,
@@ -106,11 +90,10 @@ const HotelPage = () => {
   const roomsRef = React.useRef<HTMLDivElement>(null);
   const reviewsRef = React.useRef<HTMLDivElement>(null);
   console.log(hotel);
+
   useEffect(() => {
-    if (hotelHasError || reviewsIsError) {
-      // nav("/404");
-      console.log(hotelHasError);
-      console.log(reviewsIsError);
+    if (hotelHasError || reviewsIsError || roomsIsError) {
+      nav("/404");
     }
   }, [hotelHasError]);
 
@@ -144,24 +127,7 @@ const HotelPage = () => {
       img: Room7,
     },
   ];
-  function createData(
-    name: string,
-    calories: number,
-    fat: number,
-    carbs: number,
-    protein: number
-  ) {
-    return { name, calories, fat, carbs, protein };
-  }
-  const rows = [
-    createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-    createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-    createData("Eclair", 262, 16.0, 24, 6.0),
-    createData("Cupcake", 305, 3.7, 67, 4.3),
-    createData("Gingerbread", 356, 16.0, 49, 3.9),
-  ];
-
-  if (hotelIsLoading) {
+  if (hotelIsLoading || roomsIsLoading || reviewsIsLoading) {
     return <Loading />;
   }
 
@@ -308,75 +274,7 @@ const HotelPage = () => {
         alignItems="flex-start"
         gap={2}
       >
-        <Typography component="h4" variant="h5">
-          Rooms
-        </Typography>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead
-              sx={{
-                backgroundColor: theme.palette.primary.main,
-              }}
-            >
-              <TableRow>
-                <TableCell sx={{ color: theme.palette.primary.contrastText }}>
-                  Room Type
-                </TableCell>
-                <TableCell
-                  sx={{ color: theme.palette.primary.contrastText }}
-                  align="right"
-                >
-                  Amount Available
-                </TableCell>
-                <TableCell
-                  sx={{ color: theme.palette.primary.contrastText }}
-                  align="right"
-                >
-                  Price Per Room
-                </TableCell>
-
-                <TableCell
-                  sx={{ color: theme.palette.primary.contrastText }}
-                  align="right"
-                ></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rooms &&
-                rooms?.results?.map((room, index) => (
-                  <TableRow
-                    key={index}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      <Box display="flex" flexDirection={"column"} gap={1}>
-                        <Typography
-                          component="span"
-                          variant="h6"
-                          fontSize={14}
-                          fontWeight="700px"
-                          color="primary"
-                          sx={{ cursor: "pointer" }}
-                        >
-                          {room.room_type}
-                        </Typography>
-                        <Typography component="span" variant="caption">
-                          {"1 bed"}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell align="right">{room.amount}</TableCell>
-                    <TableCell align="right">${room.price}</TableCell>
-                    <TableCell align="right">
-                      <Button sx={{ width: "80%" }} variant="contained">
-                        Book
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Rooms rooms={rooms}/>
       </Box>
 
       <Box
@@ -515,9 +413,7 @@ const HotelPage = () => {
             <Box display="flex" width="100%">
               <List>
                 <ListItem sx={{ display: "flex", gap: 3 }}>
-                  <ScoreBadge
-                    score={hotel && hotel?.hotel_score && hotel.hotel_score}
-                  />
+                  {hotel?.hotel_score && <ScoreBadge score={hotel.hotel_score} />}
                   <Typography component="span" variant="h6">
                     {hotel?.hotel_score && getBookingRating(hotel.hotel_score)}
                   </Typography>
@@ -543,131 +439,8 @@ const HotelPage = () => {
                   <Rating name="disabled" value={rating} disabled max={10} />
                 </ListItem>
               </List>
-              <Box
-                display="flex"
-                alignItems="flex-start"
-                height="fit-content"
-                width="100%"
-                padding={3}
-                border={1}
-              >
-                {reviews && reviews.results?.length > 0 ? (
-                  reviews?.results?.map((review) => {
-                    return (
-                      <>
-                        <Box
-                          display="flex"
-                          flexDirection="column"
-                          alignItems="flex-start"
-                          width="30%"
-                        >
-                          <Box display="flex" alignItems="center">
-                            <Avatar
-                              src={review?.user_image}
-                              sx={{ mr: 1, width: 50, height: 50 }}
-                            />
-                            <Box display="flex" flexDirection="column">
-                              <Typography
-                                component="span"
-                                variant="h6"
-                                fontSize={16}
-                                color={theme.palette.text.primary}
-                              ></Typography>
-                              <Typography
-                                component="span"
-                                variant="caption"
-                                fontSize={14}
-                                color={theme.palette.text.secondary}
-                              >
-                                // {review.user.country}
-                              </Typography>
-                            </Box>
-                          </Box>
-
-                          <List>
-                            <ListItem>
-                              <ListItemIcon>
-                                <Bed />
-                              </ListItemIcon>
-                              <ListItemText>
-                                <Typography
-                                  component="span"
-                                  variant="caption"
-                                  fontSize={14}
-                                >
-                                  Duplex Suite
-                                </Typography>
-                              </ListItemText>
-                            </ListItem>
-                            <ListItem>
-                              <ListItemIcon>
-                                <CalendarMonth />
-                              </ListItemIcon>
-                              <ListItemText>
-                                <Typography
-                                  component="span"
-                                  variant="caption"
-                                  fontSize={14}
-                                >
-                                  Stayed 3 nights
-                                </Typography>
-                              </ListItemText>
-                            </ListItem>
-                          </List>
-                        </Box>
-                        <Box
-                          width="60%"
-                          display="flex"
-                          gap={3}
-                          flexDirection="column"
-                        >
-                          <Typography component="span" variant="caption">
-                            Reviewed:{" "}
-                            {new Date(review.created_at).toLocaleString()}
-                          </Typography>
-                          <Typography component="span" variant="body1">
-                            {review.review}
-                          </Typography>
-                        </Box>
-                        <Box
-                          height="50%"
-                          display="flex"
-                          justifyContent="flex-end"
-                          padding={1}
-                          alignItems="center"
-                          width="10%"
-                        >
-                          <ScoreBadge
-                            score={
-                              hotel && hotel?.hotel_score && hotel.hotel_score
-                            }
-                          />
-                        </Box>
-                      </>
-                    );
-                  })
-                ) : (
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    justifyContent="center"
-                  >
-                    <Box
-                      component="img"
-                      src={noReview}
-                      width="350px"
-                      height="250px"
-                    />
-                    <Typography variant="body2">
-                      There are currently no reviews for the hotel at the
-                      moment! You can leave a review if you have previously
-                      booked the hotel from us!
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
             </Box>
+            <Reviews reviews={reviews} hotel={hotel} />
           </Box>
         </Box>
       </Box>

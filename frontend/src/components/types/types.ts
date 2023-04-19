@@ -112,6 +112,7 @@ export interface IQuery {
 }
 
 export interface IHotelRoom {
+  id: number;
   room_type: string;
   price: number;
   amount: number;

@@ -68,8 +68,6 @@ const dummyListings = [
     description:
       "Escape to the mountains in our cozy cabin. Our cabin features two bedrooms, one bathroom, a wood-burning fireplace, and beautiful mountain views.",
     address: "9101 Mountain Rd, Anytown, USA",
-  },
-  {
     image: `${BASEURL}/media/hotel_images/361374662.webp`,
     headline: "Mountain Getaway",
     description:
@@ -94,7 +92,7 @@ const dummyListings = [
 
 const SearchedResults = () => {
   const [params, setSearchParams] = useSearchParams();
-  const searchQuery = params.get("term") || "";
+  const searchQuery =   params.get("term") || "";
   const checkInDate = params.get("checkInDate") || "";
 
   const checkOutDate = params.get("checkOutDate") || "";
