@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from .models import Hotel, Booking, HotelImages, Review, Room, User
+from .models import Hotel, Booking, HotelImages, Review, Room, RoomTemp, User, BookTemp
 from account_manager.serializers import UserDetailForReviewSerializer
 
 
@@ -97,3 +97,25 @@ class RoomSerializer(ModelSerializer):
     class Meta:
         model = Room
         fields = "__all__"
+
+
+class RoomTempSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RoomTemp
+        fields = "__all__"
+
+
+class BookTempSerializer(serializers.ModelSerializer):
+    rooms = RoomTempSerializer(many=True)
+
+    class Meta:
+        model = BookTemp
+        fields = "__all__"
+
+    def create(self, validated_data):
+        rooms_data = validated_data.pop("rooms")
+        book_temp = BookTemp.objects.create(**validated_data)
+        for room_data in rooms_data:
+            room = RoomTemp.objects.create(**room_data)
+            book_temp.rooms.add(room)
+        return book_temp

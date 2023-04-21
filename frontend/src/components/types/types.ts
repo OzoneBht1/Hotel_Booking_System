@@ -118,6 +118,21 @@ export interface IHotelRoom {
   amount: number;
 }
 
+export interface IRoomWithQuantity extends IHotelRoom {
+  quantity: number;
+}
+
+export interface ITempRoom {
+  room: number;
+  quantity: number;
+}
+
+export interface ITempBooking {
+  user_id: number;
+  hotel_id: number;
+  rooms: ITempRoom[];
+}
+
 export interface IListProperty {
   email: string;
   hotel_name: string;

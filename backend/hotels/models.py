@@ -55,6 +55,20 @@ class HotelImages(BaseModel):
     image = models.ImageField(upload_to="hotel_images/")
 
 
+#
+class RoomTemp(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+
+class BookTemp(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rooms = models.ManyToManyField(
+        RoomTemp,
+    )
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+
+
 class Booking(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)

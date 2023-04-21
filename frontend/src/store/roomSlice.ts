@@ -1,17 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IHotelRoom } from "../components/types/types";
-
-interface IRoom extends IHotelRoom {
-  quantity: number;
-}
+import { IHotelRoom, IRoomWithQuantity } from "../components/types/types";
 
 interface IRoomInitial {
-  totalQuantity: number;
-  rooms: IRoom[];
+  rooms: IRoomWithQuantity[];
 }
 
 const initialState: IRoomInitial = {
-  totalQuantity: 0,
   rooms: [],
 };
 
@@ -19,7 +13,7 @@ const roomSlice = createSlice({
   name: "rooms",
   initialState: initialState,
   reducers: {
-    addRoom(state, action: PayloadAction<{ room: IRoom }>) {
+    modifyRooms(state, action: PayloadAction<{ room: IRoomWithQuantity }>) {
       const { room } = action.payload;
       const foundRoomId = state.rooms.findIndex(
         (currRooms) => currRooms.id === room.id
@@ -41,6 +35,10 @@ const roomSlice = createSlice({
         }
       }
     },
+    clearRooms(state){
+      state.rooms = []
+
+    }
   },
 });
 
