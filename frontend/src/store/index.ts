@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./auth-slice";
 import listReducer from "./list-slice";
 import roomReducer from "./roomSlice";
+import tempBookReducer from "./tempBookSlice";
 import { apiSlice } from "./api/apiSlice";
 import { paymentSlice } from "./api/payment-slice";
 
@@ -10,6 +11,7 @@ const store = configureStore({
     auth: authReducer,
     list: listReducer,
     room: roomReducer,
+    tempBook: tempBookReducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
     [paymentSlice.reducerPath]: paymentSlice.reducer,
   },

@@ -1,20 +1,33 @@
-import { IRoomWithQuantity, ITempBooking } from "../../components/types/types";
+import {
+  ITempBookingResponse,
+  ITempBookingGet,
+} from "../../components/types/types";
 import { apiSlice } from "./apiSlice";
 
 export const bookingApiSlice = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     setBookClickedHistory: build.mutation<
       { message: string; status: number },
-      ITempBooking
+      ITempBookingResponse
     >({
-      query: (roomDetails) => ({
-        url: `/hotels/${roomDetails.hotel_id}/create-temp-booking/${roomDetails.user_id}`,
+      query: (data) => ({
+        url: `/hotels/${data.hotel}/create-temp-booking/${data.user}/`,
         method: "POST",
         include: "booking",
-        body: roomDetails,
+        body: data,
+      }),
+    }),
+    getBookClickedHistory: build.query<ITempBookingResponse, ITempBookingGet>({
+      query: (data) => ({
+        url: `/hotels/${data.hotel}/get-temp-booking/${data.user}`,
+        method: "GET",
+        include: "booking",
       }),
     }),
   }),
 });
 
-export const { useSetBookClickedHistoryMutation } = bookingApiSlice;
+export const {
+  useSetBookClickedHistoryMutation,
+  useGetBookClickedHistoryQuery,
+} = bookingApiSlice;

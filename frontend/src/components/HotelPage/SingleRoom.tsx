@@ -14,33 +14,33 @@ import { roomActions } from "../../store/roomSlice";
 
 interface ISingleRoom {
   room: IHotelRoom;
-  reset :boolean;
-  setReset : React.Dispatch<React.SetStateAction<boolean>>;
+  reset: boolean;
+  setReset: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SingleRoom = ({ room, reset, setReset}: ISingleRoom) => {
+const SingleRoom = ({ room, reset, setReset }: ISingleRoom) => {
   const [roomQuantity, setRoomQuantity] = useState("0");
 
   const rooms = useAppSelector((state) => state.room.rooms);
+  console.log(rooms);
   const dispatch = useAppDispatch();
 
-  
   const handleRoomChange = (event: SelectChangeEvent) => {
-    setRoomQuantity(event!.target!.value)
+    setRoomQuantity(event!.target!.value);
     const quantity = parseInt(event!.target!.value);
-    dispatch(roomActions.modifyRooms({room : {...room, quantity}}))
+    dispatch(roomActions.modifyRooms({ room: { ...room, quantity } }));
   };
-  
-  const handleReset = ()=>{
-    setRoomQuantity("0")
-    setReset(false);
-  }
 
-  useEffect(()=>{
-    if (reset){
+  const handleReset = () => {
+    setRoomQuantity("0");
+    setReset(false);
+  };
+
+  useEffect(() => {
+    if (reset) {
       handleReset();
     }
-  }, [reset])
+  }, [reset]);
 
   return (
     <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
@@ -73,7 +73,6 @@ const SingleRoom = ({ room, reset, setReset}: ISingleRoom) => {
             label="Quantity"
             autoWidth
             onChange={handleRoomChange}
-
           >
             {[...Array(room.amount + 1).keys()].map((quantity) => (
               <MenuItem key={quantity} value={quantity}>

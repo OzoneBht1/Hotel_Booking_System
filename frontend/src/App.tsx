@@ -30,7 +30,10 @@ function App() {
           <Route path="/hotels/find" element={<SearchedResults />} />
           <Route element={<RequireAuth />}>
             <Route path="/profile" element={<Profile />} />
-            <Route path="/hotel/:id/:roomId/payment" element={<Checkout />} />
+            <Route
+              path="/hotel/:hotelId/:userId/payment"
+              element={<Checkout />}
+            />
 
             <Route path="/add-property" element={<ListProperties />} />
           </Route>

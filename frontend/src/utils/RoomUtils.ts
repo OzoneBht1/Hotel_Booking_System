@@ -1,4 +1,8 @@
-import { IRoomWithQuantity } from "../components/types/types";
+import {
+  IRoomWithQuantity,
+  ITempBookingResponse,
+  ITempBookingModifiedFormat,
+} from "../components/types/types";
 
 export const getTotalQuantity = (rooms: IRoomWithQuantity[]) => {
   let totalQuantity = 0;
@@ -18,4 +22,20 @@ export const getTotalPrice = (rooms: IRoomWithQuantity[]) => {
   }
 
   return totalPrice;
+};
+
+export const convertFormat = (
+  booking: ITempBookingResponse
+): ITempBookingModifiedFormat => {
+  const updatedRooms = booking.rooms.map((room) => ({
+    ...room.room,
+    quantity: room.quantity || 0,
+  }));
+
+  const updatedBooking: ITempBookingModifiedFormat = {
+    ...booking,
+    rooms: updatedRooms,
+  };
+
+  return updatedBooking;
 };

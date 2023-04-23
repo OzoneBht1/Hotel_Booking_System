@@ -116,6 +116,8 @@ export interface IHotelRoom {
   room_type: string;
   price: number;
   amount: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface IRoomWithQuantity extends IHotelRoom {
@@ -123,15 +125,29 @@ export interface IRoomWithQuantity extends IHotelRoom {
 }
 
 export interface ITempRoom {
-  room: number;
-  quantity: number;
+  room: IRoomWithQuantity;
+  quantity?: number;
+  // the model structure caused an incorrect response, so double quantity
 }
 
-export interface ITempBooking {
-  user_id: number;
-  hotel_id: number;
+export interface ITempBookingResponse {
+  user: string;
+  hotel: string;
   rooms: ITempRoom[];
+  hotel_name: string;
 }
+
+export interface ITempBookingModifiedFormat {
+  user: string;
+  hotel: string;
+  rooms: IRoomWithQuantity[];
+  hotel_name: string;
+}
+
+export type ITempBookingGet = Omit<
+  ITempBookingResponse,
+  "rooms" | "hotel_name"
+>;
 
 export interface IListProperty {
   email: string;

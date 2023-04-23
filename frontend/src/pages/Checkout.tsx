@@ -1,7 +1,6 @@
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import CheckoutForm from "../components/Checkout/Checkout";
 import { BASEURL } from "../store/api/apiSlice";
 

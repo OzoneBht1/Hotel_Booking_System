@@ -11,6 +11,12 @@ import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import PaymentForm from "./PaymentForm";
 import Review from "./Review";
+import { useGetBookClickedHistoryQuery } from "../../store/api/bookingSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import Loading from "../Loading";
+import { useAppDispatch } from "../../store/hooks";
+import { tempBookActions } from "../../store/tempBookSlice";
+import { convertFormat } from "../../utils/RoomUtils";
 
 const steps = ["Payment details"];
 
@@ -21,8 +27,37 @@ interface ICheckout {
     [key: string]: string;
   };
 }
-export default function Checkout({data} : ICheckout) {
+export default function Checkout({ data }: ICheckout) {
   const [activeStep, setActiveStep] = React.useState(0);
+  const { hotelId, userId } = useParams();
+  const dispatch = useAppDispatch();
+
+  const {
+    data: bookRoomsDetails,
+    isLoading: bookRoomsIsLoading,
+    isError: bookRoomsIsError,
+  } = useGetBookClickedHistoryQuery(
+    { hotel: hotelId as string, user: userId as string },
+    {
+      skip: !hotelId || !userId,
+    }
+  );
+  const nav = useNavigate();
+
+  React.useEffect(() => {
+    if (bookRoomsIsError) {
+      nav("/error");
+    }
+  }, [bookRoomsIsError, bookRoomsIsLoading]);
+
+  if (bookRoomsIsLoading) {
+    return <Loading />;
+  }
+
+  const convertedDetails = convertFormat(bookRoomsDetails!);
+  console.log(convertedDetails);
+
+  dispatch(tempBookActions.setTempBooking({ bookDetail: convertedDetails! }));
 
   const handleNext = () => {
     setActiveStep(activeStep + 1);
@@ -39,9 +74,9 @@ export default function Checkout({data} : ICheckout) {
   function getStepContent(step: number) {
     switch (step) {
       case 0:
+        return <Review />;
+      case 1:
         return <PaymentForm data={data} onReceiveForm={formReceiveHandler} />;
-      // case 1:
-      // return <Review />;
       default:
         throw new Error("Unknown step");
     }
@@ -58,7 +93,7 @@ export default function Checkout({data} : ICheckout) {
           <Typography component="h1" variant="h4" align="center">
             Checkout
           </Typography>
-                    {activeStep === steps.length ? (
+          {activeStep === steps.length ? (
             <React.Fragment>
               <Typography variant="h5" gutterBottom>
                 Thank you for your order.

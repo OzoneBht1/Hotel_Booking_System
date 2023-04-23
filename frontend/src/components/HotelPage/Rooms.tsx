@@ -52,14 +52,17 @@ const Rooms = ({ rooms }: IRoomsProps) => {
       quantity: elem.quantity,
     }));
 
+    console.log(user.user_id);
+    console.log(hotelId);
+
     setTempBooking({
-      user_id: user.user_id,
-      hotel_id: parseInt(hotelId as string),
+      user: user.user_id.toString(),
+      hotel: hotelId as string,
       rooms: tempRooms,
     })
       .unwrap()
       .then(() => {
-        nav(`/hotel/${hotelId}/payment/${user.user_id}`);
+        nav(`/hotel/${hotelId}/${user.user_id}/payment`);
       })
       .catch(() => {
         nav("/error");
