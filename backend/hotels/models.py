@@ -1,5 +1,7 @@
 from django.db import models
 from account_manager.models import User
+from django.dispatch import receiver
+from django.db.models.signals import pre_delete
 
 # Create your models here.
 
@@ -53,6 +55,35 @@ class Room(BaseModel):
 class HotelImages(BaseModel):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     image = models.ImageField(upload_to="hotel_images/")
+
+
+class BookTemp(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rooms = models.ManyToManyField(
+        "RoomTemp",
+    )
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ["hotel"]
+
+
+#
+class RoomTemp(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+
+@receiver(pre_delete, sender=BookTemp)
+def delete_rooms(sender, instance, **kwargs):
+    # Get the RoomTemp objects associated with the BookTemp instance
+    room_temps = instance.rooms.all().values_list("id", flat=True)
+    print(f"RoomTemp IDs: {list(room_temps)}")
+    # Clear the BookTemp.rooms relationship
+    instance.rooms.clear()
+    # Delete the associated RoomTemp objects
+    RoomTemp.objects.filter(id__in=room_temps).delete()
+    print(f"RoomTemp objects deleted: {len(room_temps)}")
 
 
 class Booking(BaseModel):

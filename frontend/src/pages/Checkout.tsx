@@ -1,12 +1,10 @@
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import CheckoutForm from "../components/Checkout/Checkout";
 import { BASEURL } from "../store/api/apiSlice";
 
-const stripePromise = loadStripe(
-  import.meta.env.VITE_REACT_APP_STRIPE_URL
-);
+const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 
 const Checkout = () => {
   const [clientSecret, setClientSecret] = useState<any>();

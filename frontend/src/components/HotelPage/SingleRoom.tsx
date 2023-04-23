@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -14,19 +14,34 @@ import { roomActions } from "../../store/roomSlice";
 
 interface ISingleRoom {
   room: IHotelRoom;
+  reset: boolean;
+  setReset: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SingleRoom = ({ room }: ISingleRoom) => {
+const SingleRoom = ({ room, reset, setReset }: ISingleRoom) => {
   const [roomQuantity, setRoomQuantity] = useState("0");
+
   const rooms = useAppSelector((state) => state.room.rooms);
-  const dispatch = useAppDispatch();
   console.log(rooms);
+  const dispatch = useAppDispatch();
 
   const handleRoomChange = (event: SelectChangeEvent) => {
-    setRoomQuantity(event!.target!.value)
+    setRoomQuantity(event!.target!.value);
     const quantity = parseInt(event!.target!.value);
-    dispatch(roomActions.modifyRooms({room : {...room, quantity}}))
+    dispatch(roomActions.modifyRooms({ room: { ...room, quantity } }));
   };
+
+  const handleReset = () => {
+    setRoomQuantity("0");
+    setReset(false);
+  };
+
+  useEffect(() => {
+    if (reset) {
+      handleReset();
+    }
+  }, [reset]);
+
   return (
     <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
       <TableCell component="th" scope="row">

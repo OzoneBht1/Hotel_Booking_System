@@ -13,7 +13,7 @@ import {
 } from "../store/api/hotelSlice";
 import Loading from "../components/Loading";
 import { BASEURL } from "../store/api/apiSlice";
-import {  Rating, Tab, Tabs } from "@mui/material";
+import { Rating, Tab, Tabs } from "@mui/material";
 import { ScoreBadge } from "../components/HomePageItem";
 import getHotelRating from "../utils/GetScoreRating";
 import getBookingRating from "../utils/GetScoreRating";
@@ -274,7 +274,7 @@ const HotelPage = () => {
         alignItems="flex-start"
         gap={2}
       >
-        <Rooms rooms={rooms}/>
+        <Rooms rooms={rooms} />
       </Box>
 
       <Box
@@ -313,7 +313,7 @@ const HotelPage = () => {
                 aria-controls="panel2a-content"
                 id="panel2a-header"
               >
-                <Typography>Accordion 2</Typography>
+                <Typography>Accordion 2 </Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
@@ -413,7 +413,9 @@ const HotelPage = () => {
             <Box display="flex" width="100%">
               <List>
                 <ListItem sx={{ display: "flex", gap: 3 }}>
-                  {hotel?.hotel_score && <ScoreBadge score={hotel.hotel_score} />}
+                  {hotel?.hotel_score && (
+                    <ScoreBadge score={hotel.hotel_score} />
+                  )}
                   <Typography component="span" variant="h6">
                     {hotel?.hotel_score && getBookingRating(hotel.hotel_score)}
                   </Typography>

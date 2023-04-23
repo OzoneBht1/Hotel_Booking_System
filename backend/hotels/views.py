@@ -2,7 +2,13 @@ from django.db import models
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework import status
+
+# from account_manager.permissions import UserDetailPermission
 from .serializers import (
+    BookTemp,
+    BookTempCreateSerializer,
+    BookTempWithDetailSerializer,
     HotelSerializer,
     BookingSerializer,
     ReviewSerializer,
@@ -171,6 +177,37 @@ class SingleRoomByHotelApi(generics.RetrieveAPIView):
         room_id = self.kwargs.get("id")
 
         return Room.objects.filter(hotel=hotel_id, id=room_id)
+
+
+class CreateBookingTempApi(generics.CreateAPIView):
+    serializer_class = BookTempCreateSerializer
+    authentication_classes = [JWTAuthentication]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)  # Assign the logged-in user to the booking
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            {"message": "Temporary Booking Created"},
+            status=status.HTTP_201_CREATED,
+            headers=headers,
+        )
+
+
+class GetBookingTempApi(generics.RetrieveAPIView):
+    serializer_class = BookTempWithDetailSerializer
+    # permission_classes = [UserDetailPermission]
+    lookup_field = "user_id"
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def get_queryset(self):
+        hotel_id = self.kwargs.get("hotel_id")
+        user_id = self.kwargs.get("user_id")
+
+        return BookTemp.objects.filter(hotel=hotel_id, user=user_id)
 
 
 @api_view(["GET"])
