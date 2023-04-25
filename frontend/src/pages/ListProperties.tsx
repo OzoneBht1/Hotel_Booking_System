@@ -11,21 +11,17 @@ import { useMultistepForm } from "../hooks/use-multistep-form";
 import { useAppSelector } from "../store/hooks";
 
 const ListProperties = () => {
-  const user = useAppSelector((state) => state.auth.user?.user_id);
-  const amenities = useAppSelector((state) => state.list.amenities);
-  console.log(amenities);
-
   const nextHandler = () => {
     next();
   };
-  const { steps, currentStepIndex, next, prev } = useMultistepForm([
+  const { steps, currentStepIndex, next } = useMultistepForm([
     <ListPropertiesLanding onClickNext={nextHandler} />,
     <ListPropertiesEmailForm onClickNext={nextHandler} />,
     <ListPropertiesNameAmenities onClickNext={nextHandler} />,
     <ListPropertiesServices onClickNext={nextHandler} />,
     <ListPropertiesTransportation onClickNext={nextHandler} />,
     <FaqAndCleanPractices onClickNext={nextHandler} />,
-    <ListPropertiesRoomInfo onClickNext = {nextHandler}/>
+    <ListPropertiesRoomInfo onClickNext={nextHandler} />,
   ]);
 
   console.log(currentStepIndex);

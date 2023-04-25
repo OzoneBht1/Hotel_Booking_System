@@ -1,37 +1,28 @@
 import React, { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import { Button } from "@mui/material";
-import { loadStripe } from "@stripe/stripe-js";
-import { BASEURL } from "../../store/api/apiSlice";
 import {
   PaymentElement,
   LinkAuthenticationElement,
   useStripe,
   useElements,
-  Elements,
 } from "@stripe/react-stripe-js";
 
 import { useSaveStripeInfoMutation } from "../../store/api/payment-slice";
-import { PaymentOutlined } from "@mui/icons-material";
+import { Stack } from "@mui/system";
 
 interface IPaymentFormProps {
   onReceiveForm: (data: any) => void;
   data: { [key: string]: string };
 }
-export default function PaymentForm({
-  onReceiveForm,
-  data,
-}: IPaymentFormProps) {
+export default function PaymentForm({ data }: IPaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const clientSecret = data["payment_intent_client_secret"];
 
   console.log(clientSecret);
-  const [email, setEmail] = useState<string >('');
+  const [email, setEmail] = useState<string>("");
   const [message, setMessage] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [saveStripeInfo, { isLoading, isError }] = useSaveStripeInfoMutation();
@@ -72,7 +63,6 @@ export default function PaymentForm({
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        // Make sure to change this to your payment completion page
         return_url: "http://localhost:5173",
         receipt_email: email,
       },
@@ -89,7 +79,7 @@ export default function PaymentForm({
   const paymentElementOptions = {
     layout: "tabs",
   };
-
+  //
   return (
     <React.Fragment>
       <form onSubmit={handleSubmit}>
@@ -103,19 +93,19 @@ export default function PaymentForm({
               onChange={(e) => setEmail(e.value.email)}
             />
 
-            <PaymentElement
-              id="payment-element"
-            />
+            <PaymentElement id="payment-element" />
           </Grid>
         </Grid>
-        <Button
-          disabled={loading || !stripe || !elements}
-          type="submit"
-          variant="contained"
-          sx={{ mt: 3, ml: 1 }}
-        >
-          Place Order
-        </Button>
+        <Stack alignItems="flex-end">
+          <Button
+            disabled={loading || !stripe || !elements}
+            type="submit"
+            variant="contained"
+            sx={{ mt: 3, ml: 1 }}
+          >
+            Place Order
+          </Button>
+        </Stack>
       </form>
     </React.Fragment>
   );

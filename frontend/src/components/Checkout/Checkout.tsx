@@ -18,7 +18,7 @@ import { useAppDispatch } from "../../store/hooks";
 import { tempBookActions } from "../../store/tempBookSlice";
 import { convertFormat } from "../../utils/RoomUtils";
 
-const steps = ["Payment details"];
+const steps = ["Review", "Payment form", "Bill"];
 
 const theme = createTheme();
 
@@ -69,12 +69,13 @@ export default function Checkout({ data }: ICheckout) {
 
   const formReceiveHandler = (data: any) => {
     console.log("hi mom ");
+    console.log(data);
   };
 
   function getStepContent(step: number) {
     switch (step) {
       case 0:
-        return <Review />;
+        return <Review handleNext={handleNext} />;
       case 1:
         return <PaymentForm data={data} onReceiveForm={formReceiveHandler} />;
       default:
@@ -93,6 +94,13 @@ export default function Checkout({ data }: ICheckout) {
           <Typography component="h1" variant="h4" align="center">
             Checkout
           </Typography>
+          <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
           {activeStep === steps.length ? (
             <React.Fragment>
               <Typography variant="h5" gutterBottom>
@@ -105,16 +113,7 @@ export default function Checkout({ data }: ICheckout) {
               </Typography>
             </React.Fragment>
           ) : (
-            <React.Fragment>
-              {getStepContent(activeStep)}
-              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                {activeStep !== 0 && (
-                  <Button onClick={handleBack} sx={{ mt: 3, ml: 1 }}>
-                    Back
-                  </Button>
-                )}
-              </Box>
-            </React.Fragment>
+            <React.Fragment>{getStepContent(activeStep)}</React.Fragment>
           )}
         </Paper>
       </Container>

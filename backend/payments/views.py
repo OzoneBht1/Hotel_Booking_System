@@ -23,11 +23,12 @@ def create_payment(request):
     customer = stripe.Customer.create()
     try:
         data = request.data
+        print(data)
 
         intent = stripe.PaymentIntent.create(
             customer=customer["id"],
             setup_future_usage="off_session",
-            amount=calculate_order_amount(data["items"]),
+            amount=calculate_order_amount(data),
             currency="usd",
             automatic_payment_methods={
                 "enabled": True,

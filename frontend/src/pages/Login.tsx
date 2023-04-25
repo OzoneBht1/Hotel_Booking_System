@@ -1,4 +1,3 @@
-import React from "react";
 import { Avatar, Box, Snackbar, Alert, Grid, Stack } from "@mui/material";
 import LoginForm from "../components/forms/LoginForm";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -8,7 +7,7 @@ import { ILoginCreds } from "../components/types/types";
 import { useVerifyLoginMutation } from "../store/api/authentication-api-slice";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { useAppDispatch } from "../store/hooks";
 import { authActions } from "../store/auth-slice";
 import { ITokenState } from "../components/types/types";
 import { useLocation } from "react-router-dom";
@@ -18,7 +17,7 @@ import VerifyEmail from "../components/VerifyEmail";
 let HEIGHT_OF_NAVBAR = 68;
 
 const Login = () => {
-  const {state} = useLocation();
+  const { state } = useLocation();
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(
     state?.from?.state ? true : false
   );
