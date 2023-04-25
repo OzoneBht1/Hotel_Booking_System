@@ -1,4 +1,3 @@
-import { PlusOneSharp } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -7,21 +6,21 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import AddIcon from "@mui/icons-material/Add";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { IRoom } from "../types/types";
+import { IHotelRoom } from "../types/types";
 import CloseIcon from "@mui/icons-material/Close";
 import { listActions } from "../../store/list-slice";
+import { useEffect, useState } from "react";
 interface IListPropertiesAmenitiesProps {
   onClickNext: () => void;
 }
 
 const roomSchema = yup.object().shape({
-  roomType: yup
+  room_type: yup
     .string()
     .matches(/room/i, "Please include the word 'room' in the name")
     .required("Room type is required"),
@@ -30,7 +29,7 @@ const roomSchema = yup.object().shape({
     .typeError("Price must be a number")
     .required("This is required")
     .min(1, "The price of room cannot be lower than 0"),
-  numberOfRooms: yup
+  amount: yup
     .number()
     .typeError("Number of rooms must be a number")
     .required("This is required")
@@ -42,17 +41,26 @@ const ListPropertiesRoomInfo = ({
 }: IListPropertiesAmenitiesProps) => {
   const dispatch = useAppDispatch();
 
-  
-  const rooms = useAppSelector(state=>state.list.rooms)
+  const rooms = useAppSelector((state) => state?.list?.rooms);
+
+  const [showInitialForm, setShowInitialForm] = useState(true);
+
+  console.log(rooms);
 
   const nextClickHandler = () => {
     onClickNext();
   };
 
-  const addHandler = (roomData: IRoom) => {
-    console.log(roomData)
-    dispatch(listActions.addRoom({room : roomData}))
+  const addHandler = (roomData: IHotelRoom) => {
+    console.log(roomData);
+    dispatch(listActions.addRoom({ room: roomData }));
   };
+
+  useEffect(() => {
+    if (rooms && rooms.length !== 0) {
+      setShowInitialForm(false);
+    }
+  }, [rooms, showInitialForm]);
   return (
     <Container component="main">
       <CssBaseline />
@@ -69,15 +77,18 @@ const ListPropertiesRoomInfo = ({
         <Typography variant="h4" component="h4">
           Rooms
         </Typography>
-        {rooms.map((room, index) => (
+        {rooms?.map((_, index) => (
           <RoomInfo
             key={index}
             showAddButton={rooms.length - 1 === index ? true : false}
-            showRemoveButton={rooms.length -2 === index ? true : false}
+            showRemoveButton={rooms.length - 2 === index ? true : false}
             disabledForm={rooms.length - 1 !== index ? true : false}
             onClickAdd={addHandler}
           />
         ))}
+        {showInitialForm && (
+          <RoomInfo showAddButton={true} onClickAdd={addHandler} />
+        )}
       </Box>
       <Box
         display="flex"
@@ -100,34 +111,37 @@ const ListPropertiesRoomInfo = ({
 
 export default ListPropertiesRoomInfo;
 
-
 export const RoomInfo = ({
   onClickAdd,
   showAddButton,
   showRemoveButton,
   disabledForm,
 }: {
-  onClickAdd: (data: IRoom) => void;
-  showAddButton: boolean;
-    showRemoveButton : boolean;
-  disabledForm: boolean;
+  onClickAdd: (data: IHotelRoom) => void;
+  showAddButton?: boolean;
+  showRemoveButton?: boolean;
+  disabledForm?: boolean;
 }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IRoom>({
+  } = useForm<IHotelRoom>({
     resolver: yupResolver(roomSchema),
   });
+
+  if (errors) {
+    console.log(errors);
+  }
   const dispatch = useAppDispatch();
-  const onSubmit = (data: IRoom) => {
-    console.log("submit handler")
+  const onSubmit = (data: IHotelRoom) => {
+    console.log("called");
     onClickAdd(data);
   };
 
-  const removeHandler = ()=>{
+  const removeHandler = () => {
     dispatch(listActions.removeRoom());
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -163,9 +177,7 @@ export const RoomInfo = ({
         />
         <TextField
           helperText={
-            !errors?.amount
-              ? "Ex : 5"
-              : (errors!.amount.message as string)
+            !errors?.amount ? "Ex : 5" : (errors!.amount.message as string)
           }
           id="demo-helper-text-misaligned"
           label="Number of Rooms"
@@ -178,7 +190,7 @@ export const RoomInfo = ({
           {...register("amount")}
         />
         {showRemoveButton ? (
-          <Box padding={0} onClick={removeHandler}>
+          <Box sx={{ cursor: "pointer" }} padding={0} onClick={removeHandler}>
             <CloseIcon sx={{ color: "purple" }} />
           </Box>
         ) : (

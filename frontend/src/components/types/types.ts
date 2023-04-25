@@ -112,7 +112,7 @@ export interface IQuery {
 }
 
 export interface IHotelRoom {
-  id: number;
+  id?: number;
   room_type: string;
   price: number;
   amount: number;
@@ -150,9 +150,9 @@ export type ITempBookingGet = Omit<
 >;
 
 export interface IListProperty {
-  email: string;
-  hotel_name: string;
-  hotel_address: string;
+  email: string | null;
+  hotel_name: string | null;
+  hotel_address: string | null;
   amenities: string[];
   rooms: IHotelRoom[];
 }
