@@ -81,7 +81,7 @@ seaborn==0.12.2
 sentence-transformers==2.2.2
 sentencepiece==0.1.97
 six==1.16.0
-sqlparse==0.4.3
+sqlparse==0.4.4
 stack-data==0.6.2
 sympy==1.11.1
 threadpoolctl==3.1.0
