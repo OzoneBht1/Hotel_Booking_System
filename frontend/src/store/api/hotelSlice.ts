@@ -33,7 +33,7 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
-    getSearchedResults: build.query<any, IQuery>({
+    getSearchedResults: build.query<IPaginated<IHotelData>, IQuery>({
       query: ({
         searchQuery,
         checkInDate,
