@@ -55,12 +55,12 @@ const ListPropertiesRoomInfo = ({
     console.log(roomData);
     dispatch(listActions.addRoom({ room: roomData }));
   };
-
-  useEffect(() => {
-    if (rooms && rooms.length !== 0) {
-      setShowInitialForm(false);
-    }
-  }, [rooms, showInitialForm]);
+  //
+  // useEffect(() => {
+  //   if (rooms && rooms.length !== 0) {
+  //     setShowInitialForm(false);
+  //   }
+  // }, [rooms, showInitialForm]);
   return (
     <Container component="main">
       <CssBaseline />
@@ -77,6 +77,15 @@ const ListPropertiesRoomInfo = ({
         <Typography variant="h4" component="h4">
           Rooms
         </Typography>
+        {showInitialForm && (
+          <RoomInfo
+            showAddButton={rooms.length === 0 ? true : false}
+            onClickAdd={addHandler}
+            showRemoveButton={rooms.length === 1 ? true : false}
+            disabledForm={rooms.length - 1 !== -1 ? true : false}
+          />
+        )}
+
         {rooms?.map((_, index) => (
           <RoomInfo
             key={index}
@@ -86,9 +95,6 @@ const ListPropertiesRoomInfo = ({
             onClickAdd={addHandler}
           />
         ))}
-        {showInitialForm && (
-          <RoomInfo showAddButton={true} onClickAdd={addHandler} />
-        )}
       </Box>
       <Box
         display="flex"

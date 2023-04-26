@@ -1,5 +1,5 @@
 import { Box } from "@mui/system";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import FaqAndCleanPractices from "../components/ListProperties/FaqAndCleanPractices";
 import ListPropertiesEmailForm from "../components/ListProperties/ListPropertiesEmailForm";
 import ListPropertiesLanding from "../components/ListProperties/ListPropertiesLanding";
@@ -8,7 +8,9 @@ import ListPropertiesServices from "../components/ListProperties/ListPropertiesS
 import ListPropertiesTransportation from "../components/ListProperties/ListPropertiesTransportation";
 import ListPropertiesRoomInfo from "../components/ListProperties/ListPropertiesRoomInfo";
 import { useMultistepForm } from "../hooks/use-multistep-form";
-import { useAppSelector } from "../store/hooks";
+import { usePrompt } from "../hooks/use-prompt";
+import { current } from "@reduxjs/toolkit";
+// import something which provides prompt if user is about to leave page;
 
 const ListProperties = () => {
   const nextHandler = () => {
@@ -24,8 +26,16 @@ const ListProperties = () => {
     <ListPropertiesRoomInfo onClickNext={nextHandler} />,
   ]);
 
-  console.log(currentStepIndex);
-  return <Box padding={5}>{steps[currentStepIndex]}</Box>;
+  usePrompt(
+    "Are you sure you want to leave this page? Your listing progress will not be saved.",
+    currentStepIndex > 1
+  );
+
+  return (
+    <>
+      <Box padding={5}>{steps[currentStepIndex]}</Box>
+    </>
+  );
 };
 
 export default ListProperties;
