@@ -83,7 +83,7 @@ const ListPropertiesRoomInfo = ({
           variant="filled"
           sx={{ width: "100%" }}
         >
-          This is a success message!
+          Please add atleast one room
         </Alert>
       </Snackbar>
       <Box
