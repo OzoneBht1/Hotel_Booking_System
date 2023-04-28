@@ -71,7 +71,7 @@ export interface IHotelData {
   //images? : string[];
   rating: number;
   review_count: number;
-  countInStock: number;
+  room_count: number;
   lat: number;
   lng: number;
 }

@@ -140,8 +140,19 @@ const HotelPage = () => {
         width={"70%"}
         gap={1}
       >
-        <Box display="flex" alignItems="center" gap={1}>
-          <ArrowBackIcon /> See all properties
+        <Box
+          color="blue"
+          onClick={() => nav(-1)}
+          display="flex"
+          alignItems="center"
+          gap={1}
+          m={1}
+          ml={-1}
+          sx={{
+            cursor: "pointer",
+          }}
+        >
+          <ArrowBackIcon /> Back
         </Box>
         <ImageList
           rowHeight={100}

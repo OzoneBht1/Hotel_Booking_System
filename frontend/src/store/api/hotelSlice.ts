@@ -41,8 +41,16 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         people = 0,
         rooms = 0,
       }) => ({
-        url: `/hotels/hotels-by-name-location?term=${searchQuery}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&people=${people}&rooms=${rooms}`,
+        url: `/hotels/hotels-by-name-location`,
         method: "GET",
+        params: {
+          term: searchQuery,
+          checkInDate: checkInDate,
+          checkOutDate: checkOutDate,
+          people: people,
+          rooms: rooms,
+          limit: 10,
+        },
       }),
     }),
     getReviews: build.query<IPaginated<IHotelReview>, { id?: string }>({
