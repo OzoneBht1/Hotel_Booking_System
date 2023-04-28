@@ -91,6 +91,7 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
     serializer_class = HotelSerializer
     authentication_classes = []
     permission_classes = []
+    pagination_class = CustomHotelSearchPagination
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
