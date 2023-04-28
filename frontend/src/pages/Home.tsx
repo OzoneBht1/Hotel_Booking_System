@@ -45,6 +45,8 @@ const Home = () => {
         >
           <Alert
             onClose={() => setSnackbarOpenOnLogout(false)}
+            elevation={6}
+            variant="filled"
             severity="info"
             sx={{ width: "100%" }}
           >
@@ -61,6 +63,8 @@ const Home = () => {
           <Alert
             onClose={() => setSnackbarOpen(false)}
             severity="success"
+            elevation={6}
+            variant="filled"
             sx={{ width: "100%" }}
           >
             Successfully Logged In!

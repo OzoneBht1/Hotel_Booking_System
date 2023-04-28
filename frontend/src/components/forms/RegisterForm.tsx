@@ -178,6 +178,8 @@ const RegisterForm = ({ onReceiveData, data }: RegisterFormProps) => {
           <Alert
             onClose={() => setOpen(false)}
             severity="error"
+            elevation={6}
+            variant="filled"
             sx={{ width: "100%" }}
           >
             {errorText}

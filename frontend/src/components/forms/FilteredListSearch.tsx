@@ -211,7 +211,12 @@ const FilteredListSearch = ({ onSearch }: IFilteredListSearchForm) => {
         autoHideDuration={6000}
         onClose={() => setOpenSnackbar(false)}
       >
-        <Alert onClose={() => setOpenSnackbar(false)} severity="error">
+        <Alert
+          elevation={6}
+          variant="filled"
+          onClose={() => setOpenSnackbar(false)}
+          severity="error"
+        >
           Check out date must be greater than check in date
         </Alert>
       </Snackbar>

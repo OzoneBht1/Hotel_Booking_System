@@ -70,6 +70,8 @@ const LoginForm = ({ onReceiveData, isLoading, errorText }: LoginFormProps) => {
           onClose={() => setOpen(false)}
         >
           <Alert
+            elevation={6}
+            variant="filled"
             onClose={() => setOpen(false)}
             severity="error"
             sx={{ width: "100%" }}

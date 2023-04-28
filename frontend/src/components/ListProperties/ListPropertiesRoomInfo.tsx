@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -15,6 +16,8 @@ import { IHotelRoom } from "../types/types";
 import CloseIcon from "@mui/icons-material/Close";
 import { listActions } from "../../store/list-slice";
 import { useEffect, useState } from "react";
+import Snackbar from "@mui/material/Snackbar";
+
 interface IListPropertiesAmenitiesProps {
   onClickNext: () => void;
 }
@@ -45,9 +48,13 @@ const ListPropertiesRoomInfo = ({
 
   const [showInitialForm, setShowInitialForm] = useState(true);
 
-  console.log(rooms);
+  const [showSnackbar, setShowSnackbar] = useState(false);
 
   const nextClickHandler = () => {
+    if (rooms.length === 0) {
+      setShowSnackbar(true);
+      return;
+    }
     onClickNext();
   };
 
@@ -64,6 +71,21 @@ const ListPropertiesRoomInfo = ({
   return (
     <Container component="main">
       <CssBaseline />
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setShowSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setShowSnackbar(false)}
+          severity="error"
+          elevation={6}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          This is a success message!
+        </Alert>
+      </Snackbar>
       <Box
         sx={{
           marginTop: 8,
