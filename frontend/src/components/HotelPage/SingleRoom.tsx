@@ -57,12 +57,17 @@ const SingleRoom = ({ room, reset, setReset }: ISingleRoom) => {
             {room.room_type}
           </Typography>
           <Typography component="span" variant="caption">
-            {"1 bed"}
+            <Box
+              height="200px"
+              width="300px"
+              component="img"
+              src={room.image}
+            />
           </Typography>
         </Box>
       </TableCell>
-      <TableCell align="right">{room.amount}</TableCell>
-      <TableCell align="right">${room.price}</TableCell>
+      <TableCell align="center">{room.quantity}</TableCell>
+      <TableCell align="center">${room.price}</TableCell>
       <TableCell align="center">
         <FormControl sx={{ minWidth: 120 }} size="small">
           <InputLabel id="demo-simple-select-label">Quantity</InputLabel>
@@ -74,7 +79,7 @@ const SingleRoom = ({ room, reset, setReset }: ISingleRoom) => {
             autoWidth
             onChange={handleRoomChange}
           >
-            {[...Array(room.amount + 1).keys()].map((quantity) => (
+            {[...Array(room.quantity + 1).keys()].map((quantity) => (
               <MenuItem key={quantity} value={quantity}>
                 {quantity}
               </MenuItem>

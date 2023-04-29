@@ -5,6 +5,7 @@ import {
   IQuery,
   IPaginated,
   IHotelRoom,
+  IFAQ,
 } from "../../components/types/types";
 import { IHotelReview } from "../../components/types/types";
 
@@ -65,6 +66,12 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    getFaqs: build.query<IFAQ[], { id?: string }>({
+      query: ({ id }) => ({
+        url: `/hotels/${id}/faqs`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -75,4 +82,5 @@ export const {
   useGetSearchedResultsQuery,
   useGetReviewsQuery,
   useGetRoomsQuery,
+  useGetFaqsQuery,
 } = hotelApiSlice;

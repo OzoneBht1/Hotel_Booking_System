@@ -7,6 +7,7 @@ import ImageListItem from "@mui/material/ImageListItem";
 import Typography from "@mui/material/Typography";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  useGetFaqsQuery,
   useGetHotelDetailsQuery,
   useGetReviewsQuery,
   useGetRoomsQuery,
@@ -84,7 +85,13 @@ const HotelPage = () => {
     isError: roomsIsError,
   } = useGetRoomsQuery({ id });
 
-  console.log(reviews);
+  const {
+    data: faqs,
+    isLoading: faqsIsLoading,
+    isError: faqsIsError,
+  } = useGetFaqsQuery({ id });
+
+  console.log(rooms);
 
   const overviewRef = React.useRef<HTMLDivElement>(null);
   const roomsRef = React.useRef<HTMLDivElement>(null);
@@ -165,10 +172,10 @@ const HotelPage = () => {
               <img src={`${BASEURL}${hotel.hotel_images[0].image}`} />
             )}
           </ImageListItem>
-          {hotelImages.map((image, index) => {
+          {rooms?.results?.map((room, index) => {
             return (
-              <ImageListItem key={image.id} cols={2} rows={2}>
-                <img src={image.img} alt={"hotel image"} loading="lazy" />
+              <ImageListItem key={room.id} cols={2} rows={2}>
+                <img src={room.image} alt={"hotel image"} loading="lazy" />
               </ImageListItem>
             );
           })}
@@ -302,73 +309,25 @@ const HotelPage = () => {
             </Typography>
           </Box>
           <Box>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <Typography>Accordion 1</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                  eget.
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel2a-content"
-                id="panel2a-header"
-              >
-                <Typography>Accordion 2 </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                  eget.
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel2a-content"
-                id="panel2a-header"
-              >
-                <Typography>Accordion 3</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                  eget.
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel2a-content"
-                id="panel2a-header"
-              >
-                <Typography>Accordion 4</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                  eget.
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
-          </Box>{" "}
+            {faqs?.map((faq) => {
+              return (
+                <Accordion id={faq.id}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                  >
+                    <Typography>{faq.question}</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography>{faq.answer}</Typography>
+                  </AccordionDetails>
+                </Accordion>
+              );
+            })}
+          </Box>
         </Box>
-        <Box display="flex" flexDirection="column" gap={2}>
+        <Box display="flex" width="40%" flexDirection="column" gap={2}>
           <Typography component="h4" variant="h5">
             Cleaning and Safety Practices
           </Typography>
