@@ -41,6 +41,7 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         checkOutDate,
         people = 0,
         rooms = 0,
+        page = 1,
       }) => ({
         url: `/hotels/hotels-by-name-location`,
         method: "GET",
@@ -51,6 +52,7 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
           people: people,
           rooms: rooms,
           limit: 10,
+          offset: (page - 1) * 10,
         },
       }),
     }),

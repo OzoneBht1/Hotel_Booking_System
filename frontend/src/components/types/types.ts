@@ -109,6 +109,7 @@ export interface IQuery {
   searchQuery: string;
   people: number;
   rooms: number;
+  page?: number;
 }
 
 export interface IHotelRoom {
