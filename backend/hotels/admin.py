@@ -8,6 +8,8 @@ from .models import (
     Review,
     BookTemp,
     RoomTemp,
+    FAQ,
+    HouseRules,
 )
 
 # Register your models here.
@@ -20,3 +22,5 @@ admin.site.register(Booking)
 admin.site.register(Review)
 admin.site.register(BookTemp)
 admin.site.register(RoomTemp)
+admin.site.register(FAQ)
+admin.site.register(HouseRules)

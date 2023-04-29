@@ -16,7 +16,7 @@ import {
   useRegisterUserMutation,
   useVerifyEmailMutation,
 } from "../store/api/authentication-api-slice";
-import   RegisterPageIllustration from "../assets/RegisterPageIllustration.png";
+import RegisterPageIllustration from "../assets/RegisterPageIllustration.png";
 import { useMultistepForm } from "../hooks/use-multistep-form";
 import ImageForm from "../components/forms/ImageForm";
 import VerifyEmail from "../components/VerifyEmail";
@@ -103,7 +103,6 @@ const Register = () => {
   const { steps, currentStepIndex, next, prev } = useMultistepForm([
     <RegisterForm onReceiveData={formReceiveHandler} data={data} />,
     <ImageForm
-
       onReceiveImage={imageReceiveHandler}
       loading={isLoading}
       onBack={backHandler}
@@ -171,6 +170,8 @@ const Register = () => {
           <Alert
             onClose={() => setSuccessSnackbar(false)}
             severity="success"
+            elevation={6}
+            variant="filled"
             sx={{ width: "100%" }}
           >
             Successfully registered! Verify your email to proceed.
@@ -187,6 +188,8 @@ const Register = () => {
           <Alert
             onClose={() => setOpen(false)}
             severity="error"
+            elevation={6}
+            variant="filled"
             sx={{ width: "100%" }}
           >
             {errorText}

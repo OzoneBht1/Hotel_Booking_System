@@ -6,11 +6,15 @@ from rest_framework import status
 
 # from account_manager.permissions import UserDetailPermission
 from .serializers import (
+    FAQ,
     BookTemp,
     BookTempCreateSerializer,
     BookTempWithDetailSerializer,
+    FAQSerializer,
     HotelSerializer,
     BookingSerializer,
+    HouseRules,
+    HouseRulesSerializer,
     ReviewSerializer,
     Room,
     RoomSerializer,
@@ -91,6 +95,7 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
     serializer_class = HotelSerializer
     authentication_classes = []
     permission_classes = []
+    pagination_class = CustomHotelSearchPagination
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -208,6 +213,35 @@ class GetBookingTempApi(generics.RetrieveAPIView):
         user_id = self.kwargs.get("user_id")
 
         return BookTemp.objects.filter(hotel=hotel_id, user=user_id)
+
+
+class FAQByHotelApi(generics.ListAPIView):
+    serializer_class = FAQSerializer
+    pagination_class = None
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        hotel_id = self.kwargs.get("id")
+        print(hotel_id)
+        a = FAQ.objects.filter(hotel=hotel_id)
+        print(a)
+
+        return FAQ.objects.filter(hotel=hotel_id)
+
+
+class HouseRulesByHotelApi(generics.RetrieveAPIView):
+    serializer_class = HouseRulesSerializer
+    lookup_field = "id"
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def get_queryset(self):
+        hotel_id = self.kwargs.get("id")
+
+        return HouseRules.objects.filter(hotel=hotel_id)
 
 
 @api_view(["GET"])

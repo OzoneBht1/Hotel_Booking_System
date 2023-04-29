@@ -5,6 +5,7 @@ import {
   IQuery,
   IPaginated,
   IHotelRoom,
+  IFAQ,
 } from "../../components/types/types";
 import { IHotelReview } from "../../components/types/types";
 
@@ -33,7 +34,7 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
-    getSearchedResults: build.query<any, IQuery>({
+    getSearchedResults: build.query<IPaginated<IHotelData>, IQuery>({
       query: ({
         searchQuery,
         checkInDate,
@@ -41,8 +42,16 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         people = 0,
         rooms = 0,
       }) => ({
-        url: `/hotels/hotels-by-name-location?term=${searchQuery}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&people=${people}&rooms=${rooms}`,
+        url: `/hotels/hotels-by-name-location`,
         method: "GET",
+        params: {
+          term: searchQuery,
+          checkInDate: checkInDate,
+          checkOutDate: checkOutDate,
+          people: people,
+          rooms: rooms,
+          limit: 10,
+        },
       }),
     }),
     getReviews: build.query<IPaginated<IHotelReview>, { id?: string }>({
@@ -57,6 +66,12 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    getFaqs: build.query<IFAQ[], { id?: string }>({
+      query: ({ id }) => ({
+        url: `/hotels/${id}/faqs`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -67,4 +82,5 @@ export const {
   useGetSearchedResultsQuery,
   useGetReviewsQuery,
   useGetRoomsQuery,
+  useGetFaqsQuery,
 } = hotelApiSlice;

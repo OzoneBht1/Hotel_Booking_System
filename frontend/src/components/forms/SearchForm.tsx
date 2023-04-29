@@ -153,7 +153,7 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
   const formSubmitHandler = (e: React.FormEvent<HTMLDivElement>) => {
     e.preventDefault();
     setErrorMessage("");
-    setOpenSnackbar(false)
+    setOpenSnackbar(false);
     if (!selectedCheckInDate || !selectedCheckOutDate) {
       setOpenSnackbar(true);
       setErrorMessage("Please select check in and check out dates");
@@ -172,13 +172,13 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
     console.log(dateFormatCheckIn > dateFormatCheckOut);
 
     if (dateFormatCheckIn > dateFormatCheckOut) {
-      console.log("hi im here somehow")
+      console.log("hi im here somehow");
       setOpenSnackbar(true);
       setErrorMessage("Check out date must be greater than check in date");
       return;
     }
 
-    if (searchQuery.trim().length === 0 ) {
+    if (searchQuery.trim().length === 0) {
       setOpenSnackbar(true);
       setErrorMessage("Please provide a query");
       return;
@@ -212,7 +212,12 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
         autoHideDuration={6000}
         onClose={() => setOpenSnackbar(false)}
       >
-        <Alert onClose={() => setOpenSnackbar(false)} severity="error">
+        <Alert
+          elevation={6}
+          variant="filled"
+          onClose={() => setOpenSnackbar(false)}
+          severity="error"
+        >
           {errorMessage}
         </Alert>
       </Snackbar>

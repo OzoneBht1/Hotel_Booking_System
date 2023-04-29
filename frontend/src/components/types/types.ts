@@ -71,7 +71,7 @@ export interface IHotelData {
   //images? : string[];
   rating: number;
   review_count: number;
-  countInStock: number;
+  room_count: number;
   lat: number;
   lng: number;
 }
@@ -115,7 +115,8 @@ export interface IHotelRoom {
   id?: number;
   room_type: string;
   price: number;
-  amount: number;
+  quantity: number;
+  image: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -155,4 +156,11 @@ export interface IListProperty {
   hotel_address: string | null;
   amenities: string[];
   rooms: IHotelRoom[];
+}
+
+export interface IFAQ {
+  id: string;
+  question: string;
+  answer: string;
+  hotel: string;
 }

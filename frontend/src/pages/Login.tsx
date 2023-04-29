@@ -96,6 +96,8 @@ const Login = () => {
           <Alert
             onClose={() => setSnackbarOpen(false)}
             severity="success"
+            elevation={6}
+            variant="filled"
             sx={{ width: "100%" }}
           >
             Your account has been verified! You can now log in.
@@ -110,6 +112,8 @@ const Login = () => {
         >
           <Alert
             onClose={() => setOpen(false)}
+            elevation={6}
+            variant="filled"
             severity="error"
             sx={{ width: "100%" }}
           >

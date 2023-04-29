@@ -12,3 +12,6 @@ lib64
 pyvenv.cfg
 *.pkl
 .env
+hotel_images
+room_images
+.~lock.hotels.csv#

@@ -70,6 +70,8 @@ const ListPropertiesServices = ({
           onClose={() => setShowSnackbar(false)}
         >
           <Alert
+            elevation={6}
+            variant="filled"
             onClose={() => setShowSnackbar(false)}
             severity="error"
             sx={{ width: "100%" }}
