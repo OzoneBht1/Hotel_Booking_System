@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (
     CreateBookingTempApi,
+    FAQByHotelApi,
     GetBookingTempApi,
     HotelCreateApi,
     HotelDetailApi,
@@ -8,6 +9,7 @@ from .views import (
     HotelSearchApi,
     HotelsByLocationApi,
     HotelByLocationAndNameApi,
+    HouseRulesByHotelApi,
     ReviewByHotelApi,
     recommend_hotels,
     RoomByHotelApi,
@@ -22,6 +24,16 @@ urlpatterns = [
         "hotels/<int:id>/reviews",
         ReviewByHotelApi.as_view(),
         name="hotel_review",
+    ),
+    path(
+        "hotels/<int:id>/faqs",
+        FAQByHotelApi.as_view(),
+        name="hotel_faq",
+    ),
+    path(
+        "hotels/<int:id>/house-rules",
+        HouseRulesByHotelApi.as_view(),
+        name="hotel_faq",
     ),
     path(
         "hotels/<int:id>/rooms",
