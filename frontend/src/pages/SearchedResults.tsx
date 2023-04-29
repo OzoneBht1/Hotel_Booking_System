@@ -88,13 +88,12 @@ const SearchedResults = () => {
             {data?.results?.map((listing, index) => (
               <Box key={index}>
                 <Card
-                  onClick={() => nav(`/hotel/${listing.id}`)}
                   sx={{
                     padding: 1,
                   }}
                 >
-                  <CardContent>
-                    <CardActionArea>
+                  <CardActionArea onClick={() => nav(`/hotel/${listing.id}`)}>
+                    <CardContent>
                       <Box display="flex" gap={2} alignItems={"flex-start"}>
                         <Box width="25%" height="200px">
                           <CardActionArea>
@@ -234,12 +233,14 @@ const SearchedResults = () => {
                           </Button>
                         </Box>
                       </Box>
-                    </CardActionArea>
-                  </CardContent>
+                    </CardContent>
+                  </CardActionArea>
                 </Card>
               </Box>
             ))}
-            <Pagination count={10} color="primary" />
+            {data && data.count > 10 && (
+              <Pagination count={data?.count / 10} color="primary" />
+            )}
           </Box>
         </Box>
       </Box>

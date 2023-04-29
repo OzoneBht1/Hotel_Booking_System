@@ -47,9 +47,10 @@ class Hotel(BaseModel):
 
 class Room(BaseModel):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
-    amount = models.IntegerField()
     room_type = models.CharField(max_length=200)
     price = models.IntegerField()
+    quantity = models.IntegerField(default=1)
+    image = models.ImageField(upload_to="room_images/", null=True, blank=True)
 
 
 class HotelImages(BaseModel):
@@ -109,14 +110,21 @@ class Review(BaseModel):
     review = models.TextField()
     score = models.IntegerField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    stay_duration = models.IntegerField(default=1)
 
     def __str__(self):
         return f"{self.hotel.name} "
 
 
-class HouseRule(models.Model):
+class HouseRules(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
-    rule = models.CharField(max_length=200)
+    smoking_allowed = models.BooleanField(default=False)
+    pets_allowed = models.BooleanField(default=False)
+    parties_allowed = models.BooleanField(default=False)
+    self_check_in = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "House Rules"
 
 
 class FAQ(models.Model):
