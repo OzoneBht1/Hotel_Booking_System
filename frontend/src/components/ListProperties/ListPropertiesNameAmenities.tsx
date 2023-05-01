@@ -1,26 +1,14 @@
-import {
-  Alert,
-  Box,
-  Button,
-  Checkbox,
-  Container,
-  CssBaseline,
-  FormControlLabel,
-  FormGroup,
-  Grid,
-  ListItemText,
-  Snackbar,
-  TextField,
-  Typography,
-} from "@mui/material";
-import React, { useRef, useState } from "react";
+import { Box, Button, Container, CssBaseline, TextField } from "@mui/material";
+import React, { useState } from "react";
 import { useAppDispatch } from "../../store/hooks";
 import { styled } from "@mui/material/styles";
-import { amenitiesMap } from "../icons/Icons";
 import { listActions } from "../../store/list-slice";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import defaultHotelImage from "../../assets/default-hotel-image.jpg";
+import { grey } from "@mui/material/colors";
+import { MuiFileInput } from "mui-file-input";
 
 interface IListPropertiesAmenitiesProps {
   onClickNext: () => void;
@@ -40,6 +28,7 @@ const Item = styled(Box)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+const allowedFileTypes = ["png", "jpeg", "jpg"];
 const ListPropertiesNameAmenities = ({
   onClickNext,
 }: IListPropertiesAmenitiesProps) => {
@@ -52,6 +41,26 @@ const ListPropertiesNameAmenities = ({
   } = useForm<{ hotelName: string; hotelAddress: string }>({
     resolver: yupResolver(nameAddressSchema),
   });
+
+  const [image, setImage] = useState<File | null>(null);
+
+  const [error, setError] = React.useState<string | null>(null);
+
+  const handleFileChange = (newValue: File | null) => {
+    if (!newValue) return setImage(null);
+
+    if (
+      allowedFileTypes.includes(newValue?.type.split("/")[1]) &&
+      newValue?.size < 5 * 1024 * 1024
+    ) {
+      setImage(newValue);
+      setError(null);
+    } else {
+      setError(
+        "The image must be a png, jpeg or jpg file with a maximum size of 5MB"
+      );
+    }
+  };
 
   const onSubmit: SubmitHandler<{ hotelName: string; hotelAddress: string }> = (
     data
@@ -66,23 +75,6 @@ const ListPropertiesNameAmenities = ({
     onClickNext();
   };
 
-  const handleAmenitiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
-    console.log(e.target.checked);
-    if (e.target.checked) {
-      dispatch(
-        listActions.addAmenity({
-          amenity: e.target.value,
-        })
-      );
-    } else {
-      dispatch(
-        listActions.removeAmenity({
-          amenity: e.target.value,
-        })
-      );
-    }
-  };
   return (
     <Container component="main">
       <CssBaseline />
@@ -99,11 +91,12 @@ const ListPropertiesNameAmenities = ({
           gap: 5,
         }}
       >
-        <Box display="flex" flexDirection="row" gap={5} width="100%">
+        <Box display="flex" flexDirection="column" gap={5} width="60%">
           <TextField
             required
             id="outlined-required"
             label="Hotel Name"
+            variant="standard"
             fullWidth
             // helperText={errors?.hotelName ? errors!.hotelName!.message : ""}
 
@@ -114,6 +107,7 @@ const ListPropertiesNameAmenities = ({
           <TextField
             required
             id="outlined-required"
+            variant="standard"
             helperText={
               errors?.hotelAddress
                 ? (errors?.hotelAddress?.message as string)
@@ -126,45 +120,33 @@ const ListPropertiesNameAmenities = ({
             {...register("hotelAddress")}
           />
         </Box>
-        <Box display="flex" flexDirection="column" gap={3}>
-          <Typography variant="h4" component="h4">
-            Accessibility Features
-          </Typography>
-          <Typography variant="body2">Select all that apply*</Typography>
-        </Box>
-        <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-          {Object.keys(amenitiesMap).map((amenity) => {
-            const amenityObj = amenitiesMap[amenity];
-            if (amenityObj.category === "Accessibility") {
-              return (
-                <Grid item xs={6} key={amenity}>
-                  <Box display="flex" alignItems="center">
-                    <FormGroup>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            onChange={handleAmenitiesChange}
-                            value={amenity}
-                            // name={amenity}
-                          />
-                        }
-                        label={
-                          <Item>
-                            {amenityObj.icon}
-                            {amenity}
-                          </Item>
-                        }
-                      />
-                    </FormGroup>
-                  </Box>
-                </Grid>
-              );
+
+        <Box width="100%" gap={2} display="flex" flexDirection="column">
+          <Box
+            component="img"
+            sx={{
+              width: "60%",
+              height: "450px",
+              border: `1px solid ${grey[400]}`,
+            }}
+            src={image ? URL.createObjectURL(image!) : defaultHotelImage}
+          ></Box>
+          <MuiFileInput
+            size="small"
+            getInputText={(file) =>
+              file?.name ? file.name : "No file selected"
             }
-          })}
-        </Grid>
+            placeholder="Upload your profile picture"
+            value={image}
+            sx={{ width: "60%" }}
+            onChange={handleFileChange}
+            hideSizeText
+          />
+        </Box>
+
         <Box
           display="flex"
-          width="70%"
+          width="60%"
           alignItems="flex-end"
           justifyContent="flex-end"
         >

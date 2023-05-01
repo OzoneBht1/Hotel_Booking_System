@@ -2,12 +2,8 @@ import {
   Alert,
   Box,
   Button,
-  Checkbox,
   Container,
   CssBaseline,
-  FormControlLabel,
-  FormGroup,
-  Grid,
   List,
   ListItem,
   ListItemText,
@@ -16,13 +12,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useRef, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useRef, useState } from "react";
+import { useAppDispatch } from "../../store/hooks";
 import { styled } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
-import { amenitiesMap } from "../icons/Icons";
-import { listActions } from "../../store/list-slice";
-import { fontWeight } from "@mui/system";
 
 interface IListPropertiesAmenitiesProps {
   onClickNext: () => void;

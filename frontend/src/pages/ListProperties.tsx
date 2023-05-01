@@ -10,6 +10,7 @@ import ListPropertiesRoomInfo from "../components/ListProperties/ListPropertiesR
 import { useMultistepForm } from "../hooks/use-multistep-form";
 import { usePrompt } from "../hooks/use-prompt";
 import { current } from "@reduxjs/toolkit";
+import ListPropertiesAccessibilities from "../components/ListProperties/ListPropertiesAccessibilities";
 // import something which provides prompt if user is about to leave page;
 
 const ListProperties = () => {
@@ -20,6 +21,7 @@ const ListProperties = () => {
     <ListPropertiesLanding onClickNext={nextHandler} />,
     <ListPropertiesEmailForm onClickNext={nextHandler} />,
     <ListPropertiesNameAmenities onClickNext={nextHandler} />,
+    <ListPropertiesAccessibilities onClickNext={nextHandler} />,
     <ListPropertiesServices onClickNext={nextHandler} />,
     <ListPropertiesTransportation onClickNext={nextHandler} />,
     <FaqAndCleanPractices onClickNext={nextHandler} />,
