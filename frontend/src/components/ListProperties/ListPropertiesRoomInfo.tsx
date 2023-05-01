@@ -4,6 +4,7 @@ import {
   Button,
   Container,
   CssBaseline,
+  Menu,
   TextField,
   Typography,
 } from "@mui/material";
@@ -17,6 +18,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import { listActions } from "../../store/list-slice";
 import { useEffect, useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
+import { MuiFileInput } from "mui-file-input";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { grey } from "@mui/material/colors";
+import PreviewIcon from "@mui/icons-material/Preview";
 
 interface IListPropertiesAmenitiesProps {
   onClickNext: () => void;
@@ -32,7 +37,7 @@ const roomSchema = yup.object().shape({
     .typeError("Price must be a number")
     .required("This is required")
     .min(1, "The price of room cannot be lower than 0"),
-  amount: yup
+  quantity: yup
     .number()
     .typeError("Number of rooms must be a number")
     .required("This is required")
@@ -139,6 +144,8 @@ const ListPropertiesRoomInfo = ({
 
 export default ListPropertiesRoomInfo;
 
+const allowedFileTypes = ["png", "jpeg", "jpg"];
+
 export const RoomInfo = ({
   onClickAdd,
   showAddButton,
@@ -157,6 +164,36 @@ export const RoomInfo = ({
   } = useForm<IHotelRoom>({
     resolver: yupResolver(roomSchema),
   });
+  const [value, setValue] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [anchorEl, setAnchorEl] = useState<any>(null);
+
+  const handleClick = (event: any) => {
+    console.log("Mouse hover");
+    if (anchorEl !== event.currentTarget) {
+      setAnchorEl(event.currentTarget);
+    }
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleChange = (newValue: File | null) => {
+    if (!newValue) return setValue(null);
+
+    if (
+      allowedFileTypes.includes(newValue?.type.split("/")[1]) &&
+      newValue?.size < 5 * 1024 * 1024
+    ) {
+      setValue(newValue);
+      setError(null);
+    } else {
+      setError(
+        "The image must be a png, jpeg or jpg file with a maximum size of 5MB"
+      );
+    }
+  };
 
   if (errors) {
     console.log(errors);
@@ -205,18 +242,85 @@ export const RoomInfo = ({
         />
         <TextField
           helperText={
-            !errors?.amount ? "Ex : 5" : (errors!.amount.message as string)
+            !errors?.quantity ? "Ex : 5" : (errors!.quantity.message as string)
           }
           id="demo-helper-text-misaligned"
           label="Number of Rooms"
           type="number"
           disabled={disabledForm}
-          error={errors?.amount ? true : false}
+          error={errors?.quantity ? true : false}
           sx={{
             width: "32%",
           }}
-          {...register("amount")}
+          {...register("quantity")}
         />
+        <MuiFileInput
+          size="medium"
+          aria-owns={anchorEl ? "simple-menu" : undefined}
+          getInputText={(file) => (file?.name ? file.name : "No file selected")}
+          placeholder="Upload your profile picture"
+          value={value}
+          onChange={handleChange}
+          sx={{ marginBottom: 2 }}
+          hideSizeText
+        />
+        {error && (
+          <Typography color="error" sx={{ margin: 1 }}>
+            {error}
+          </Typography>
+        )}
+        {value && (
+          // <Box
+          //   sx={{
+          //     // borderRadius: "50%",
+          //     height: "70px",
+          //     width: "70px",
+          //     display: "flex",
+          //     alignItems: "center",
+          //     border: `1px solid ${grey[600]}`,
+          //   }}
+          //   onMouseOver={handleClick}
+          // >
+          <Box onMouseOver={handleClick}>
+            <PreviewIcon
+              sx={{
+                color: "grey",
+                opacity: 0.6,
+                height: "40px",
+                width: "50px",
+              }}
+            />
+          </Box>
+        )}
+        {value && (
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            onClose={handleClose}
+            MenuListProps={{ onMouseLeave: handleClose }}
+          >
+            <Box paddingX={1}>
+              <Typography variant="h6" marginBottom={1}>
+                Image Preview
+              </Typography>
+              <Box
+                component="img"
+                height="400px"
+                width="400px"
+                src={value ? URL.createObjectURL(value!) : ""}
+              ></Box>
+            </Box>
+          </Menu>
+        )}
         {showRemoveButton ? (
           <Box sx={{ cursor: "pointer" }} padding={0} onClick={removeHandler}>
             <CloseIcon sx={{ color: "purple" }} />

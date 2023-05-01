@@ -20,9 +20,9 @@ const Reviews = ({ reviews, hotel }: IReviews) => {
   return (
     <Box
       display="flex"
-      alignItems="flex-start"
+      // alignItems="flex-start"
       height="fit-content"
-      width="100%"
+      // width="100%"
       padding={3}
       border={1}
     >
