@@ -109,6 +109,7 @@ export interface IQuery {
   searchQuery: string;
   people: number;
   rooms: number;
+  page?: number;
 }
 
 export interface IHotelRoom {
@@ -116,7 +117,7 @@ export interface IHotelRoom {
   room_type: string;
   price: number;
   quantity: number;
-  image: string;
+  image?: string;
   created_at?: string;
   updated_at?: string;
 }

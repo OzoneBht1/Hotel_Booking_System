@@ -61,7 +61,7 @@ const SingleRoom = ({ room, reset, setReset }: ISingleRoom) => {
               height="200px"
               width="300px"
               component="img"
-              src={room.image}
+              src={room.image as string}
             />
           </Typography>
         </Box>

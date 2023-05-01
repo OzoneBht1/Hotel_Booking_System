@@ -1,12 +1,10 @@
 import * as React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
-import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import PaymentForm from "./PaymentForm";
@@ -69,7 +67,7 @@ export default function Checkout({ data }: ICheckout) {
 
   const formReceiveHandler = (data: any) => {
     console.log("hi mom ");
-    console.log(data);
+    console.log(data)
   };
 
   function getStepContent(step: number) {

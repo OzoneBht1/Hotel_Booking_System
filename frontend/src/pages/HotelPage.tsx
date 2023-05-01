@@ -19,13 +19,6 @@ import { ScoreBadge } from "../components/HomePageItem";
 import getHotelRating from "../utils/GetScoreRating";
 import getBookingRating from "../utils/GetScoreRating";
 import { getIcon } from "../components/icons/Icons";
-import Room1 from "../assets/rooms/room1.jpg";
-import Room2 from "../assets/rooms/room2.jpg";
-import Room3 from "../assets/rooms/room3.jpg";
-import Room4 from "../assets/rooms/room4.jpg";
-import Room5 from "../assets/rooms/room5.jpg";
-import Room6 from "../assets/rooms/room6.jpg";
-import Room7 from "../assets/rooms/room7.jpg";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -33,15 +26,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import { useTheme } from "@mui/material/styles";
 import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-import {
-  AccountCircle,
-  Bed,
-  CalendarMonth,
-  Dining,
-  Sanitizer,
-  StorefrontSharp,
-} from "@mui/icons-material";
-import SocialDistanceIcon from "@mui/icons-material/SocialDistance";
+import { Dining, Sanitizer } from "@mui/icons-material";
 import Reviews from "../components/HotelPage/Reviews";
 import Rooms from "../components/HotelPage/Rooms";
 
@@ -58,14 +43,10 @@ const StyledBox = styled(Box)(({ theme }) => ({
   // maxWidth: "1100px",
 }));
 const HotelPage = () => {
-  const [value, setValue] = useState(0);
-  const [open, setOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<any>(null);
   const [rating, setRating] = useState(3);
   const { id } = useParams();
   const theme = useTheme();
   const nav = useNavigate();
-  const [roomQuantity, setRoomQuantity] = useState(0);
 
   const {
     data: hotel,
@@ -103,37 +84,6 @@ const HotelPage = () => {
       nav("/404");
     }
   }, [hotelHasError]);
-
-  const hotelImages = [
-    {
-      id: 1,
-      img: Room1,
-    },
-    {
-      id: 2,
-      img: Room2,
-    },
-    {
-      id: 3,
-      img: Room3,
-    },
-    {
-      id: 4,
-      img: Room4,
-    },
-    {
-      id: 5,
-      img: Room5,
-    },
-    {
-      id: 6,
-      img: Room6,
-    },
-    {
-      id: 7,
-      img: Room7,
-    },
-  ];
   if (hotelIsLoading || roomsIsLoading || reviewsIsLoading) {
     return <Loading />;
   }
@@ -411,8 +361,8 @@ const HotelPage = () => {
                   <Rating name="disabled" value={rating} disabled max={10} />
                 </ListItem>
               </List>
+              <Reviews reviews={reviews} hotel={hotel} />
             </Box>
-            <Reviews reviews={reviews} hotel={hotel} />
           </Box>
         </Box>
       </Box>

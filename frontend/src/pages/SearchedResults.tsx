@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
@@ -37,15 +37,25 @@ const SearchedResults = () => {
   const rooms =
     params && params.get("rooms") ? parseInt(params.get("rooms") as string) : 0;
 
+  const [page, setPage] = useState(1);
   const { data, isLoading, isError } = useGetSearchedResultsQuery({
     searchQuery,
     checkInDate,
     checkOutDate,
     people,
     rooms,
+    page,
   } as IQuery);
 
   console.log(data);
+
+  const itemsPerPage = 10;
+  const totalItems = data?.count || 0;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
 
   const nav = useNavigate();
 
@@ -100,6 +110,7 @@ const SearchedResults = () => {
                             <CardMedia
                               component="img"
                               height="100%"
+                              loading="lazy"
                               image={
                                 listing.hotel_images &&
                                 listing.hotel_images[0].image &&
@@ -239,7 +250,12 @@ const SearchedResults = () => {
               </Box>
             ))}
             {data && data.count > 10 && (
-              <Pagination count={data?.count / 10} color="primary" />
+              <Pagination
+                onChange={handleChange}
+                count={totalPages}
+                page={page}
+                color="primary"
+              />
             )}
           </Box>
         </Box>
