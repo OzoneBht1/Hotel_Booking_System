@@ -4,6 +4,7 @@ import {
   Button,
   Container,
   CssBaseline,
+  Dialog,
   Menu,
   TextField,
   Typography,
@@ -16,12 +17,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { IHotelRoom } from "../types/types";
 import CloseIcon from "@mui/icons-material/Close";
 import { listActions } from "../../store/list-slice";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import { MuiFileInput } from "mui-file-input";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import { grey } from "@mui/material/colors";
 import PreviewIcon from "@mui/icons-material/Preview";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 interface IListPropertiesAmenitiesProps {
   onClickNext: () => void;
@@ -30,7 +33,7 @@ interface IListPropertiesAmenitiesProps {
 const roomSchema = yup.object().shape({
   room_type: yup
     .string()
-    .matches(/room/i, "Please include the word 'room' in the name")
+    .matches(/room/i, "Include the term 'room'")
     .required("Room type is required"),
   price: yup
     .number()
@@ -44,12 +47,23 @@ const roomSchema = yup.object().shape({
     .min(1, "There should be atleast one room of the provided type"),
 });
 
+let isInitial = true;
 const ListPropertiesRoomInfo = ({
   onClickNext,
 }: IListPropertiesAmenitiesProps) => {
   const dispatch = useAppDispatch();
-
+  const [files, setFiles] = useState<File[]>([]);
   const rooms = useAppSelector((state) => state?.list?.rooms);
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    isInitial = false;
+    setOpen(false);
+  };
 
   const [showInitialForm, setShowInitialForm] = useState(true);
 
@@ -60,19 +74,28 @@ const ListPropertiesRoomInfo = ({
       setShowSnackbar(true);
       return;
     }
+    if (isInitial) {
+      handleClickOpen();
+      return;
+    }
     onClickNext();
   };
 
-  const addHandler = (roomData: IHotelRoom) => {
+  const addHandler = (
+    roomData: Omit<IHotelRoom, "image"> & { image?: File }
+  ) => {
+    const image = roomData.image;
+    if (image) {
+      setFiles((prev) => [...prev, image]);
+    }
+
+    delete roomData.image;
+
     console.log(roomData);
-    dispatch(listActions.addRoom({ room: roomData }));
+
+    dispatch(listActions.addRoom({ room: roomData as IHotelRoom }));
   };
-  //
-  // useEffect(() => {
-  //   if (rooms && rooms.length !== 0) {
-  //     setShowInitialForm(false);
-  //   }
-  // }, [rooms, showInitialForm]);
+
   return (
     <Container component="main">
       <CssBaseline />
@@ -110,6 +133,7 @@ const ListPropertiesRoomInfo = ({
             onClickAdd={addHandler}
             showRemoveButton={rooms.length === 1 ? true : false}
             disabledForm={rooms.length - 1 !== -1 ? true : false}
+            setFiles={setFiles}
           />
         )}
 
@@ -120,6 +144,7 @@ const ListPropertiesRoomInfo = ({
             showRemoveButton={rooms.length - 2 === index ? true : false}
             disabledForm={rooms.length - 1 !== index ? true : false}
             onClickAdd={addHandler}
+            setFiles={setFiles}
           />
         ))}
       </Box>
@@ -137,6 +162,30 @@ const ListPropertiesRoomInfo = ({
         >
           Next
         </Button>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Use Google's location service?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              You are about to create a new listing. Please review all of the
+              information provided before proceeding further.
+            </DialogContentText>
+            <DialogContentText>
+              Click the next button again to proceed
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} autoFocus>
+              Okay
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </Container>
   );
@@ -151,11 +200,13 @@ export const RoomInfo = ({
   showAddButton,
   showRemoveButton,
   disabledForm,
+  setFiles,
 }: {
-  onClickAdd: (data: IHotelRoom) => void;
+  onClickAdd: (data: any) => void;
   showAddButton?: boolean;
   showRemoveButton?: boolean;
   disabledForm?: boolean;
+  setFiles: React.Dispatch<React.SetStateAction<File[]>>;
 }) => {
   const {
     register,
@@ -181,6 +232,7 @@ export const RoomInfo = ({
 
   const handleChange = (newValue: File | null) => {
     if (!newValue) return setValue(null);
+    setError(null);
 
     if (
       allowedFileTypes.includes(newValue?.type.split("/")[1]) &&
@@ -201,11 +253,16 @@ export const RoomInfo = ({
   const dispatch = useAppDispatch();
   const onSubmit = (data: IHotelRoom) => {
     console.log("called");
-    onClickAdd(data);
+    if (!value) {
+      setError("Room image is required");
+      return;
+    }
+    onClickAdd({ ...data, image: value });
   };
 
   const removeHandler = () => {
     dispatch(listActions.removeRoom());
+    setFiles((prev) => prev.slice(0, prev.length - 1));
   };
 
   return (
@@ -260,27 +317,14 @@ export const RoomInfo = ({
           getInputText={(file) => (file?.name ? file.name : "No file selected")}
           placeholder="Upload your profile picture"
           value={value}
+          disabled={disabledForm}
           onChange={handleChange}
-          sx={{ marginBottom: 2 }}
+          error={!!error && true}
+          helperText={!!error ? error : "The room image"}
           hideSizeText
         />
-        {error && (
-          <Typography color="error" sx={{ margin: 1 }}>
-            {error}
-          </Typography>
-        )}
+
         {value && (
-          // <Box
-          //   sx={{
-          //     // borderRadius: "50%",
-          //     height: "70px",
-          //     width: "70px",
-          //     display: "flex",
-          //     alignItems: "center",
-          //     border: `1px solid ${grey[600]}`,
-          //   }}
-          //   onMouseOver={handleClick}
-          // >
           <Box onMouseOver={handleClick}>
             <PreviewIcon
               sx={{
@@ -321,6 +365,7 @@ export const RoomInfo = ({
             </Box>
           </Menu>
         )}
+        {!value && <Box visibility="hidden" width="80px"></Box>}
         {showRemoveButton ? (
           <Box sx={{ cursor: "pointer" }} padding={0} onClick={removeHandler}>
             <CloseIcon sx={{ color: "purple" }} />

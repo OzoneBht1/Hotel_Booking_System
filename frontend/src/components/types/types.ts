@@ -117,7 +117,7 @@ export interface IHotelRoom {
   room_type: string;
   price: number;
   quantity: number;
-  image: string;
+  image?: string;
   created_at?: string;
   updated_at?: string;
 }
