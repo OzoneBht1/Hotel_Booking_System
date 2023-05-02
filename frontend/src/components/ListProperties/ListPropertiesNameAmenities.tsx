@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { styled } from "@mui/material/styles";
 import { listActions } from "../../store/list-slice";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";

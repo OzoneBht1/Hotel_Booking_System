@@ -1,5 +1,4 @@
 import {
-  Alert,
   Box,
   Button,
   Checkbox,
@@ -8,11 +7,9 @@ import {
   FormControlLabel,
   FormGroup,
   Grid,
-  Snackbar,
-  TextField,
   Typography,
 } from "@mui/material";
-import React, { useRef, useState } from "react";
+import React from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { styled } from "@mui/material/styles";
 import { amenitiesMap } from "../icons/Icons";

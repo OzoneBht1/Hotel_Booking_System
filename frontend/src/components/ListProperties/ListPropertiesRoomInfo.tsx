@@ -50,6 +50,7 @@ const roomSchema = yup.object().shape({
 });
 
 let isInitial = true;
+let showInitialForm = true;
 const ListPropertiesRoomInfo = ({
   onClickNext,
   onClickPrev,
@@ -68,8 +69,6 @@ const ListPropertiesRoomInfo = ({
     isInitial = false;
     setOpen(false);
   };
-  const [showInitialForm, setShowInitialForm] = useState(true);
-
   const [showSnackbar, setShowSnackbar] = useState(false);
 
   const nextClickHandler = () => {
@@ -234,7 +233,6 @@ export const RoomInfo = ({
   } = useForm<IHotelRoom>({
     resolver: yupResolver(roomSchema),
   });
-  console.log(defaultImage);
   const [value, setValue] = useState<File | null>(
     defaultImage ? defaultImage : null
   );
@@ -242,7 +240,6 @@ export const RoomInfo = ({
   const [anchorEl, setAnchorEl] = useState<any>(null);
 
   const handleClick = (event: any) => {
-    console.log("Mouse hover");
     if (anchorEl !== event.currentTarget) {
       setAnchorEl(event.currentTarget);
     }
@@ -269,12 +266,8 @@ export const RoomInfo = ({
     }
   };
 
-  if (errors) {
-    console.log(errors);
-  }
   const dispatch = useAppDispatch();
   const onSubmit = (data: IHotelRoom) => {
-    console.log("called");
     if (!value) {
       setError("Room image is required");
       return;

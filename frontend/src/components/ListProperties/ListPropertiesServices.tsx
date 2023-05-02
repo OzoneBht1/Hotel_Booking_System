@@ -1,5 +1,4 @@
 import {
-  Alert,
   Box,
   Button,
   Checkbox,
@@ -8,11 +7,9 @@ import {
   FormControlLabel,
   FormGroup,
   Grid,
-  Snackbar,
-  TextField,
   Typography,
 } from "@mui/material";
-import React, { useRef, useState } from "react";
+import React from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { styled } from "@mui/material/styles";
 import { amenitiesMap } from "../icons/Icons";
@@ -38,10 +35,6 @@ const ListPropertiesServices = ({
 }: IListPropertiesAmenitiesProps) => {
   const dispatch = useAppDispatch();
   const { list } = useAppSelector((state) => state);
-  const hotelNameRef = useRef<HTMLInputElement>(null);
-  const amenities = useAppSelector((state) => state.list.amenities);
-  const [showSnackbar, setShowSnackbar] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const nextClickHandler = () => {
     onClickNext();
@@ -66,24 +59,6 @@ const ListPropertiesServices = ({
   };
   return (
     <Container component="main">
-      {error && showSnackbar && (
-        <Snackbar
-          open={showSnackbar}
-          autoHideDuration={6000}
-          onClose={() => setShowSnackbar(false)}
-        >
-          <Alert
-            elevation={6}
-            variant="filled"
-            onClose={() => setShowSnackbar(false)}
-            severity="error"
-            sx={{ width: "100%" }}
-          >
-            {error}
-          </Alert>
-        </Snackbar>
-      )}
-
       <CssBaseline />
       <Box
         sx={{

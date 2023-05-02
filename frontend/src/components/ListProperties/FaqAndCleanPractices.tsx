@@ -6,7 +6,6 @@ import {
   CssBaseline,
   List,
   ListItem,
-  ListItemText,
   Snackbar,
   Switch,
   TextField,
