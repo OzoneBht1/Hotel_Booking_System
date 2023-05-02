@@ -17,7 +17,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { IHotelRoom } from "../types/types";
 import CloseIcon from "@mui/icons-material/Close";
 import { listActions } from "../../store/list-slice";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import { MuiFileInput } from "mui-file-input";
 import PreviewIcon from "@mui/icons-material/Preview";
@@ -56,9 +56,8 @@ const ListPropertiesRoomInfo = ({
   defaultImgs,
 }: IListPropertiesAmenitiesProps) => {
   const dispatch = useAppDispatch();
-  console.log(defaultImgs);
   const [files, setFiles] = useState<File[]>(defaultImgs ? defaultImgs : []);
-  const rooms = useAppSelector((state) => state?.list?.rooms);
+  const { rooms } = useAppSelector((state) => state?.list);
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -69,9 +68,7 @@ const ListPropertiesRoomInfo = ({
     isInitial = false;
     setOpen(false);
   };
-  const [showInitialForm, setShowInitialForm] = useState(
-    rooms.length === 0 ? true : false
-  );
+  const [showInitialForm, setShowInitialForm] = useState(true);
 
   const [showSnackbar, setShowSnackbar] = useState(false);
 
@@ -91,16 +88,11 @@ const ListPropertiesRoomInfo = ({
   const addHandler = (
     roomData: Omit<IHotelRoom, "image"> & { image?: File }
   ) => {
-    setShowInitialForm(false);
     const image = roomData.image;
     if (image) {
       setFiles((prev) => [...prev, image]);
     }
-
     delete roomData.image;
-
-    console.log(roomData);
-
     dispatch(listActions.addRoom({ room: roomData as IHotelRoom }));
   };
 
@@ -140,19 +132,25 @@ const ListPropertiesRoomInfo = ({
           <RoomInfo
             showAddButton={rooms.length === 0 ? true : false}
             onClickAdd={addHandler}
+            defaultValues={rooms[0]}
+            defaultImage={defaultImgs ? defaultImgs[0] : undefined}
             showRemoveButton={rooms.length === 1 ? true : false}
             disabledForm={rooms.length - 1 !== -1 ? true : false}
             setFiles={setFiles}
           />
         )}
         {rooms?.length > 0 &&
-          rooms?.map((_, index) => (
+          rooms?.map((room, index) => (
             <RoomInfo
               key={index}
               showAddButton={rooms.length - 1 === index ? true : false}
               showRemoveButton={rooms.length - 2 === index ? true : false}
-              defaultValues={rooms[index]}
-              defaultImage={defaultImgs ? defaultImgs[index] : undefined}
+              defaultValues={rooms.length - 1 !== index ? room : undefined}
+              defaultImage={
+                defaultImgs && defaultImgs.length - 1 !== index
+                  ? defaultImgs[index]
+                  : undefined
+              }
               disabledForm={rooms.length - 1 !== index ? true : false}
               onClickAdd={addHandler}
               setFiles={setFiles}
@@ -301,7 +299,7 @@ export const RoomInfo = ({
           id="demo-helper-text-misaligned"
           label="Room Type"
           disabled={disabledForm}
-          defaultValue={defaultValues?.room_type}
+          defaultValue={defaultValues?.room_type || ""}
           error={errors.room_type ? true : false}
           sx={{
             width: "32%",
@@ -315,7 +313,7 @@ export const RoomInfo = ({
           id="demo-helper-text-misaligned"
           label="Price"
           disabled={disabledForm}
-          defaultValue={defaultValues?.price}
+          defaultValue={defaultValues?.price || ""}
           type="number"
           error={errors?.price ? true : false}
           sx={{
@@ -331,7 +329,7 @@ export const RoomInfo = ({
           label="Number of Rooms"
           type="number"
           disabled={disabledForm}
-          defaultValue={defaultValues?.quantity}
+          defaultValue={defaultValues?.quantity || ""}
           error={errors?.quantity ? true : false}
           sx={{
             width: "32%",
