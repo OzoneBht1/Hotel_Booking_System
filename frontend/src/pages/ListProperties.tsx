@@ -11,21 +11,68 @@ import { useMultistepForm } from "../hooks/use-multistep-form";
 import { usePrompt } from "../hooks/use-prompt";
 import { current } from "@reduxjs/toolkit";
 import ListPropertiesAccessibilities from "../components/ListProperties/ListPropertiesAccessibilities";
+import { useAppSelector } from "../store/hooks";
 // import something which provides prompt if user is about to leave page;
 
 const ListProperties = () => {
+  const [hotelImage, setHotelImage] = useState<File | null>(null);
+  const [roomImages, setRoomImages] = useState<File[] | null>(null);
+  const rooms = useAppSelector((state) => state.list.rooms);
+  const { list } = useAppSelector((state) => state);
+
   const nextHandler = () => {
     next();
   };
-  const { steps, currentStepIndex, next } = useMultistepForm([
+
+  const prevHandler = () => {
+    prev();
+  };
+
+  const imageReceieveHandler = (image: File) => {
+    console.log("GOT IMAGE");
+    setHotelImage(image);
+    next();
+  };
+
+  const listingCreateHandler = (roomImages: File[] | null) => {
+    setRoomImages(roomImages);
+    console.log(list);
+  };
+
+  const roomPrevHandler = (roomImages: File[] | null) => {
+    setRoomImages(roomImages);
+    prev();
+  };
+
+  const { steps, currentStepIndex, next, prev } = useMultistepForm([
     <ListPropertiesLanding onClickNext={nextHandler} />,
     <ListPropertiesEmailForm onClickNext={nextHandler} />,
-    <ListPropertiesNameAmenities onClickNext={nextHandler} />,
-    <ListPropertiesAccessibilities onClickNext={nextHandler} />,
-    <ListPropertiesServices onClickNext={nextHandler} />,
-    <ListPropertiesTransportation onClickNext={nextHandler} />,
-    <FaqAndCleanPractices onClickNext={nextHandler} />,
-    <ListPropertiesRoomInfo onClickNext={nextHandler} />,
+    <ListPropertiesNameAmenities
+      onClickNext={imageReceieveHandler}
+      onClickPrev={prevHandler}
+      defaultImg={hotelImage}
+    />,
+    <ListPropertiesAccessibilities
+      onClickNext={nextHandler}
+      onClickPrev={prevHandler}
+    />,
+    <ListPropertiesServices
+      onClickNext={nextHandler}
+      onClickPrev={prevHandler}
+    />,
+    <ListPropertiesTransportation
+      onClickNext={nextHandler}
+      onClickPrev={prevHandler}
+    />,
+    <FaqAndCleanPractices
+      onClickNext={nextHandler}
+      onClickPrev={prevHandler}
+    />,
+    <ListPropertiesRoomInfo
+      onClickNext={listingCreateHandler}
+      onClickPrev={roomPrevHandler}
+      defaultImgs={roomImages}
+    />,
   ]);
 
   usePrompt(

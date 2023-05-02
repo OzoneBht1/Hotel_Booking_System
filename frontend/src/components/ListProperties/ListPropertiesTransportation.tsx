@@ -20,6 +20,7 @@ import { listActions } from "../../store/list-slice";
 
 interface IListPropertiesAmenitiesProps {
   onClickNext: () => void;
+  onClickPrev: () => void;
 }
 
 const Item = styled(Box)(({ theme }) => ({
@@ -33,8 +34,10 @@ const Item = styled(Box)(({ theme }) => ({
 
 const ListPropertiesTransportation = ({
   onClickNext,
+  onClickPrev,
 }: IListPropertiesAmenitiesProps) => {
   const dispatch = useAppDispatch();
+  const { list } = useAppSelector((state) => state);
 
   const nextClickHandler = () => {
     onClickNext();
@@ -89,7 +92,8 @@ const ListPropertiesTransportation = ({
                           <Checkbox
                             onChange={handleAmenitiesChange}
                             value={amenity}
-                            // name={amenity}
+                            checked={list.amenities.includes(amenity) || false}
+                            name={amenity}
                           />
                         }
                         label={
@@ -113,6 +117,14 @@ const ListPropertiesTransportation = ({
         alignItems="flex-end"
         justifyContent="flex-end"
       >
+        <Button
+          sx={{ width: "20%", marginRight: "auto" }}
+          color="secondary"
+          variant="outlined"
+          onClick={() => onClickPrev()}
+        >
+          Previous
+        </Button>
         <Button
           sx={{ width: "20%", mt: 2 }}
           variant="contained"

@@ -1,6 +1,14 @@
-import { Box, Button, Container, CssBaseline, TextField } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  CssBaseline,
+  Snackbar,
+  TextField,
+} from "@mui/material";
 import React, { useState } from "react";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { styled } from "@mui/material/styles";
 import { listActions } from "../../store/list-slice";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -11,7 +19,9 @@ import { grey } from "@mui/material/colors";
 import { MuiFileInput } from "mui-file-input";
 
 interface IListPropertiesAmenitiesProps {
-  onClickNext: () => void;
+  onClickNext: (image: File) => void;
+  onClickPrev: () => void;
+  defaultImg: File | null;
 }
 
 const nameAddressSchema = yup.object().shape({
@@ -19,20 +29,15 @@ const nameAddressSchema = yup.object().shape({
   hotelAddress: yup.string().required("This is required"),
 });
 
-const Item = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  display: "flex",
-  alignItems: "center",
-  padding: theme.spacing(1),
-  gap: 1,
-  color: theme.palette.text.secondary,
-}));
-
 const allowedFileTypes = ["png", "jpeg", "jpg"];
 const ListPropertiesNameAmenities = ({
   onClickNext,
+  onClickPrev,
+  defaultImg,
 }: IListPropertiesAmenitiesProps) => {
+  console.log(defaultImg);
   const dispatch = useAppDispatch();
+  const { list } = useAppSelector((state) => state);
 
   const {
     register,
@@ -42,7 +47,9 @@ const ListPropertiesNameAmenities = ({
     resolver: yupResolver(nameAddressSchema),
   });
 
-  const [image, setImage] = useState<File | null>(null);
+  const [image, setImage] = useState<File | null>(
+    defaultImg ? defaultImg : null
+  );
 
   const [error, setError] = React.useState<string | null>(null);
 
@@ -66,17 +73,40 @@ const ListPropertiesNameAmenities = ({
     data
   ) => {
     console.log(data);
+
+    if (!image) {
+      setError("An image is required");
+      return;
+    }
+
     dispatch(
       listActions.setHotelNameAndAddress({
         hotel_name: data.hotelName,
         hotel_address: data.hotelAddress,
       })
     );
-    onClickNext();
+    onClickNext(image);
   };
 
   return (
     <Container component="main">
+      {!!error && (
+        <Snackbar
+          open={!!error}
+          autoHideDuration={6000}
+          onClose={() => setError(null)}
+        >
+          <Alert
+            onClose={() => setError(null)}
+            severity="error"
+            elevation={6}
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            {error}
+          </Alert>
+        </Snackbar>
+      )}
       <CssBaseline />
       <Box
         component="form"
@@ -98,6 +128,7 @@ const ListPropertiesNameAmenities = ({
             label="Hotel Name"
             variant="standard"
             fullWidth
+            value={list.hotel_name}
             // helperText={errors?.hotelName ? errors!.hotelName!.message : ""}
 
             error={errors?.hotelName ? true : false}
@@ -108,6 +139,7 @@ const ListPropertiesNameAmenities = ({
             required
             id="outlined-required"
             variant="standard"
+            value={list.hotel_address}
             helperText={
               errors?.hotelAddress
                 ? (errors?.hotelAddress?.message as string)
@@ -150,6 +182,14 @@ const ListPropertiesNameAmenities = ({
           alignItems="flex-end"
           justifyContent="flex-end"
         >
+          <Button
+            sx={{ width: "20%", marginRight: "auto" }}
+            color="secondary"
+            variant="outlined"
+            onClick={() => onClickPrev()}
+          >
+            Previous
+          </Button>
           <Button sx={{ width: "20%" }} variant="contained" type="submit">
             Next
           </Button>

@@ -18,6 +18,7 @@ import { styled } from "@mui/material/styles";
 
 interface IListPropertiesAmenitiesProps {
   onClickNext: () => void;
+  onClickPrev: () => void;
 }
 
 const Item = styled(Box)(({ theme }) => ({
@@ -31,6 +32,7 @@ const Item = styled(Box)(({ theme }) => ({
 
 const FaqAndCleanPractices = ({
   onClickNext,
+  onClickPrev,
 }: IListPropertiesAmenitiesProps) => {
   const dispatch = useAppDispatch();
   const [showSnackbar, setShowSnackbar] = useState(false);
@@ -205,6 +207,14 @@ const FaqAndCleanPractices = ({
         alignItems="flex-end"
         justifyContent="flex-end"
       >
+        <Button
+          sx={{ width: "20%", marginRight: "auto" }}
+          color="secondary"
+          variant="outlined"
+          onClick={() => onClickPrev()}
+        >
+          Previous
+        </Button>
         <Button
           sx={{ width: "20%", mt: 2 }}
           variant="contained"

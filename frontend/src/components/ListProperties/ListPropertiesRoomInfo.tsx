@@ -17,7 +17,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { IHotelRoom } from "../types/types";
 import CloseIcon from "@mui/icons-material/Close";
 import { listActions } from "../../store/list-slice";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import { MuiFileInput } from "mui-file-input";
 import PreviewIcon from "@mui/icons-material/Preview";
@@ -27,7 +27,9 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 interface IListPropertiesAmenitiesProps {
-  onClickNext: () => void;
+  onClickNext: (images: File[]) => void;
+  onClickPrev: (images: File[]) => void;
+  defaultImgs: File[] | null;
 }
 
 const roomSchema = yup.object().shape({
@@ -50,9 +52,12 @@ const roomSchema = yup.object().shape({
 let isInitial = true;
 const ListPropertiesRoomInfo = ({
   onClickNext,
+  onClickPrev,
+  defaultImgs,
 }: IListPropertiesAmenitiesProps) => {
   const dispatch = useAppDispatch();
-  const [files, setFiles] = useState<File[]>([]);
+  console.log(defaultImgs);
+  const [files, setFiles] = useState<File[]>(defaultImgs ? defaultImgs : []);
   const rooms = useAppSelector((state) => state?.list?.rooms);
   const [open, setOpen] = useState(false);
 
@@ -64,8 +69,9 @@ const ListPropertiesRoomInfo = ({
     isInitial = false;
     setOpen(false);
   };
-
-  const [showInitialForm, setShowInitialForm] = useState(true);
+  const [showInitialForm, setShowInitialForm] = useState(
+    rooms.length === 0 ? true : false
+  );
 
   const [showSnackbar, setShowSnackbar] = useState(false);
 
@@ -78,12 +84,14 @@ const ListPropertiesRoomInfo = ({
       handleClickOpen();
       return;
     }
-    onClickNext();
+
+    onClickNext(files);
   };
 
   const addHandler = (
     roomData: Omit<IHotelRoom, "image"> & { image?: File }
   ) => {
+    setShowInitialForm(false);
     const image = roomData.image;
     if (image) {
       setFiles((prev) => [...prev, image]);
@@ -127,6 +135,7 @@ const ListPropertiesRoomInfo = ({
         <Typography variant="h4" component="h4">
           Rooms
         </Typography>
+
         {showInitialForm && (
           <RoomInfo
             showAddButton={rooms.length === 0 ? true : false}
@@ -136,17 +145,19 @@ const ListPropertiesRoomInfo = ({
             setFiles={setFiles}
           />
         )}
-
-        {rooms?.map((_, index) => (
-          <RoomInfo
-            key={index}
-            showAddButton={rooms.length - 1 === index ? true : false}
-            showRemoveButton={rooms.length - 2 === index ? true : false}
-            disabledForm={rooms.length - 1 !== index ? true : false}
-            onClickAdd={addHandler}
-            setFiles={setFiles}
-          />
-        ))}
+        {rooms?.length > 0 &&
+          rooms?.map((_, index) => (
+            <RoomInfo
+              key={index}
+              showAddButton={rooms.length - 1 === index ? true : false}
+              showRemoveButton={rooms.length - 2 === index ? true : false}
+              defaultValues={rooms[index]}
+              defaultImage={defaultImgs ? defaultImgs[index] : undefined}
+              disabledForm={rooms.length - 1 !== index ? true : false}
+              onClickAdd={addHandler}
+              setFiles={setFiles}
+            />
+          ))}
       </Box>
       <Box
         display="flex"
@@ -154,6 +165,14 @@ const ListPropertiesRoomInfo = ({
         alignItems="flex-end"
         justifyContent="flex-end"
       >
+        <Button
+          sx={{ width: "20%", marginRight: "auto" }}
+          color="secondary"
+          variant="outlined"
+          onClick={() => onClickPrev(files)}
+        >
+          Previous
+        </Button>
         <Button
           sx={{ width: "20%", mt: 2 }}
           variant="contained"
@@ -168,9 +187,7 @@ const ListPropertiesRoomInfo = ({
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">
-            {"Use Google's location service?"}
-          </DialogTitle>
+          <DialogTitle id="alert-dialog-title">Confirmation</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
               You are about to create a new listing. Please review all of the
@@ -200,11 +217,15 @@ export const RoomInfo = ({
   showAddButton,
   showRemoveButton,
   disabledForm,
+  defaultValues,
+  defaultImage,
   setFiles,
 }: {
   onClickAdd: (data: any) => void;
   showAddButton?: boolean;
   showRemoveButton?: boolean;
+  defaultValues?: IHotelRoom;
+  defaultImage?: File;
   disabledForm?: boolean;
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;
 }) => {
@@ -215,7 +236,10 @@ export const RoomInfo = ({
   } = useForm<IHotelRoom>({
     resolver: yupResolver(roomSchema),
   });
-  const [value, setValue] = useState<File | null>(null);
+  console.log(defaultImage);
+  const [value, setValue] = useState<File | null>(
+    defaultImage ? defaultImage : null
+  );
   const [error, setError] = useState<string | null>(null);
   const [anchorEl, setAnchorEl] = useState<any>(null);
 
@@ -277,6 +301,7 @@ export const RoomInfo = ({
           id="demo-helper-text-misaligned"
           label="Room Type"
           disabled={disabledForm}
+          defaultValue={defaultValues?.room_type}
           error={errors.room_type ? true : false}
           sx={{
             width: "32%",
@@ -290,6 +315,7 @@ export const RoomInfo = ({
           id="demo-helper-text-misaligned"
           label="Price"
           disabled={disabledForm}
+          defaultValue={defaultValues?.price}
           type="number"
           error={errors?.price ? true : false}
           sx={{
@@ -305,6 +331,7 @@ export const RoomInfo = ({
           label="Number of Rooms"
           type="number"
           disabled={disabledForm}
+          defaultValue={defaultValues?.quantity}
           error={errors?.quantity ? true : false}
           sx={{
             width: "32%",

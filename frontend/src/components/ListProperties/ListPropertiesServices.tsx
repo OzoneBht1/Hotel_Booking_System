@@ -20,6 +20,7 @@ import { listActions } from "../../store/list-slice";
 
 interface IListPropertiesAmenitiesProps {
   onClickNext: () => void;
+  onClickPrev: () => void;
 }
 
 const Item = styled(Box)(({ theme }) => ({
@@ -33,8 +34,10 @@ const Item = styled(Box)(({ theme }) => ({
 
 const ListPropertiesServices = ({
   onClickNext,
+  onClickPrev,
 }: IListPropertiesAmenitiesProps) => {
   const dispatch = useAppDispatch();
+  const { list } = useAppSelector((state) => state);
   const hotelNameRef = useRef<HTMLInputElement>(null);
   const amenities = useAppSelector((state) => state.list.amenities);
   const [showSnackbar, setShowSnackbar] = useState(false);
@@ -111,7 +114,8 @@ const ListPropertiesServices = ({
                           <Checkbox
                             onChange={handleAmenitiesChange}
                             value={amenity}
-                            // name={amenity}
+                            checked={list.amenities.includes(amenity) || false}
+                            name={amenity}
                           />
                         }
                         label={
@@ -135,6 +139,14 @@ const ListPropertiesServices = ({
         alignItems="flex-end"
         justifyContent="flex-end"
       >
+        <Button
+          sx={{ width: "20%", marginRight: "auto" }}
+          color="secondary"
+          variant="outlined"
+          onClick={() => onClickPrev()}
+        >
+          Previous
+        </Button>
         <Button
           sx={{ width: "20%", mt: 2 }}
           variant="contained"
