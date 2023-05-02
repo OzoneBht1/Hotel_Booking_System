@@ -176,7 +176,7 @@ const ListPropertiesRoomInfo = ({
           onClick={nextClickHandler}
           type="button"
         >
-          Next
+          Create Listing
         </Button>
         <Dialog
           open={open}

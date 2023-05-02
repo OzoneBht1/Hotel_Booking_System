@@ -1,5 +1,5 @@
 import { Box } from "@mui/system";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import FaqAndCleanPractices from "../components/ListProperties/FaqAndCleanPractices";
 import ListPropertiesEmailForm from "../components/ListProperties/ListPropertiesEmailForm";
 import ListPropertiesLanding from "../components/ListProperties/ListPropertiesLanding";
@@ -9,7 +9,6 @@ import ListPropertiesTransportation from "../components/ListProperties/ListPrope
 import ListPropertiesRoomInfo from "../components/ListProperties/ListPropertiesRoomInfo";
 import { useMultistepForm } from "../hooks/use-multistep-form";
 import { usePrompt } from "../hooks/use-prompt";
-import { current } from "@reduxjs/toolkit";
 import ListPropertiesAccessibilities from "../components/ListProperties/ListPropertiesAccessibilities";
 import { useAppSelector } from "../store/hooks";
 // import something which provides prompt if user is about to leave page;
@@ -19,6 +18,7 @@ const ListProperties = () => {
   const [roomImages, setRoomImages] = useState<File[] | null>(null);
   const rooms = useAppSelector((state) => state.list.rooms);
   const { list } = useAppSelector((state) => state);
+  console.log(list);
 
   const nextHandler = () => {
     next();

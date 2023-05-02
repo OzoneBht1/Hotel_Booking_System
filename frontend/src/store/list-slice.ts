@@ -1,5 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IHotelRoom, IListProperty } from "../components/types/types";
+import {
+  IFAQCreate,
+  IHotelRoom,
+  IHouseRules,
+  IListProperty,
+} from "../components/types/types";
 
 const initialState: IListProperty = {
   email: null,
@@ -7,6 +12,13 @@ const initialState: IListProperty = {
   hotel_address: null,
   amenities: [],
   rooms: [],
+  house_rules: {
+    smoking_allowed: false,
+    pets_allowed: false,
+    parties_allowed: false,
+    self_check_in: false,
+  },
+  faqs: { faqs: [] },
 };
 
 const listingSlice = createSlice({
@@ -43,6 +55,13 @@ const listingSlice = createSlice({
     },
     removeRoom(state) {
       state.rooms.pop();
+    },
+    setHouseRules(state, action: PayloadAction<{ house_rules: IHouseRules }>) {
+      state.house_rules = action.payload.house_rules;
+    },
+    setFaq(state, action: PayloadAction<IFAQCreate>) {
+      console.log(action.payload);
+      state.faqs.faqs = action.payload.faqs;
     },
   },
 });
