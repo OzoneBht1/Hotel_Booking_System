@@ -151,17 +151,30 @@ export type ITempBookingGet = Omit<
   "rooms" | "hotel_name"
 >;
 
+export interface IHouseRules {
+  smoking_allowed: boolean;
+  pets_allowed: boolean;
+  parties_allowed: boolean;
+  self_check_in: boolean;
+}
+
 export interface IListProperty {
   email: string | null;
   hotel_name: string | null;
   hotel_address: string | null;
   amenities: string[];
   rooms: IHotelRoom[];
+  house_rules: IHouseRules;
+  faqs: IFAQCreate;
 }
 
 export interface IFAQ {
-  id: string;
+  id?: string;
   question: string;
   answer: string;
-  hotel: string;
+  hotel?: string;
+}
+
+export interface IFAQCreate {
+  faqs: { question: string; answer: string; id: string }[];
 }

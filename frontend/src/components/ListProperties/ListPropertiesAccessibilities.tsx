@@ -15,7 +15,7 @@ import { styled } from "@mui/material/styles";
 import { amenitiesMap } from "../icons/Icons";
 import { listActions } from "../../store/list-slice";
 
-interface IListPropertiesAmenitiesProps {
+interface IListPropertiesAccessbilitesProps {
   onClickNext: () => void;
   onClickPrev: () => void;
 }
@@ -29,10 +29,10 @@ const Item = styled(Box)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-const ListPropertiesServices = ({
+const ListPropertiesAccessibilities = ({
   onClickNext,
   onClickPrev,
-}: IListPropertiesAmenitiesProps) => {
+}: IListPropertiesAccessbilitesProps) => {
   const dispatch = useAppDispatch();
   const { list } = useAppSelector((state) => state);
 
@@ -72,14 +72,14 @@ const ListPropertiesServices = ({
       >
         <Box display="flex" flexDirection="column" gap={3}>
           <Typography variant="h4" component="h4">
-            Services Provided
+            Accessibility Features
           </Typography>
           <Typography variant="body2">Select all that apply*</Typography>
         </Box>
         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           {Object.keys(amenitiesMap).map((amenity) => {
             const amenityObj = amenitiesMap[amenity];
-            if (amenityObj.category === "Services") {
+            if (amenityObj.category === "Accessibility") {
               return (
                 <Grid item xs={4} key={amenity}>
                   <Box display="flex" alignItems="center">
@@ -135,4 +135,4 @@ const ListPropertiesServices = ({
   );
 };
 
-export default ListPropertiesServices;
+export default ListPropertiesAccessibilities;

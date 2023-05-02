@@ -27,7 +27,9 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 interface IListPropertiesAmenitiesProps {
-  onClickNext: () => void;
+  onClickNext: (images: File[]) => void;
+  onClickPrev: (images: File[]) => void;
+  defaultImgs: File[] | null;
 }
 
 const roomSchema = yup.object().shape({
@@ -48,12 +50,15 @@ const roomSchema = yup.object().shape({
 });
 
 let isInitial = true;
+let showInitialForm = true;
 const ListPropertiesRoomInfo = ({
   onClickNext,
+  onClickPrev,
+  defaultImgs,
 }: IListPropertiesAmenitiesProps) => {
   const dispatch = useAppDispatch();
-  const [files, setFiles] = useState<File[]>([]);
-  const rooms = useAppSelector((state) => state?.list?.rooms);
+  const [files, setFiles] = useState<File[]>(defaultImgs ? defaultImgs : []);
+  const { rooms } = useAppSelector((state) => state?.list);
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -64,9 +69,6 @@ const ListPropertiesRoomInfo = ({
     isInitial = false;
     setOpen(false);
   };
-
-  const [showInitialForm, setShowInitialForm] = useState(true);
-
   const [showSnackbar, setShowSnackbar] = useState(false);
 
   const nextClickHandler = () => {
@@ -78,7 +80,8 @@ const ListPropertiesRoomInfo = ({
       handleClickOpen();
       return;
     }
-    onClickNext();
+
+    onClickNext(files);
   };
 
   const addHandler = (
@@ -88,11 +91,7 @@ const ListPropertiesRoomInfo = ({
     if (image) {
       setFiles((prev) => [...prev, image]);
     }
-
     delete roomData.image;
-
-    console.log(roomData);
-
     dispatch(listActions.addRoom({ room: roomData as IHotelRoom }));
   };
 
@@ -127,26 +126,35 @@ const ListPropertiesRoomInfo = ({
         <Typography variant="h4" component="h4">
           Rooms
         </Typography>
+
         {showInitialForm && (
           <RoomInfo
             showAddButton={rooms.length === 0 ? true : false}
             onClickAdd={addHandler}
+            defaultValues={rooms[0]}
+            defaultImage={defaultImgs ? defaultImgs[0] : undefined}
             showRemoveButton={rooms.length === 1 ? true : false}
             disabledForm={rooms.length - 1 !== -1 ? true : false}
             setFiles={setFiles}
           />
         )}
-
-        {rooms?.map((_, index) => (
-          <RoomInfo
-            key={index}
-            showAddButton={rooms.length - 1 === index ? true : false}
-            showRemoveButton={rooms.length - 2 === index ? true : false}
-            disabledForm={rooms.length - 1 !== index ? true : false}
-            onClickAdd={addHandler}
-            setFiles={setFiles}
-          />
-        ))}
+        {rooms?.length > 0 &&
+          rooms?.map((room, index) => (
+            <RoomInfo
+              key={index}
+              showAddButton={rooms.length - 1 === index ? true : false}
+              showRemoveButton={rooms.length - 2 === index ? true : false}
+              defaultValues={rooms.length - 1 !== index ? room : undefined}
+              defaultImage={
+                defaultImgs && defaultImgs.length - 1 !== index
+                  ? defaultImgs[index]
+                  : undefined
+              }
+              disabledForm={rooms.length - 1 !== index ? true : false}
+              onClickAdd={addHandler}
+              setFiles={setFiles}
+            />
+          ))}
       </Box>
       <Box
         display="flex"
@@ -155,12 +163,20 @@ const ListPropertiesRoomInfo = ({
         justifyContent="flex-end"
       >
         <Button
+          sx={{ width: "20%", marginRight: "auto" }}
+          color="secondary"
+          variant="outlined"
+          onClick={() => onClickPrev(files)}
+        >
+          Previous
+        </Button>
+        <Button
           sx={{ width: "20%", mt: 2 }}
           variant="contained"
           onClick={nextClickHandler}
           type="button"
         >
-          Next
+          Create Listing
         </Button>
         <Dialog
           open={open}
@@ -168,9 +184,7 @@ const ListPropertiesRoomInfo = ({
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">
-            {"Use Google's location service?"}
-          </DialogTitle>
+          <DialogTitle id="alert-dialog-title">Confirmation</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
               You are about to create a new listing. Please review all of the
@@ -200,11 +214,15 @@ export const RoomInfo = ({
   showAddButton,
   showRemoveButton,
   disabledForm,
+  defaultValues,
+  defaultImage,
   setFiles,
 }: {
   onClickAdd: (data: any) => void;
   showAddButton?: boolean;
   showRemoveButton?: boolean;
+  defaultValues?: IHotelRoom;
+  defaultImage?: File;
   disabledForm?: boolean;
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;
 }) => {
@@ -215,12 +233,13 @@ export const RoomInfo = ({
   } = useForm<IHotelRoom>({
     resolver: yupResolver(roomSchema),
   });
-  const [value, setValue] = useState<File | null>(null);
+  const [value, setValue] = useState<File | null>(
+    defaultImage ? defaultImage : null
+  );
   const [error, setError] = useState<string | null>(null);
   const [anchorEl, setAnchorEl] = useState<any>(null);
 
   const handleClick = (event: any) => {
-    console.log("Mouse hover");
     if (anchorEl !== event.currentTarget) {
       setAnchorEl(event.currentTarget);
     }
@@ -247,12 +266,8 @@ export const RoomInfo = ({
     }
   };
 
-  if (errors) {
-    console.log(errors);
-  }
   const dispatch = useAppDispatch();
   const onSubmit = (data: IHotelRoom) => {
-    console.log("called");
     if (!value) {
       setError("Room image is required");
       return;
@@ -277,6 +292,7 @@ export const RoomInfo = ({
           id="demo-helper-text-misaligned"
           label="Room Type"
           disabled={disabledForm}
+          defaultValue={defaultValues?.room_type || ""}
           error={errors.room_type ? true : false}
           sx={{
             width: "32%",
@@ -290,6 +306,7 @@ export const RoomInfo = ({
           id="demo-helper-text-misaligned"
           label="Price"
           disabled={disabledForm}
+          defaultValue={defaultValues?.price || ""}
           type="number"
           error={errors?.price ? true : false}
           sx={{
@@ -305,6 +322,7 @@ export const RoomInfo = ({
           label="Number of Rooms"
           type="number"
           disabled={disabledForm}
+          defaultValue={defaultValues?.quantity || ""}
           error={errors?.quantity ? true : false}
           sx={{
             width: "32%",

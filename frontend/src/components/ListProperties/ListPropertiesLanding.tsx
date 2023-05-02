@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Button,
   List,
@@ -10,7 +9,6 @@ import {
 import { Box } from "@mui/system";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { ArrowRight } from "@mui/icons-material";
-import { useLocation, useNavigate } from "react-router-dom";
 
 interface IListPropertiesLandingProps {
   onClickNext: () => void;
