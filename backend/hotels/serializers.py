@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_framework import serializers
 from .models import (
     FAQ,
+    Amenity,
     Hotel,
     Booking,
     HotelImages,
@@ -12,7 +13,7 @@ from .models import (
     User,
     BookTemp,
 )
-from account_manager.serializers import UserDetailForReviewSerializer
+from account_manager.serializers import Base64ImageField, UserDetailForReviewSerializer
 
 
 class ReviewSerializer(ModelSerializer):
@@ -105,9 +106,11 @@ class BookingSerializer(ModelSerializer):
 
 
 class RoomSerializer(ModelSerializer):
+    image = Base64ImageField(required=False, allow_null=True)
+
     class Meta:
         model = Room
-        fields = "__all__"
+        fields = ["id", "room_type", "price", "quantity", "image", "hotel"]
 
 
 class RoomTempSerializer(ModelSerializer):
@@ -163,10 +166,108 @@ class BookTempWithDetailSerializer(ModelSerializer):
 class FAQSerializer(ModelSerializer):
     class Meta:
         model = FAQ
-        fields = "__all__"
+        fields = ["question", "answer"]
 
 
 class HouseRulesSerializer(ModelSerializer):
     class Meta:
         model = HouseRules
+        fields = ["smoking_allowed", "pets_allowed", "parties_allowed", "self_check_in"]
+
+
+class AmenitySerializer(ModelSerializer):
+    class Meta:
+        model = Amenity
         fields = "__all__"
+
+
+class HotelCreateWithDetailsSerializer(serializers.ModelSerializer):
+    amenities = AmenitySerializer(many=True)
+    faqs = FAQSerializer(many=True)
+    house_rules = HouseRulesSerializer(many=False)
+    rooms = RoomSerializer(many=True)
+    hotel_image = Base64ImageField(required=False, allow_null=True)
+
+    class Meta:
+        model = Hotel
+        fields = "__all__"
+
+    def create(self, validated_data):
+        # Separate the related objects from the hotel data
+        amenities_data = validated_data.pop("amenities")
+        faqs_data = validated_data.pop("faqs")
+        house_rules_data = validated_data.pop("house_rules")
+        rooms_data = validated_data.pop("rooms")
+        hotel_image_data = validated_data.pop("hotel_image", None)
+
+        # Create the hotel instance
+        hotel = Hotel.objects.create(**validated_data)
+
+        # Create the related objects
+        amenities = []
+        for amenity_data in amenities_data:
+            amenity = Amenity.objects.create(**amenity_data)
+            amenities.append(amenity)
+        hotel.amenities.set(amenities)
+
+        faqs = []
+        for faq_data in faqs_data:
+            faq = FAQ.objects.create(**faq_data)
+            faqs.append(faq)
+        hotel.faqs.set(faqs)
+
+        house_rules = HouseRules.objects.create(**house_rules_data)
+        hotel.house_rules = house_rules
+
+        rooms = []
+        for room_data in rooms_data:
+            room = Room.objects.create(hotel=hotel, **room_data)
+            rooms.append(room)
+
+        if hotel_image_data:
+            hotel_image = HotelImages.objects.create(
+                hotel=hotel, image=hotel_image_data
+            )
+            hotel.hotel_images.add(hotel_image)
+
+        return hotel
+
+
+#
+# class HotelCreateWithDetailsSerializer(serializers.ModelSerializer):
+#     amenities = AmenitySerializer(many=True)
+#     faqs = FAQSerializer(many=True)
+#     house_rules = HouseRulesSerializer(many=False)
+#     rooms = RoomSerializer(many=True)
+#     hotel_image = Base64ImageField(required=False, allow_null=True)
+#
+#     class Meta:
+#         model = Hotel
+#         fields = "__all__"
+#
+#     def create(self, validated_data):
+#         amenities_data = validated_data.pop("amenities")
+#         rooms_data = validated_data.pop("rooms")
+#         faqs = validated_data.pop("faqs")
+#         house_rules = validated_data.pop("house_rules")
+#         image = validated_data.pop("hotel_image")
+#
+#         house_rules.remove("hotel")
+#         hotel = Hotel.objects.create(**validated_data)
+#
+#         for amenity_data in amenities_data:
+#             amenity = Amenity.objects.get(name=amenity_data["name"]).name
+#             hotel.amenities.add(amenity)
+#
+#         for room_data in rooms_data:
+#             Room.objects.create(hotel=hotel, **room_data)
+#
+#         for faq in faqs:
+#             FAQ.objects.create(hotel=hotel, **faq)
+#
+#         for house_rule in house_rules:
+#             HouseRules.objects.create(hotel=hotel, **house_rule)
+#
+#         HotelImages.objects.create(hotel=hotel, image=image)
+#
+#         return hotel

@@ -3,6 +3,7 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework import status
+from sentence_transformers.models.Pooling import json
 
 # from account_manager.permissions import UserDetailPermission
 from .serializers import (
@@ -11,6 +12,7 @@ from .serializers import (
     BookTempCreateSerializer,
     BookTempWithDetailSerializer,
     FAQSerializer,
+    HotelCreateWithDetailsSerializer,
     HotelSerializer,
     BookingSerializer,
     HouseRules,
@@ -60,6 +62,20 @@ class HotelCreateApi(generics.CreateAPIView):
     permission_classes = [IsAuthenticated, IsAdminUser, IsPartnerPermission]
 
     def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
+class HotelCreateWithDetailApi(generics.CreateAPIView):
+    queryset = Hotel.objects.all()
+    serializer_class = HotelCreateWithDetailsSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        print(request.data.get("amenities[]"))
+        # print(request.data.get("amenities"))
+        # print(json.loads(request.]data["amenities"]))
         return self.create(request, *args, **kwargs)
 
 

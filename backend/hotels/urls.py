@@ -4,6 +4,7 @@ from .views import (
     FAQByHotelApi,
     GetBookingTempApi,
     HotelCreateApi,
+    HotelCreateWithDetailApi,
     HotelDetailApi,
     HotelListApi,
     HotelSearchApi,
@@ -46,6 +47,12 @@ urlpatterns = [
     ),
     path("hotels/search/", HotelSearchApi.as_view(), name="hotel_search"),
     path("add-hotel/", HotelCreateApi.as_view(), name="hotels"),
+    path(
+        "hotels/create-hotel-with-detail/",
+        HotelCreateWithDetailApi.as_view(),
+        name="create-hotel-with-detail",
+    ),
+    # path('create-booking/', BookingCreateApi.as_view(), name='booking'),
     # path('create-booking/', BookingCreateApi.as_view(), name='booking'),
     path(
         "hotels-by-location/", HotelsByLocationApi.as_view(), name="hotel_by_location"
