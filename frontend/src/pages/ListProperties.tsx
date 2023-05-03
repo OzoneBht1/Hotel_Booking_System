@@ -11,6 +11,7 @@ import { useMultistepForm } from "../hooks/use-multistep-form";
 import { usePrompt } from "../hooks/use-prompt";
 import ListPropertiesAccessibilities from "../components/ListProperties/ListPropertiesAccessibilities";
 import { useAppSelector } from "../store/hooks";
+import { useCreateHotelMutation } from "../store/api/hotelSlice";
 // import something which provides prompt if user is about to leave page;
 
 const ListProperties = () => {
@@ -18,6 +19,8 @@ const ListProperties = () => {
   const [roomImages, setRoomImages] = useState<File[] | null>(null);
   const rooms = useAppSelector((state) => state.list.rooms);
   const { list } = useAppSelector((state) => state);
+
+  const [createHotel, { isLoading, isError }] = useCreateHotelMutation();
   console.log(list);
 
   const nextHandler = () => {
@@ -36,11 +39,76 @@ const ListProperties = () => {
 
   const listingCreateHandler = (roomImages: File[] | null) => {
     setRoomImages(roomImages);
-    console.log(list);
+
+    const data = {
+      ...list,
+      amenities: list.amenities.map((amenity) => {
+        return { name: amenity };
+      }),
+      faqs: list.faqs.faqs,
+      rooms: rooms.map((room, index) => {
+        return {
+          ...room,
+          image: roomImages![index],
+        };
+      }, []),
+    };
+    console.log(data.amenities);
+
+    const formData = new FormData();
+
+    // Add email, name, and address
+    formData.append("email", data.email!);
+    formData.append("name", data.name!);
+    formData.append("address", data.address!);
+
+    // Add amenities
+    data.amenities.forEach((amenity, index) => {
+      formData.append(`amenities[${index}]`, JSON.stringify(amenity));
+    });
+
+    // Add house_rules
+    Object.keys(data.house_rules).forEach((key) => {
+      formData.append(
+        `house_rules.${key}`,
+        data.house_rules[key as keyof typeof data.house_rules].toString()
+      );
+    });
+
+    // Add faqs
+    data.faqs.forEach((faq, index) => {
+      formData.append(`faqs`, JSON.stringify(faq));
+    });
+
+    // Add rooms and their images
+    data.rooms.forEach((room, index) => {
+      Object.keys(room).forEach((key) => {
+        if (key !== "image") {
+          formData.append(
+            `rooms[${index}].${key}`,
+            room && room[key as keyof typeof room].toString()
+          );
+        } else {
+          formData.append(`rooms[${index}].image`, room.image);
+        }
+      });
+    });
+
+    formData.getAll("faqs").forEach((faq) => {
+      console.log(faq);
+    });
+
+    // Add hotel_image field if required
+    // formData.append('hotel_image', hotelImage);
+
+    createHotel(formData);
   };
 
   const roomPrevHandler = (roomImages: File[] | null) => {
     setRoomImages(roomImages);
+    console.log(list);
+    console.log(roomImages);
+
     prev();
   };
 

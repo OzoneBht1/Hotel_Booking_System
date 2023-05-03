@@ -191,7 +191,7 @@ const ListPropertiesRoomInfo = ({
               information provided before proceeding further.
             </DialogContentText>
             <DialogContentText>
-              Click the next button again to proceed
+              Click the button again to proceed
             </DialogContentText>
           </DialogContent>
           <DialogActions>

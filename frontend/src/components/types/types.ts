@@ -136,20 +136,17 @@ export interface ITempBookingResponse {
   user: string;
   hotel: string;
   rooms: ITempRoom[];
-  hotel_name: string;
+  name: string;
 }
 
 export interface ITempBookingModifiedFormat {
   user: string;
   hotel: string;
   rooms: IRoomWithQuantity[];
-  hotel_name: string;
+  name: string;
 }
 
-export type ITempBookingGet = Omit<
-  ITempBookingResponse,
-  "rooms" | "hotel_name"
->;
+export type ITempBookingGet = Omit<ITempBookingResponse, "rooms" | "name">;
 
 export interface IHouseRules {
   smoking_allowed: boolean;
@@ -160,8 +157,8 @@ export interface IHouseRules {
 
 export interface IListProperty {
   email: string | null;
-  hotel_name: string | null;
-  hotel_address: string | null;
+  name: string | null;
+  address: string | null;
   amenities: string[];
   rooms: IHotelRoom[];
   house_rules: IHouseRules;
