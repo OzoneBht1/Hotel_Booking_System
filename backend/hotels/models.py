@@ -46,7 +46,7 @@ class Hotel(BaseModel):
 
 
 class Room(BaseModel):
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
     room_type = models.CharField(max_length=200)
     price = models.IntegerField()
     quantity = models.IntegerField(default=1)
@@ -117,7 +117,9 @@ class Review(BaseModel):
 
 
 class HouseRules(models.Model):
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(
+        Hotel, on_delete=models.CASCADE, related_name="house_rules"
+    )
     smoking_allowed = models.BooleanField(default=False)
     pets_allowed = models.BooleanField(default=False)
     parties_allowed = models.BooleanField(default=False)
@@ -128,6 +130,6 @@ class HouseRules(models.Model):
 
 
 class FAQ(models.Model):
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="faqs")
     question = models.CharField(max_length=200)
     answer = models.TextField()
