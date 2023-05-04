@@ -8,8 +8,8 @@ import {
 
 const initialState: IListProperty = {
   email: null,
-  hotel_name: null,
-  hotel_address: null,
+  name: null,
+  address: null,
   amenities: [],
   rooms: [],
   house_rules: {
@@ -34,8 +34,8 @@ const listingSlice = createSlice({
       state,
       action: PayloadAction<{ hotel_name: string; hotel_address: string }>
     ) {
-      state.hotel_name = action.payload.hotel_name;
-      state.hotel_address = action.payload.hotel_address;
+      state.name = action.payload.hotel_name;
+      state.address = action.payload.hotel_address;
     },
     addAmenity(state, action: PayloadAction<{ amenity: string }>) {
       state.amenities.push(action.payload.amenity);

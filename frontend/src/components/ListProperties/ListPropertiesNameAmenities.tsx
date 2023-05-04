@@ -24,8 +24,8 @@ interface IListPropertiesAmenitiesProps {
 }
 
 const nameAddressSchema = yup.object().shape({
-  hotelName: yup.string().required("Name is Required"),
-  hotelAddress: yup.string().required("This is required"),
+  name: yup.string().required("Name is Required"),
+  address: yup.string().required("This is required"),
 });
 
 const allowedFileTypes = ["png", "jpeg", "jpg"];
@@ -42,7 +42,7 @@ const ListPropertiesNameAmenities = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<{ hotelName: string; hotelAddress: string }>({
+  } = useForm<{ name: string; address: string }>({
     resolver: yupResolver(nameAddressSchema),
   });
 
@@ -68,9 +68,7 @@ const ListPropertiesNameAmenities = ({
     }
   };
 
-  const onSubmit: SubmitHandler<{ hotelName: string; hotelAddress: string }> = (
-    data
-  ) => {
+  const onSubmit: SubmitHandler<{ name: string; address: string }> = (data) => {
     console.log(data);
 
     if (!image) {
@@ -80,8 +78,8 @@ const ListPropertiesNameAmenities = ({
 
     dispatch(
       listActions.setHotelNameAndAddress({
-        hotel_name: data.hotelName,
-        hotel_address: data.hotelAddress,
+        hotel_name: data.name,
+        hotel_address: data.address,
       })
     );
     onClickNext(image);
@@ -127,28 +125,26 @@ const ListPropertiesNameAmenities = ({
             label="Hotel Name"
             variant="standard"
             fullWidth
-            value={list.hotel_name}
+            value={list.name}
             // helperText={errors?.hotelName ? errors!.hotelName!.message : ""}
 
-            error={errors?.hotelName ? true : false}
-            {...register("hotelName")}
+            error={errors?.name ? true : false}
+            {...register("name")}
           />
 
           <TextField
             required
             id="outlined-required"
             variant="standard"
-            value={list.hotel_address}
+            value={list.address}
             helperText={
-              errors?.hotelAddress
-                ? (errors?.hotelAddress?.message as string)
-                : ""
+              errors?.address ? (errors?.address?.message as string) : ""
             }
-            error={errors?.hotelAddress ? true : false}
+            error={errors?.address ? true : false}
             multiline
             fullWidth
             label="Hotel Address"
-            {...register("hotelAddress")}
+            {...register("address")}
           />
         </Box>
 

@@ -25,11 +25,13 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { LoadingButton } from "@mui/lab";
 
 interface IListPropertiesAmenitiesProps {
   onClickNext: (images: File[]) => void;
   onClickPrev: (images: File[]) => void;
   defaultImgs: File[] | null;
+  loading: boolean;
 }
 
 const roomSchema = yup.object().shape({
@@ -55,6 +57,7 @@ const ListPropertiesRoomInfo = ({
   onClickNext,
   onClickPrev,
   defaultImgs,
+  loading,
 }: IListPropertiesAmenitiesProps) => {
   const dispatch = useAppDispatch();
   const [files, setFiles] = useState<File[]>(defaultImgs ? defaultImgs : []);
@@ -170,14 +173,15 @@ const ListPropertiesRoomInfo = ({
         >
           Previous
         </Button>
-        <Button
+        <LoadingButton
+          loading={loading}
           sx={{ width: "20%", mt: 2 }}
           variant="contained"
           onClick={nextClickHandler}
           type="button"
         >
           Create Listing
-        </Button>
+        </LoadingButton>
         <Dialog
           open={open}
           onClose={handleClose}
@@ -191,7 +195,7 @@ const ListPropertiesRoomInfo = ({
               information provided before proceeding further.
             </DialogContentText>
             <DialogContentText>
-              Click the next button again to proceed
+              Click the button again to proceed
             </DialogContentText>
           </DialogContent>
           <DialogActions>

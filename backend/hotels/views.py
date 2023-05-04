@@ -3,6 +3,7 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework import status
+from sentence_transformers.models.Pooling import json
 
 # from account_manager.permissions import UserDetailPermission
 from .serializers import (
@@ -11,6 +12,7 @@ from .serializers import (
     BookTempCreateSerializer,
     BookTempWithDetailSerializer,
     FAQSerializer,
+    HotelCreateWithDetailsSerializer,
     HotelSerializer,
     BookingSerializer,
     HouseRules,
@@ -61,6 +63,66 @@ class HotelCreateApi(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
+
+
+class HotelCreateWithDetailApi(generics.CreateAPIView):
+    queryset = Hotel.objects.all()
+    serializer_class = HotelCreateWithDetailsSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def post(self, request, *args, **kwargs):
+        amenities = request.POST.getlist("amenities")
+        parsed_amenities = [json.loads(amenity) for amenity in amenities]
+        faqs = request.POST.getlist("faqs")
+        parsed_faqs = [json.loads(faq) for faq in faqs]
+        house_rules = request.POST.get("house_rules")
+        parsed_house_rules = {}
+        if house_rules:
+            parsed_house_rules = json.loads(house_rules)
+        rooms = []
+
+        for key, value in request.data.items():
+            if key.startswith("rooms["):
+                room_id = int(key.split(".")[0].split("[")[1].strip("]"))
+                room_field = key.split(".")[1]
+                if room_id >= len(rooms):
+                    rooms.append({})
+                rooms[room_id][room_field] = value
+
+        print(rooms)
+
+        #         rooms = [
+        #     {
+        #         "room_type": request.data.get("rooms[0].room_type"),
+        #         "quantity": request.data.get("rooms[0].quantity"),
+        #         "price": request.data.get("rooms[0].price"),
+        #         "image": request.data.get("rooms[0].image"),
+        #     }
+        # ]
+        # Now you have a list of dictionaries where each dictionary represents a room
+        # You can then pass this list to the RoomSerializer to validate the data
+
+        # Create a dictionary with the validated data and the parsed amenities list
+        validated_data = dict(request.data)
+        validated_data = {
+            "name": request.data.get("name"),
+            "address": request.data.get("address"),
+            "house_rules": parsed_house_rules,
+            "rooms": request.data.get("rooms", []),
+            "amenities": parsed_amenities,
+            "faqs": parsed_faqs,
+            "room_count": request.data.get("room_count", None),
+            "rooms": rooms,
+            "hotel_image": request.data.get("hotel_image", None),
+            "manager": (request.data.get("manager")),
+        }
+
+        serializer = HotelCreateWithDetailsSerializer(data=validated_data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class HotelListApi(generics.ListAPIView):

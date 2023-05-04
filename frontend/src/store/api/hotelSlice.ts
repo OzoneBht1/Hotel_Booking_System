@@ -74,6 +74,13 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    createHotel: build.mutation<any, any>({
+      query: (body) => ({
+        url: `/hotels/create-hotel-with-detail/`,
+        method: "POST",
+        body: body,
+      }),
+    }),
   }),
 });
 
@@ -85,4 +92,5 @@ export const {
   useGetReviewsQuery,
   useGetRoomsQuery,
   useGetFaqsQuery,
+  useCreateHotelMutation,
 } = hotelApiSlice;

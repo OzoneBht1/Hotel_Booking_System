@@ -11,6 +11,7 @@ import { useMultistepForm } from "../hooks/use-multistep-form";
 import { usePrompt } from "../hooks/use-prompt";
 import ListPropertiesAccessibilities from "../components/ListProperties/ListPropertiesAccessibilities";
 import { useAppSelector } from "../store/hooks";
+import { useCreateHotelMutation } from "../store/api/hotelSlice";
 // import something which provides prompt if user is about to leave page;
 
 const ListProperties = () => {
@@ -18,6 +19,9 @@ const ListProperties = () => {
   const [roomImages, setRoomImages] = useState<File[] | null>(null);
   const rooms = useAppSelector((state) => state.list.rooms);
   const { list } = useAppSelector((state) => state);
+  const user = useAppSelector((state) => state.auth.user);
+
+  const [createHotel, { isLoading, isError }] = useCreateHotelMutation();
   console.log(list);
 
   const nextHandler = () => {
@@ -36,11 +40,62 @@ const ListProperties = () => {
 
   const listingCreateHandler = (roomImages: File[] | null) => {
     setRoomImages(roomImages);
-    console.log(list);
+
+    const data = {
+      ...list,
+      amenities: list.amenities.map((amenity) => {
+        return { name: amenity };
+      }),
+      faqs: list.faqs.faqs,
+      rooms: rooms.map((room, index) => {
+        return {
+          ...room,
+          image: roomImages![index],
+        };
+      }, []),
+    };
+    console.log(data.amenities);
+
+    const roomsCount = rooms.reduce((acc, room) => {
+      return acc + room.quantity;
+    }, 0);
+
+    const formData = new FormData();
+
+    formData.append("email", data.email!);
+    formData.append("name", data.name!);
+    formData.append("address", data.address!);
+    formData.append("hotel_image", hotelImage!, hotelImage!.name);
+    formData.append("room_count", JSON.stringify(roomsCount));
+    formData.append("manager", JSON.stringify(user?.user_id));
+
+    data.amenities.forEach((amenity, index) => {
+      formData.append(`amenities`, JSON.stringify({ name: amenity.name }));
+    });
+    data.rooms.forEach((room, index) => {
+      Object.keys(room).forEach((key) => {
+        if (key !== "image") {
+          formData.append(
+            `rooms[${index}].${key}`,
+            (room[key as keyof typeof room] as any).toString()
+          );
+        } else {
+          formData.append(`rooms[${index}].image`, room.image);
+        }
+      });
+    });
+    formData.append("house_rules", JSON.stringify(data.house_rules));
+    data.faqs.forEach((faq, index) => {
+      formData.append(`faqs`, JSON.stringify(faq));
+    });
+    createHotel(formData);
   };
 
   const roomPrevHandler = (roomImages: File[] | null) => {
     setRoomImages(roomImages);
+    console.log(list);
+    console.log(roomImages);
+
     prev();
   };
 
@@ -69,6 +124,7 @@ const ListProperties = () => {
       onClickPrev={prevHandler}
     />,
     <ListPropertiesRoomInfo
+      loading={isLoading}
       onClickNext={listingCreateHandler}
       onClickPrev={roomPrevHandler}
       defaultImgs={roomImages}

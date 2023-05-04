@@ -139,7 +139,7 @@ class Command(BaseCommand):
             users.append(user)
 
         for user in users:
-            for i in range(random.randint(1, 12)):
+            for i in range(random.randint(4, 18)):
                 hotel = Hotel.objects.order_by("?").first()
                 if not hotel:
                     break
