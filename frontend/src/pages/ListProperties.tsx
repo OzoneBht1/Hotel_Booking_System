@@ -19,6 +19,7 @@ const ListProperties = () => {
   const [roomImages, setRoomImages] = useState<File[] | null>(null);
   const rooms = useAppSelector((state) => state.list.rooms);
   const { list } = useAppSelector((state) => state);
+  const user = useAppSelector((state) => state.auth.user);
 
   const [createHotel, { isLoading, isError }] = useCreateHotelMutation();
   console.log(list);
@@ -55,52 +56,38 @@ const ListProperties = () => {
     };
     console.log(data.amenities);
 
+    const roomsCount = rooms.reduce((acc, room) => {
+      return acc + room.quantity;
+    }, 0);
+
     const formData = new FormData();
 
-    // Add email, name, and address
     formData.append("email", data.email!);
     formData.append("name", data.name!);
     formData.append("address", data.address!);
+    formData.append("hotel_image", hotelImage!, hotelImage!.name);
+    formData.append("room_count", JSON.stringify(roomsCount));
+    formData.append("manager", JSON.stringify(user?.user_id));
 
-    // Add amenities
     data.amenities.forEach((amenity, index) => {
-      formData.append(`amenities[${index}]`, JSON.stringify(amenity));
+      formData.append(`amenities`, JSON.stringify({ name: amenity.name }));
     });
-
-    // Add house_rules
-    Object.keys(data.house_rules).forEach((key) => {
-      formData.append(
-        `house_rules.${key}`,
-        data.house_rules[key as keyof typeof data.house_rules].toString()
-      );
-    });
-
-    // Add faqs
-    data.faqs.forEach((faq, index) => {
-      formData.append(`faqs`, JSON.stringify(faq));
-    });
-
-    // Add rooms and their images
     data.rooms.forEach((room, index) => {
       Object.keys(room).forEach((key) => {
         if (key !== "image") {
           formData.append(
             `rooms[${index}].${key}`,
-            room && room[key as keyof typeof room].toString()
+            (room[key as keyof typeof room] as any).toString()
           );
         } else {
           formData.append(`rooms[${index}].image`, room.image);
         }
       });
     });
-
-    formData.getAll("faqs").forEach((faq) => {
-      console.log(faq);
+    formData.append("house_rules", JSON.stringify(data.house_rules));
+    data.faqs.forEach((faq, index) => {
+      formData.append(`faqs`, JSON.stringify(faq));
     });
-
-    // Add hotel_image field if required
-    // formData.append('hotel_image', hotelImage);
-
     createHotel(formData);
   };
 
@@ -137,6 +124,7 @@ const ListProperties = () => {
       onClickPrev={prevHandler}
     />,
     <ListPropertiesRoomInfo
+      loading={isLoading}
       onClickNext={listingCreateHandler}
       onClickPrev={roomPrevHandler}
       defaultImgs={roomImages}
