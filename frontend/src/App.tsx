@@ -18,7 +18,8 @@ import VerifyAdmin from "./utils/VerifyAdmin";
 import Dashboard from "./pages/AdminSection/Dashboard";
 import { useAppSelector } from "./store/hooks";
 import { UserType } from "./components/types/types";
-import Sidebar from "./components/AdminComponents/Sidebar";
+import Layout from "./components/AdminComponents/Layout";
+import { Box } from "@mui/system";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 function App() {
@@ -26,7 +27,7 @@ function App() {
   return (
     <Elements stripe={stripePromise}>
       <div>
-        {!user || user?.user_type !== UserType.ADMIN ? <NavBar /> : <Sidebar />}
+        {!user || (user?.user_type !== UserType.ADMIN && <NavBar />)}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/hotel/:id" element={<HotelPage />} />
