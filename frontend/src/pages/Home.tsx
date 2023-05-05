@@ -7,12 +7,15 @@ import { styled } from "@mui/system";
 import HomePageCard from "../components/HomePageCard";
 import HomePageItems from "../components/HomePageItems";
 import { IQuery } from "../components/types/types";
+import { useAppSelector } from "../store/hooks";
 
 const Home = () => {
   const { state } = useLocation();
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(
     state?.open ? true : false
   );
+  const user = useAppSelector((state) => state.auth.user);
+  console.log(user);
   const nav = useNavigate();
   const [snackbarOpenOnLogout, setSnackbarOpenOnLogout] = useState<boolean>(
     state?.openOnLogout ? true : false

@@ -1,4 +1,7 @@
 from rest_framework import generics
+
+from hotels.pagination import CustomPagination
+from hotels.views import IsAdminUser
 from .models import User, EmailVerification
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import (
@@ -12,12 +15,38 @@ from django.contrib.auth import logout
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.mail import send_mail
-from django.http import HttpResponse
 import string
 import random
 from rest_framework.decorators import api_view
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .permissions import UserDetailPermission
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+
+
+class UserListSerializer(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserDetailSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminUser]
+    pagination_class = CustomPagination
+    filter_backends = [
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        DjangoFilterBackend,
+    ]
+
+    filterset_fields = [
+        "email",
+        "is_active",
+        "is_staff",
+        "is_superuser",
+        "user_type",
+        "country",
+    ]
+    search_fields = ["^email", "$first_name", "$last_name", "id"]
+    ordering_fields = ["id", "last_name", "country"]
+    ordering = ["last_name"]
 
 
 class UserProfileCreateApi(generics.CreateAPIView):

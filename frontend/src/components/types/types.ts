@@ -3,12 +3,20 @@ export interface ITokenState {
   refresh: string;
 }
 
+export enum UserType {
+  NORMAL = "Normal",
+  PARTNER = "Partner",
+  ADMIN = "Admin",
+}
+
 export interface IUserJwt {
   token_type: string;
   exp: number;
   iat: number;
   jti: string;
   user_id: number;
+  name: string;
+  user_type: UserType;
 }
 export interface IAuthState {
   authTokens: null | ITokenState;

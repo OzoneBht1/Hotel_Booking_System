@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import "./App.css";
 import NavBar from "./components/Navigation/NavBar";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
@@ -15,13 +14,22 @@ import SearchedResults from "./pages/SearchedResults";
 import Checkout from "./pages/Checkout";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import VerifyAdmin from "./utils/VerifyAdmin";
+import Dashboard from "./pages/AdminSection/Dashboard";
+import { useAppSelector } from "./store/hooks";
+import { UserType } from "./components/types/types";
+import Layout from "./components/AdminComponents/Layout";
+import { Box } from "@mui/system";
+import UserManagement from "./pages/AdminSection/UserManagement";
+import AdminProfileMain from "./components/AdminComponents/AdminProfileMain";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 function App() {
+  const { user } = useAppSelector((state) => state.auth);
   return (
     <Elements stripe={stripePromise}>
       <div>
-        <NavBar />
+        {!user || (user?.user_type !== UserType.ADMIN && <NavBar />)}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/hotel/:id" element={<HotelPage />} />
@@ -29,13 +37,17 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/hotels/find" element={<SearchedResults />} />
           <Route element={<RequireAuth />}>
-            <Route path="/profile" element={<Profile />} />
+            // <Route path="/profile" element={<Profile />} />
             <Route
               path="/hotel/:hotelId/:userId/payment"
               element={<Checkout />}
             />
-
             <Route path="/add-property" element={<ListProperties />} />
+            <Route path="/profile/:id" element={<Profile />} />
+            <Route element={<VerifyAdmin />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/customers" element={<UserManagement />} />
+            </Route>
           </Route>
           <Route path="*" element={<Error />} />
         </Routes>
