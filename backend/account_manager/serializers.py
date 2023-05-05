@@ -92,7 +92,18 @@ class UserDetailSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "gender", "country", "image"]
+        fields = [
+            "first_name",
+            "last_name",
+            "email",
+            "gender",
+            "country",
+            "image",
+            "id",
+            "user_type",
+            "is_active",
+            "is_superuser",
+        ]
         read_only_fields = ["email"]
 
 
@@ -105,7 +116,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # print(token)
 
         # Add custom claims
-        # token['name'] = user.name
+        # token["name"] = user.name
+        token["user_type"] = user.user_type
         # ...
 
         return token

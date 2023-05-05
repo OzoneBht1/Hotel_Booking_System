@@ -24,7 +24,7 @@ from .serializers import (
 from rest_framework.decorators import api_view
 from .models import Hotel
 from .permissions import IsPartnerPermission
-from .pagination import CustomHotelSearchPagination
+from .pagination import CustomPagination, CustomPagination
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
@@ -130,7 +130,7 @@ class HotelListApi(generics.ListAPIView):
     serializer_class = HotelSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAdminUser]
-    pagination_class = CustomHotelSearchPagination
+    pagination_class = CustomPagination
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -140,7 +140,7 @@ class HotelSearchApi(generics.ListAPIView):
     serializer_class = HotelSerializer
     authentication_classes = []
     permission_classes = []
-    pagination_class = CustomHotelSearchPagination
+    pagination_class = CustomPagination
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -157,7 +157,7 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
     serializer_class = HotelSerializer
     authentication_classes = []
     permission_classes = []
-    pagination_class = CustomHotelSearchPagination
+    pagination_class = CustomPagination
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -208,7 +208,7 @@ class HotelsByLocationApi(generics.ListAPIView):
 
 class ReviewByHotelApi(generics.ListAPIView):
     serializer_class = ReviewSerializer
-    pagination_class = CustomHotelSearchPagination
+    pagination_class = CustomPagination
     lookup_field = "id"
 
     def get(self, request, *args, **kwargs):
@@ -221,7 +221,7 @@ class ReviewByHotelApi(generics.ListAPIView):
 
 class RoomByHotelApi(generics.ListAPIView):
     serializer_class = RoomSerializer
-    pagination_class = CustomHotelSearchPagination
+    pagination_class = CustomPagination
     lookup_field = "id"
 
     def get(self, request, *args, **kwargs):
