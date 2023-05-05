@@ -18,7 +18,7 @@ const Layout = ({ children }: ILayout) => {
       <CssBaseline />
       <Topbar open={open} toggleDrawer={toggleDrawer} />
       <Sidebar open={open} toggleDrawer={toggleDrawer} />
-      <Box width="100%" display="flex" marginTop={10}>
+      <Box width="100%" display="flex" marginTop={9}>
         {children}
       </Box>
     </Box>

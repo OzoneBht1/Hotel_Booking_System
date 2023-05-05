@@ -153,7 +153,7 @@ const user = {
 };
 
 export const AccountProfile = () => (
-  <Card sx={{ maxWidth: "350px" }}>
+  <Card sx={{ maxWidth: "300px", maxHeight: "350px" }}>
     <CardContent>
       <Box
         sx={{
@@ -192,8 +192,6 @@ export const AccountProfile = () => (
           marginX: -3,
 
           outline: "none",
-          height: "100%",
-          width: "100%",
           border: "none",
         }}
         // value={value}
