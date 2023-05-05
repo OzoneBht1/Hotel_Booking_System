@@ -95,7 +95,7 @@ const data = [
 const UserManagement = () => {
   return (
     <Layout>
-      <Stack width="100%" alignItems="center">
+      <Stack direction="row" width="100%" alignItems="center">
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
           <CustomersSearch />
           <CustomersTable items={data} />

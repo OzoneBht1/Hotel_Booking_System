@@ -21,6 +21,7 @@ import { UserType } from "./components/types/types";
 import Layout from "./components/AdminComponents/Layout";
 import { Box } from "@mui/system";
 import UserManagement from "./pages/AdminSection/UserManagement";
+import AdminProfileMain from "./components/AdminComponents/AdminProfileMain";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 function App() {
@@ -36,14 +37,13 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/hotels/find" element={<SearchedResults />} />
           <Route element={<RequireAuth />}>
-            <Route path="/profile" element={<Profile />} />
+            // <Route path="/profile" element={<Profile />} />
             <Route
               path="/hotel/:hotelId/:userId/payment"
               element={<Checkout />}
             />
-
             <Route path="/add-property" element={<ListProperties />} />
-
+            <Route path="/profile/:id" element={<Profile />} />
             <Route element={<VerifyAdmin />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/customers" element={<UserManagement />} />
