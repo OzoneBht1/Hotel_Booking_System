@@ -20,6 +20,7 @@ import { useAppSelector } from "./store/hooks";
 import { UserType } from "./components/types/types";
 import Layout from "./components/AdminComponents/Layout";
 import { Box } from "@mui/system";
+import UserManagement from "./pages/AdminSection/UserManagement";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 function App() {
@@ -45,6 +46,7 @@ function App() {
 
             <Route element={<VerifyAdmin />}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/customers" element={<UserManagement />} />
             </Route>
           </Route>
           <Route path="*" element={<Error />} />
