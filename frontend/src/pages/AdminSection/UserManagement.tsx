@@ -1,6 +1,6 @@
 import { Container, Stack } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CustomersTable, {
   CustomersSearch,
 } from "../../components/AdminComponents/Customers";
@@ -12,16 +12,38 @@ import { useGetAllUsersQuery } from "../../store/api/authorization-api-slice";
 let rowsPerPage = 10;
 const UserManagement = () => {
   const handlePageChange = (page: number) => {
+    console.log(page);
     setPage(page);
   };
 
-  const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [apiSearchQuery, setApiSearchQuery] = useState("");
+
+  const [page, setPage] = useState(0);
 
   const {
     data: userData,
     isLoading: userIsLoading,
     isError: userIsError,
-  } = useGetAllUsersQuery({ page: page });
+  } = useGetAllUsersQuery({
+    page: page,
+    search: apiSearchQuery,
+    limit: rowsPerPage,
+  });
+
+  const handleSearch = (search: string) => {
+    setSearchTerm(search);
+
+    setPage(0);
+  };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setApiSearchQuery(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
   if (userIsLoading) return <Loading />;
 
@@ -30,7 +52,10 @@ const UserManagement = () => {
     <Layout>
       <Stack direction="row" width="100%" alignItems="center">
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <CustomersSearch />
+          <CustomersSearch
+            searchTerm={searchTerm}
+            handleSearch={handleSearch}
+          />
           {userData && (
             <CustomersTable
               onPageChange={handlePageChange}

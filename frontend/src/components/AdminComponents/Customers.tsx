@@ -16,23 +16,33 @@ import {
 import { MoreVert } from "@mui/icons-material";
 import { IPaginated, IUserData } from "../types/types";
 
-export const CustomersSearch = () => (
-  <Card sx={{ p: 2 }}>
-    <OutlinedInput
-      defaultValue=""
-      fullWidth
-      placeholder="Search customer"
-      startAdornment={
-        <InputAdornment position="start">
-          <SvgIcon color="action" fontSize="small">
-            <SearchIcon />
-          </SvgIcon>
-        </InputAdornment>
-      }
-      sx={{ maxWidth: 500 }}
-    />
-  </Card>
-);
+interface ICustomersSearchProps {
+  searchTerm: string;
+  handleSearch: (search: string) => void;
+}
+export const CustomersSearch = ({
+  searchTerm,
+  handleSearch,
+}: ICustomersSearchProps) => {
+  return (
+    <Card sx={{ p: 2 }}>
+      <OutlinedInput
+        defaultValue=""
+        fullWidth
+        placeholder="Search customer"
+        onChange={(e) => handleSearch(e.target.value)}
+        startAdornment={
+          <InputAdornment position="start">
+            <SvgIcon color="action" fontSize="small">
+              <SearchIcon />
+            </SvgIcon>
+          </InputAdornment>
+        }
+        sx={{ maxWidth: 500 }}
+      />
+    </Card>
+  );
+};
 
 interface ICustomersTableProps {
   count?: number;

@@ -17,7 +17,7 @@ export const authenticationApiSlice = apiSlice.injectEndpoints({
     }),
 
     getAllUsers: build.query<IPaginated<IUserData>, IUserQuery>({
-      query: ({ search = "", user_type, ordering, limit = 30, page = 1 }) => ({
+      query: ({ search = "", user_type, ordering, limit = 10, page = 1 }) => ({
         url: "users",
         method: "GET",
         include: "credentials",
@@ -26,7 +26,7 @@ export const authenticationApiSlice = apiSlice.injectEndpoints({
           user_type,
           ordering,
           limit,
-          offset: (page - 1) * limit,
+          offset: page * limit,
         },
       }),
     }),
