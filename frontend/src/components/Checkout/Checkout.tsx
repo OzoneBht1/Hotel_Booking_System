@@ -15,6 +15,7 @@ import Loading from "../Loading";
 import { useAppDispatch } from "../../store/hooks";
 import { tempBookActions } from "../../store/tempBookSlice";
 import { convertFormat } from "../../utils/RoomUtils";
+import { ITempBookingModifiedFormat } from "../types/types";
 
 const steps = ["Review", "Payment form", "Bill"];
 
@@ -24,38 +25,14 @@ interface ICheckout {
   data: {
     [key: string]: string;
   };
+  booking: ITempBookingModifiedFormat;
 }
-export default function Checkout({ data }: ICheckout) {
+export default function Checkout({ data, booking }: ICheckout) {
   const [activeStep, setActiveStep] = React.useState(0);
-  const { hotelId, userId } = useParams();
+
   const dispatch = useAppDispatch();
 
-  const {
-    data: bookRoomsDetails,
-    isLoading: bookRoomsIsLoading,
-    isError: bookRoomsIsError,
-  } = useGetBookClickedHistoryQuery(
-    { hotel: hotelId as string, user: userId as string },
-    {
-      skip: !hotelId || !userId,
-    }
-  );
-  const nav = useNavigate();
-
-  React.useEffect(() => {
-    if (bookRoomsIsError) {
-      nav("/error");
-    }
-  }, [bookRoomsIsError, bookRoomsIsLoading]);
-
-  if (bookRoomsIsLoading) {
-    return <Loading />;
-  }
-
-  const convertedDetails = convertFormat(bookRoomsDetails!);
-  console.log(convertedDetails);
-
-  dispatch(tempBookActions.setTempBooking({ bookDetail: convertedDetails! }));
+  dispatch(tempBookActions.setTempBooking({ bookDetail: booking }));
 
   const handleNext = () => {
     setActiveStep(activeStep + 1);
@@ -67,7 +44,7 @@ export default function Checkout({ data }: ICheckout) {
 
   const formReceiveHandler = (data: any) => {
     console.log("hi mom ");
-    console.log(data)
+    console.log(data);
   };
 
   function getStepContent(step: number) {

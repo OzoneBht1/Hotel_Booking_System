@@ -94,8 +94,6 @@ class HotelCreateWithDetailApi(generics.CreateAPIView):
                     rooms.append({})
                 rooms[room_id][room_field] = value
 
-        print(rooms)
-
         #         rooms = [
         #     {
         #         "room_type": request.data.get("rooms[0].room_type"),
@@ -167,11 +165,30 @@ class HotelSearchApi(generics.ListAPIView):
         return queryset
 
 
+from django.db.models import Q
+
+
 class HotelByLocationAndNameApi(generics.ListAPIView):
     serializer_class = HotelSerializer
     authentication_classes = []
     permission_classes = []
     pagination_class = CustomPagination
+    filterset_fields = [
+        "hotel_score",
+        "cheapest_price",
+        "amenities" "check_in_date",
+        "check_out_date",
+    ]
+    ordering_fields = [
+        "name",
+        "hotel_score",
+        "num_people",
+        "num_rooms",
+    ]
+    search_fields = [
+        "name",
+        "address",
+    ]
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -179,17 +196,34 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
     def get_queryset(self):
         queryset = Hotel.objects.all()
         search_query = self.request.query_params.get("term", None)
-        checkInDate = self.request.query_params.get("checkInDate", None)
+        check_in_date = self.request.query_params.get("checkinDate", None)
+        check_out_date = self.request.query_params.get("checkoutDate", None)
+        num_people = self.request.query_params.get("people", None)
+        num_rooms = self.request.query_params.get("rooms", None)
+        ordering = self.request.query_params.get("ordering", None)
 
-        checkOutDate = self.request.query_params.get("checkOutDate", None)
-
-        people = self.request.query_params.get("people", None)
-        rooms = self.request.query_params.get("rooms", None)
-
-        if search_query is not None:
+        if search_query:
             queryset = queryset.filter(
                 Q(name__icontains=search_query) | Q(address__icontains=search_query)
             )
+
+        if check_in_date:
+            queryset = queryset.filter(check_in_date=check_in_date)
+
+        if check_out_date:
+            queryset = queryset.filter(check_out_date=check_out_date)
+
+        if num_people:
+            queryset = queryset.filter(num_people=num_people)
+
+        if num_rooms:
+            queryset = queryset.filter(num_rooms=num_rooms)
+
+        queryset = self.filter_queryset(queryset)
+        # ordering = self.get_ordering()
+        if ordering:
+            queryset = queryset.order_by(*ordering)
+
         return queryset
 
 
