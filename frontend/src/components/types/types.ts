@@ -188,10 +188,14 @@ export interface IFAQ {
 export interface IFAQCreate {
   faqs: { question: string; answer: string; id: string }[];
 }
-export interface IUserQuery {
+export interface IFilterQuery {
   search?: string;
-  user_type?: UserType;
   ordering?: string;
   limit?: number;
   page: number;
 }
+export interface IUserQuery extends IFilterQuery {
+  user_type?: UserType;
+}
+
+export interface IHotelQuery extends IFilterQuery {}

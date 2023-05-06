@@ -1,14 +1,13 @@
 import { Container, Stack } from "@mui/material";
-import { Box } from "@mui/system";
-import React, { useEffect, useState } from "react";
-import CustomersTable from "../../components/AdminComponents/Customers";
+import { useEffect, useState } from "react";
 import Layout from "../../components/AdminComponents/Layout";
 import Loading from "../../components/Loading";
-import { useGetAllUsersQuery } from "../../store/api/authorization-api-slice";
 import Search from "../../components/AdminComponents/Search";
+import { useGetAllHotelsQuery } from "../../store/api/hotelSlice";
+import HotelTable from "../../components/AdminComponents/HotelTable";
 
 let rowsPerPage = 10;
-const UserManagement = () => {
+const HotelManagement = () => {
   const handlePageChange = (page: number) => {
     console.log(page);
     setPage(page);
@@ -20,10 +19,10 @@ const UserManagement = () => {
   const [page, setPage] = useState(0);
 
   const {
-    data: userData,
-    isLoading: userIsLoading,
-    isError: userIsError,
-  } = useGetAllUsersQuery({
+    data: hotelData,
+    isLoading: hotelIsLoading,
+    isError: hotelIsError,
+  } = useGetAllHotelsQuery({
     page: page,
     search: apiSearchQuery,
     limit: rowsPerPage,
@@ -43,23 +42,23 @@ const UserManagement = () => {
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
-  if (userIsLoading) return <Loading />;
+  if (hotelIsLoading) return <Loading />;
 
-  if (userIsError) return <div>Failed to load</div>;
+  if (hotelIsError) return <div>Failed to load</div>;
 
   return (
     <Layout>
       <Stack direction="row" width="100%" alignItems="center">
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
           <Search handleSearch={handleSearch} />
-          {userData && (
-            <CustomersTable
+          {hotelData && (
+            <HotelTable
               onPageChange={handlePageChange}
               rowsPerPage={rowsPerPage}
               page={page}
-              count={userData.count}
-              items={userData}
-              loading={userIsLoading}
+              count={hotelData.count}
+              items={hotelData}
+              loading={hotelIsLoading}
             />
           )}
         </Container>
@@ -68,4 +67,4 @@ const UserManagement = () => {
   );
 };
 
-export default UserManagement;
+export default HotelManagement;
