@@ -1,11 +1,9 @@
 import React from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import { Card, InputAdornment, OutlinedInput, SvgIcon } from "@mui/material";
-import PropTypes from "prop-types";
 import {
   Avatar,
   Box,
-  Checkbox,
   Stack,
   Table,
   TableBody,
@@ -16,6 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { MoreVert } from "@mui/icons-material";
+import { IPaginated, IUserData } from "../types/types";
 
 export const CustomersSearch = () => (
   <Card sx={{ p: 2 }}>
@@ -35,19 +34,26 @@ export const CustomersSearch = () => (
   </Card>
 );
 
-export const CustomersTable = (props: any) => {
-  const {
-    count = 0,
-    items = [],
-    onPageChange = () => {},
-    page = 0,
-    rowsPerPage = 0,
-    selected = [],
-  } = props;
+interface ICustomersTableProps {
+  count?: number;
+  items: IPaginated<IUserData>;
+  onPageChange: (page: number) => void;
+  page?: number;
+  rowsPerPage?: number;
+  loading?: boolean;
+  // selected?: any[];
+  //
+}
 
-  const selectedSome = selected.length > 0 && selected.length < items.length;
-  const selectedAll = items.length > 0 && selected.length === items.length;
+export const CustomersTable = (props: ICustomersTableProps) => {
+  const { count = 0, items, page = 0, rowsPerPage = 0 } = props;
 
+  const handlePageChange = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    props.onPageChange(newPage);
+  };
   return (
     <Card>
       <Box sx={{ minWidth: 800 }}>
@@ -63,28 +69,24 @@ export const CustomersTable = (props: any) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {items.map((customer: any) => {
-              const isSelected = selected.includes(customer.id);
-              const createdAt = customer.createdAt;
+            {items?.results?.map((customer) => {
+              // const createdAt = customer.createdAt;
 
               return (
-                <TableRow hover key={customer.id} selected={isSelected}>
+                <TableRow hover key={customer.id}>
                   <TableCell>
                     <Stack alignItems="center" direction="row" spacing={2}>
-                      <Avatar src={customer.avatar} />
+                      <Avatar src={customer.image} />
 
                       <Typography variant="subtitle2">
-                        {customer.name}
+                        {customer.first_name} {customer.last_name}
                       </Typography>
                     </Stack>
                   </TableCell>
                   <TableCell>{customer.email}</TableCell>
-                  <TableCell>
-                    {customer.address.city}, {customer.address.state},{" "}
-                    {customer.address.country}
-                  </TableCell>
-                  <TableCell>{customer.phone}</TableCell>
-                  <TableCell>{createdAt}</TableCell>
+                  <TableCell>{customer.country}</TableCell>
+                  <TableCell>{customer.user_type}</TableCell>
+                  <TableCell>{customer.is_superuser}</TableCell>
                   <TableCell>
                     <MoreVert />
                   </TableCell>
@@ -97,25 +99,26 @@ export const CustomersTable = (props: any) => {
       <TablePagination
         component="div"
         count={count}
-        onPageChange={onPageChange}
+        onPageChange={handlePageChange}
         page={page}
+        backIconButtonProps={
+          props.loading
+            ? {
+                disabled: props.loading,
+              }
+            : undefined
+        }
+        nextIconButtonProps={
+          props.loading
+            ? {
+                disabled: props.loading,
+              }
+            : undefined
+        }
         rowsPerPage={rowsPerPage}
       />
     </Card>
   );
-};
-
-CustomersTable.propTypes = {
-  count: PropTypes.number,
-  items: PropTypes.array,
-  onDeselectAll: PropTypes.func,
-  onDeselectOne: PropTypes.func,
-  onPageChange: PropTypes.func,
-  onSelectAll: PropTypes.func,
-  onSelectOne: PropTypes.func,
-  page: PropTypes.number,
-  rowsPerPage: PropTypes.number,
-  selected: PropTypes.array,
 };
 
 export default CustomersTable;
