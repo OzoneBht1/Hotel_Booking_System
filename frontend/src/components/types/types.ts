@@ -51,6 +51,7 @@ export interface ISelect {
   value: string;
   label: string;
 }
+
 export interface IUserData {
   first_name: string;
   last_name: string;
@@ -58,6 +59,10 @@ export interface IUserData {
   gender: string;
   country: string;
   image: string;
+  id?: number;
+  user_type?: UserType;
+  is_active?: boolean;
+  is_superuser?: boolean;
 }
 
 export interface IHotelData {
@@ -183,3 +188,14 @@ export interface IFAQ {
 export interface IFAQCreate {
   faqs: { question: string; answer: string; id: string }[];
 }
+export interface IFilterQuery {
+  search?: string;
+  ordering?: string;
+  limit?: number;
+  page: number;
+}
+export interface IUserQuery extends IFilterQuery {
+  user_type?: UserType;
+}
+
+export interface IHotelQuery extends IFilterQuery {}

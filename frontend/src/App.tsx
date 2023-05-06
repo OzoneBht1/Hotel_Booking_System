@@ -22,6 +22,7 @@ import Layout from "./components/AdminComponents/Layout";
 import { Box } from "@mui/system";
 import UserManagement from "./pages/AdminSection/UserManagement";
 import AdminProfileMain from "./components/AdminComponents/AdminProfileMain";
+import HotelManagement from "./pages/AdminSection/HotelManagement";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 function App() {
@@ -47,6 +48,7 @@ function App() {
             <Route element={<VerifyAdmin />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/customers" element={<UserManagement />} />
+              <Route path="/hotels" element={<HotelManagement />} />
             </Route>
           </Route>
           <Route path="*" element={<Error />} />

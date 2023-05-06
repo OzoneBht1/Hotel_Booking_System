@@ -5,6 +5,10 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework import status
 from sentence_transformers.models.Pooling import json
 
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+
+
 # from account_manager.permissions import UserDetailPermission
 from .serializers import (
     FAQ,
@@ -131,6 +135,16 @@ class HotelListApi(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAdminUser]
     pagination_class = CustomPagination
+    filter_backends = [
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        DjangoFilterBackend,
+    ]
+
+    filterset_fields = ["hotel_score"]
+    search_fields = ["name", "address", "id", "rooms__room_type"]
+    ordering_fields = ["id", "name", "country"]
+    ordering = ["name"]
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
