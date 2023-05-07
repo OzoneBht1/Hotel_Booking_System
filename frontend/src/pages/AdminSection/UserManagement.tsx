@@ -51,7 +51,10 @@ const UserManagement = () => {
     <Layout>
       <Stack direction="row" width="100%" alignItems="center">
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <Search handleSearch={handleSearch} />
+          <Search
+            handleSearch={handleSearch}
+            placeholder="Search for email, name"
+          />
           {userData && (
             <CustomersTable
               onPageChange={handlePageChange}

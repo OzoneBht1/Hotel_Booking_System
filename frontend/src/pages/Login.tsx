@@ -1,10 +1,21 @@
-import { Avatar, Box, Snackbar, Alert, Grid, Stack } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Snackbar,
+  Alert,
+  Grid,
+  Stack,
+  Modal,
+} from "@mui/material";
 import LoginForm from "../components/forms/LoginForm";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/system";
-import { ILoginCreds } from "../components/types/types";
-import { useVerifyLoginMutation } from "../store/api/authentication-api-slice";
+import { ILoginCreds, UserType } from "../components/types/types";
+import {
+  useVerifyEmailMutation,
+  useVerifyLoginMutation,
+} from "../store/api/authentication-api-slice";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAppDispatch } from "../store/hooks";
@@ -13,6 +24,8 @@ import { ITokenState } from "../components/types/types";
 import { useLocation } from "react-router-dom";
 import LoginPageIllustration from "../assets/LoginPageIllustration.png";
 import VerifyEmail from "../components/VerifyEmail";
+import jwtDecode from "jwt-decode";
+import { IUserJwt } from "../components/types/types";
 
 let HEIGHT_OF_NAVBAR = 68;
 
@@ -21,13 +34,16 @@ const Login = () => {
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(
     state?.from?.state ? true : false
   );
+
+  const [verifyEmail, { isLoading: verificationApiIsLoading, isSuccess }] =
+    useVerifyEmailMutation();
   const nav = useNavigate();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const dispatch = useAppDispatch();
 
-  const [verifyLogin, { error, isLoading, isSuccess }] =
-    useVerifyLoginMutation();
+  const [verifyLogin, { error, isLoading }] = useVerifyLoginMutation();
   const [emailVerified, setEmailVerified] = useState(true);
   let errorText: string | undefined = "";
 
@@ -54,12 +70,20 @@ const Login = () => {
   const loginDataHandler = (data: ILoginCreds) => {
     verifyLogin({ email: data.email, password: data.password })
       .unwrap()
-      .then((tokens: ITokenState) =>
-        dispatch(authActions.setCredentials({ authTokens: tokens }))
-      )
-      .then(() => nav("/", { state: { open: true } }))
+      .then((tokens: ITokenState) => {
+        dispatch(authActions.setCredentials({ authTokens: tokens }));
+        if (
+          (jwtDecode(tokens.access) as IUserJwt).user_type === UserType.ADMIN
+        ) {
+          nav("/dashboard", { state: { open: true } });
+        } else {
+          nav("/", { state: { open: true } });
+        }
+      })
+
       .catch((err: { status: number; data: { email: string[] } }) => {
         if (err.data.email[0] === "Email Not verified") {
+          setShowModal(true);
           setEmailVerified(false);
           setEmail(data.email);
         }
@@ -74,8 +98,33 @@ const Login = () => {
     alignItems: "center",
   });
 
+  const style = {
+    position: "absolute" as "absolute",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 3,
+    top: "40%",
+    left: "40%",
+    transform: "translate(-50%, -50%)",
+    width: 600,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    pt: 2,
+    px: 4,
+    pb: 3,
+  };
+
   const codeReceiveHandler = (email: string, code: string) => {
     console.log(email, code);
+    verifyEmail({ email, code })
+      .unwrap()
+      .then(() => {
+        setEmailVerified(true);
+        setShowModal(false);
+        setSnackbarOpen(true);
+      });
   };
 
   return (
@@ -85,7 +134,16 @@ const Login = () => {
       height={`calc(100vh - ${HEIGHT_OF_NAVBAR}px)`}
     >
       {!isSuccess && !emailVerified && !!email && (
-        <VerifyEmail onCodeReceieve={codeReceiveHandler} email={email} />
+        <Modal
+          // sx={{ backgroundColor: "white" }}
+          open={showModal}
+          onClose={() => setShowModal(false)}
+        >
+          <Box {...style}>
+            <Typography>Enter the code sent to your email </Typography>
+            <VerifyEmail onCodeReceieve={codeReceiveHandler} email={email} />
+          </Box>
+        </Modal>
       )}
       {snackbarOpen && (
         <Snackbar

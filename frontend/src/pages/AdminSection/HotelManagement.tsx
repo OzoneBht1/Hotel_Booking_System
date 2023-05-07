@@ -50,7 +50,10 @@ const HotelManagement = () => {
     <Layout>
       <Stack direction="row" width="100%" alignItems="center">
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <Search handleSearch={handleSearch} />
+          <Search
+            handleSearch={handleSearch}
+            placeholder="Search for name, address.."
+          />
           {hotelData && (
             <HotelTable
               onPageChange={handlePageChange}

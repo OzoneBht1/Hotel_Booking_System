@@ -35,6 +35,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["first_name", "last_name", "country", "gender"]
     USERNAME_FIELD = "email"
 
+    def set_password(self, raw_password: str | None) -> None:
+        return super().set_password(raw_password)
+
     def __str__(self) -> str:
         return f"{str(self.id)}, {self.first_name},{self.email}, {self.user_type}"
 

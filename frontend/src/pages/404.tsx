@@ -1,8 +1,10 @@
 import React from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
+import { useNavigate } from "react-router-dom";
 
 function Error() {
+  const nav = useNavigate();
   return (
     <Box
       sx={{
@@ -19,7 +21,7 @@ function Error() {
             <Typography variant="h6">
               The page you’re looking for doesn’t exist.
             </Typography>
-            <Button variant="contained">Back Home</Button>
+            <Button onClick={()=>nav("/")} variant="contained">Back Home</Button>
           </Grid>
           <Grid xs={6}>
             <img

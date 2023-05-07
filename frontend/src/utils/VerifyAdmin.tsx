@@ -5,12 +5,13 @@ import { useAppSelector } from "../store/hooks";
 
 const VerifyAdmin = () => {
   const user = useAppSelector((state) => state.auth.user);
+  console.log(user);
   const location = useLocation();
 
   return user && user?.user_type === UserType.ADMIN ? (
     <Outlet />
   ) : (
-    <Navigate to="/login" state={{ from: location }} replace />
+    <Navigate to="/**" state={{ from: location }} replace />
   );
 };
 

@@ -123,18 +123,17 @@ class Command(BaseCommand):
             first_name = name[0]
             last_name = name[1]
             email = fake.ascii_free_email()
-            password = "user123"
             gender = random.choice(["Male", "Female", "Others"])
             country = random.choice(df["Reviewer_Nationality"].unique())
             user = User.objects.create(
                 first_name=first_name,
                 last_name=last_name,
                 email=email,
-                password=password,
                 gender=gender,
                 country=country,
                 is_active=True,
             )
+            user.set_password("user123")
             user.save()
             users.append(user)
 
