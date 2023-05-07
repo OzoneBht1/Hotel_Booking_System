@@ -141,7 +141,7 @@ class HotelListApi(generics.ListAPIView):
 
     filterset_fields = ["hotel_score"]
     search_fields = ["name", "address", "id", "rooms__room_type"]
-    ordering_fields = ["id", "name", "country"]
+    ordering_fields = ["id", "name", "hotel_score"]
     ordering = ["name"]
 
     def get(self, request, *args, **kwargs):
