@@ -27,6 +27,7 @@ export const getTotalPrice = (rooms: IRoomWithQuantity[]) => {
 export const convertFormat = (
   booking: ITempBookingResponse
 ): ITempBookingModifiedFormat => {
+  console.log(booking);
   const updatedRooms = booking.rooms.map((room) => ({
     ...room.room,
     quantity: room.quantity || 0,

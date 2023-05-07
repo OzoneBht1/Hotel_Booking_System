@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
 const HomePageItem = (props: IHomePageItems) => {
   const nav = useNavigate();
+
   const cardClickHandler = () => {
     console.log(props);
     console.log("clicked");
@@ -46,7 +47,7 @@ const HomePageItem = (props: IHomePageItems) => {
               lineHeight={1.2}
               marginBottom={0.5}
               component="div"
-              width ="90%"
+              width="90%"
               noWrap
               sx={{ opacity: 0.8 }}
             >

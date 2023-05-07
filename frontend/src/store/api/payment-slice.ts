@@ -12,7 +12,7 @@ export const paymentSlice = paymentApiSlice.injectEndpoints({
     }),
     createPayment: build.query<any, any>({
       query: (data: any) => ({
-        url: "https://localhost:8000/payment/test-payment",
+        url: "http://localhost:8000/payment/test-payment/",
         method: "POST",
         include: "payment",
         body: data,

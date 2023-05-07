@@ -19,10 +19,13 @@ def calculate_order_amount(items):
 
 @api_view(["POST"])
 def create_payment(request):
+    print("Hello")
+    print(request.data)
     # Create a PaymentIntent with the order amount and currency
     customer = stripe.Customer.create()
     try:
         data = request.data
+
         print(data)
 
         intent = stripe.PaymentIntent.create(

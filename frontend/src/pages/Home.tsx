@@ -6,7 +6,7 @@ import HomepageImg from "../assets/homepage-img.jpg";
 import { styled } from "@mui/system";
 import HomePageCard from "../components/HomePageCard";
 import HomePageItems from "../components/HomePageItems";
-import { IQuery } from "../components/types/types";
+import { IQuery, UserType } from "../components/types/types";
 import { useAppSelector } from "../store/hooks";
 
 const Home = () => {
@@ -73,6 +73,17 @@ const Home = () => {
             Successfully Logged In!
           </Alert>
         </Snackbar>
+      )}
+      {user && user.user_type === UserType.ADMIN && (
+        <Box p={2} display="flex" justifyContent="flex-end">
+          <Button
+            color="success"
+            onClick={() => nav("/dashboard")}
+            variant="contained"
+          >
+            Back to Admin Panel
+          </Button>
+        </Box>
       )}
       <Box height="320px" width="100%">
         <Box

@@ -54,6 +54,7 @@ const Rooms = ({ rooms }: IRoomsProps) => {
 
     console.log(user.user_id);
     console.log(hotelId);
+    console.log(tempRooms);
 
     setTempBooking({
       user: user.user_id.toString(),

@@ -3,14 +3,15 @@ import { Card, InputAdornment, OutlinedInput, SvgIcon } from "@mui/material";
 
 interface ISearchProps {
   handleSearch: (search: string) => void;
+  placeholder?: string;
 }
-const Search = ({ handleSearch }: ISearchProps) => {
+const Search = ({ handleSearch, placeholder }: ISearchProps) => {
   return (
     <Card sx={{ p: 2 }}>
       <OutlinedInput
         defaultValue=""
         fullWidth
-        placeholder="Search customer"
+        placeholder={placeholder || "Search"}
         onChange={(e) => handleSearch(e.target.value)}
         startAdornment={
           <InputAdornment position="start">

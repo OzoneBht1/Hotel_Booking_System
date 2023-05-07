@@ -23,6 +23,7 @@ import { Box } from "@mui/system";
 import UserManagement from "./pages/AdminSection/UserManagement";
 import AdminProfileMain from "./components/AdminComponents/AdminProfileMain";
 import HotelManagement from "./pages/AdminSection/HotelManagement";
+import Unauthorized from "./pages/Unauthorized";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 function App() {

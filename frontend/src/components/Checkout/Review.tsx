@@ -21,7 +21,7 @@ export default function Review({ handleNext }: IReview) {
         </Typography>
 
         <Typography variant="body2" gutterBottom>
-          Hotel : {bookDetail?.hotel_name}
+          Hotel : {bookDetail?.hotel}
         </Typography>
         <List disablePadding>
           {bookDetail?.rooms?.map((room) => (
