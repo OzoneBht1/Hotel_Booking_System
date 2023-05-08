@@ -63,7 +63,7 @@ class HotelCreateApi(generics.CreateAPIView):
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser, IsPartnerPermission]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
