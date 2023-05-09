@@ -140,26 +140,40 @@ export interface IRoomWithQuantity extends IHotelRoom {
 }
 
 export interface ITempRoom {
-  room: IRoomWithQuantity;
-  quantity?: number;
+  room: number;
+  quantity: number;
   // the model structure caused an incorrect response, so double quantity
+}
+
+export interface RoomResponseFromApi {
+  id?: number;
+  room: Omit<IHotelRoom, "quantity">;
+  quantity: number;
 }
 
 export interface ITempBookingResponse {
   user: string;
   hotel: string;
-  rooms: ITempRoom[];
-  name: string;
+  hotel_name: string;
+  rooms: RoomResponseFromApi[];
+  name?: string;
+  check_in_date: string;
+  check_out_date: string;
 }
 
 export interface ITempBookingModifiedFormat {
   user: string;
   hotel: string;
   rooms: IRoomWithQuantity[];
-  name: string;
+  hotel_name: string;
+  check_in_date: string;
+  check_out_date: string;
 }
 
-export type ITempBookingGet = Omit<ITempBookingResponse, "rooms" | "name">;
+export interface ITempBookingGet {
+  hotel: string;
+  user: string;
+}
 
 export interface IHouseRules {
   smoking_allowed: boolean;
@@ -199,3 +213,15 @@ export interface IUserQuery extends IFilterQuery {
 }
 
 export interface IHotelQuery extends IFilterQuery {}
+
+export interface IPayment {
+  paymentMethod?: string;
+  clientSecret?: string;
+  email?: string;
+  paymentIntentId?: string;
+}
+
+export interface IBookingCreate extends ITempBookingModifiedFormat {
+  email: string;
+  paymentIntentId: string;
+}

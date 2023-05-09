@@ -1,3 +1,4 @@
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useEffect } from "react";
@@ -11,6 +12,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { roomActions } from "../store/roomSlice";
 import { tempBookActions } from "../store/tempBookSlice";
 import { convertFormat } from "../utils/RoomUtils";
+// import { convertFormat } from "../utils/RoomUtils";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 
@@ -31,17 +33,14 @@ const Checkout = () => {
       skip: !hotelId || !userId,
     }
   );
+  console.log(bookRoomsDetails);
 
   const { data, isLoading, isError } = useCreatePaymentQuery(
-    bookRoomsDetails &&
-      bookRoomsDetails.rooms &&
-      convertFormat(bookRoomsDetails).rooms,
+    bookRoomsDetails && convertFormat(bookRoomsDetails),
     {
-      skip: !bookRoomsDetails || !bookRoomsDetails.rooms || !bookRoomsIsSuccess,
+      skip: !bookRoomsIsSuccess,
     }
   );
-
-  // dispatch(tempBookActions.setTempBooking({ bookDetail: convertedDetails! }));
 
   // if (bookRoomsIsError) {
   //   nav("/error");
@@ -50,8 +49,6 @@ const Checkout = () => {
   // if (bookRoomsIsLoading) {
   //   return <Loading />;
   // }
-
-  const rooms = useAppSelector((state) => state.tempBook.bookDetail?.rooms);
 
   if (isLoading || bookRoomsIsLoading) {
     return <Loading />;
@@ -62,11 +59,11 @@ const Checkout = () => {
   }
   console.log(data);
 
-  dispatch(
-    tempBookActions.setTempBooking({
-      bookDetail: convertFormat(bookRoomsDetails!),
-    })
-  );
+  // dispatch(
+  //   tempBookActions.setTempBooking({
+  //     bookDetail: convertFormat(bookRoomsDetails!),
+  //   })
+  // );
 
   type Theme = "stripe" | "night" | "flat" | "none" | undefined;
 
@@ -85,8 +82,8 @@ const Checkout = () => {
         <Elements options={options} stripe={stripePromise}>
           {data && bookRoomsDetails && (
             <CheckoutForm
-              data={{ payment_intent_client_secret: data.clientSecret }}
-              booking={bookRoomsDetails}
+              data={{ paymentIntentClientSecret: data.clientSecret }}
+              booking={convertFormat(bookRoomsDetails)}
             />
           )}
           )

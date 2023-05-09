@@ -7,16 +7,18 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import { IHotelRoom, IPaginated } from "../types/types";
+import { IHotelRoom, IPaginated, ITempRoom } from "../types/types";
 import SingleRoom from "./SingleRoom";
 import { Box } from "@mui/system";
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getTotalPrice, getTotalQuantity } from "../../utils/RoomUtils";
 import { roomActions } from "../../store/roomSlice";
 import { useState } from "react";
 import { useSetBookClickedHistoryMutation } from "../../store/api/bookingSlice";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 interface IRoomsProps {
   rooms: IPaginated<IHotelRoom> | undefined;
@@ -30,6 +32,15 @@ const Rooms = ({ rooms }: IRoomsProps) => {
   console.log(addedRooms);
   const dispatch = useAppDispatch();
   const [reset, setReset] = useState(false);
+  const [selectedCheckInDate, setSelectedCheckInDate] = useState<Date | null>(
+    null
+  );
+
+  const [selectedCheckOutDate, setSelectedCheckOutDate] = useState<Date | null>(
+    null
+  );
+  const [error, setError] = useState<null | string>(null);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const { id: hotelId } = useParams();
 
@@ -47,19 +58,38 @@ const Rooms = ({ rooms }: IRoomsProps) => {
       return;
     }
 
-    const tempRooms = addedRooms.map((elem) => ({
-      room: elem.id,
+    if (!selectedCheckInDate || !selectedCheckOutDate) {
+      setError("Please select check-in and check-out dates");
+      return;
+    }
+
+    const checkInISO = selectedCheckInDate.toISOString();
+    const checkOutISO = selectedCheckOutDate.toISOString();
+
+    const checkInDate = checkInISO.split("T")[0];
+    const checkOutDate = checkOutISO.split("T")[0];
+
+    const dateFormatCheckIn = new Date(checkInISO);
+    const dateFormatCheckOut = new Date(checkOutISO);
+
+    if (dateFormatCheckIn > dateFormatCheckOut) {
+      setOpenSnackbar(true);
+      setError("Check out date must be greater than check in date");
+      return;
+    }
+
+    const tempRooms: ITempRoom[] = addedRooms.map((elem) => ({
+      room: elem.id as number,
       quantity: elem.quantity,
     }));
-
-    console.log(user.user_id);
-    console.log(hotelId);
-    console.log(tempRooms);
 
     setTempBooking({
       user: user.user_id.toString(),
       hotel: hotelId as string,
+      name: "",
       rooms: tempRooms,
+      check_in_date: checkInDate,
+      check_out_date: checkOutDate,
     })
       .unwrap()
       .then(() => {
@@ -132,6 +162,51 @@ const Rooms = ({ rooms }: IRoomsProps) => {
                         ${getTotalPrice(addedRooms)}
                       </Typography>
                     </Box>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      {/* <Box
+            sx={{
+              // display: { xs: "flex", md: "block" },
+              width: "100%",
+
+              flexWrap: "nowrap",
+            }}
+          > */}
+                      <DatePicker
+                        renderInput={(props) => (
+                          <TextField
+                            {...props}
+                            sx={{
+                              marginRight: 0.5,
+                              width: { xs: "48%", md: "30%" },
+                              flexShrink: 1,
+                            }}
+                          />
+                        )}
+                        label="Check-in date"
+                        value={selectedCheckInDate}
+                        onChange={(newValue) => {
+                          console.log(newValue);
+                          setSelectedCheckInDate(newValue);
+                        }}
+                      />
+                      <DatePicker
+                        renderInput={(props) => (
+                          <TextField
+                            {...props}
+                            sx={{
+                              width: { xs: "45%", sm: "48%", md: "30%" },
+                              flexShrink: 1,
+                            }}
+                          />
+                        )}
+                        label="Check-out date"
+                        value={selectedCheckOutDate}
+                        onChange={(newValue) => {
+                          setSelectedCheckOutDate(newValue);
+                        }}
+                      />
+                      {/* </Box> */}
+                    </LocalizationProvider>
 
                     <Box display="flex" alignItems="center" gap={1}>
                       Rooms :{" "}

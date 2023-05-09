@@ -138,10 +138,8 @@ class Command(BaseCommand):
             users.append(user)
 
         for user in users:
-            for i in range(random.randint(4, 18)):
-                hotel = Hotel.objects.order_by("?").first()
-                if not hotel:
-                    break
+            for i in range(random.randint(1, 4)):
+                hotel = random.choice(Hotel.objects.all())
                 rooms = Room.objects.filter(hotel=hotel)
                 if rooms:
                     room = random.choice(rooms)

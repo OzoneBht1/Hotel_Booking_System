@@ -16,6 +16,7 @@ import { useAppDispatch } from "../../store/hooks";
 import { tempBookActions } from "../../store/tempBookSlice";
 import { convertFormat } from "../../utils/RoomUtils";
 import { ITempBookingModifiedFormat } from "../types/types";
+import Bill from "./Bill";
 
 const steps = ["Review", "Payment form", "Bill"];
 
@@ -23,16 +24,25 @@ const theme = createTheme();
 
 interface ICheckout {
   data: {
-    [key: string]: string;
+    paymentIntentClientSecret: string;
   };
   booking: ITempBookingModifiedFormat;
 }
+
+let isInitial = true;
 export default function Checkout({ data, booking }: ICheckout) {
   const [activeStep, setActiveStep] = React.useState(0);
+  console.log(booking);
 
   const dispatch = useAppDispatch();
 
-  dispatch(tempBookActions.setTempBooking({ bookDetail: booking }));
+  React.useEffect(() => {
+    if (isInitial) {
+      console.log(booking);
+      dispatch(tempBookActions.setTempBooking({ bookDetail: booking }));
+    }
+    isInitial = false;
+  }, [dispatch, booking]);
 
   const handleNext = () => {
     setActiveStep(activeStep + 1);
@@ -52,7 +62,15 @@ export default function Checkout({ data, booking }: ICheckout) {
       case 0:
         return <Review handleNext={handleNext} />;
       case 1:
-        return <PaymentForm data={data} onReceiveForm={formReceiveHandler} />;
+        return (
+          <PaymentForm
+            handleNext={handleNext}
+            data={data}
+            onReceiveForm={formReceiveHandler}
+          />
+        );
+      case 2:
+        return <Bill secret={data.paymentIntentClientSecret} />;
       default:
         throw new Error("Unknown step");
     }

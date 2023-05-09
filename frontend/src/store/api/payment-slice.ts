@@ -4,7 +4,7 @@ export const paymentSlice = paymentApiSlice.injectEndpoints({
   endpoints: (build) => ({
     saveStripeInfo: build.mutation<any, any>({
       query: (data: any) => ({
-        url: `/payments/save-stripe-info/`,
+        url: `http://localhost:8000/payment/create-payment/`,
         method: "POST",
         include: "payment",
         body: data,
@@ -18,8 +18,21 @@ export const paymentSlice = paymentApiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    retrievePayment: build.query<any, string>({
+      query: (secret) => ({
+        url: `http://localhost:8000/payment/retrieve-payment/`,
+        method: "GET",
+        include: "payment",
+        params: {
+          secret: secret,
+        },
+      }),
+    }),
   }),
 });
 
-export const { useSaveStripeInfoMutation, useCreatePaymentQuery } =
-  paymentSlice;
+export const {
+  useSaveStripeInfoMutation,
+  useCreatePaymentQuery,
+  useRetrievePaymentQuery,
+} = paymentSlice;
