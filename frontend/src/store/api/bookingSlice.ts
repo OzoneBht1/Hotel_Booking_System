@@ -30,7 +30,7 @@ export const bookingApiSlice = apiSlice.injectEndpoints({
       IBookingCreate
     >({
       query: (data) => ({
-        url: `/hotels/${data.hotel}/create-booking/${data.user}`,
+        url: `/hotels/${data.hotel}/create-booking/${data.user}/`,
         method: "POST",
         include: "booking",
         body: data,

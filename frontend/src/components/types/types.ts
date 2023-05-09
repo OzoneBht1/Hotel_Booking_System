@@ -222,5 +222,6 @@ export interface IPayment {
 }
 
 export interface IBookingCreate extends ITempBookingModifiedFormat {
+  email: string;
   paymentIntentId: string;
 }

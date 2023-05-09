@@ -14,6 +14,7 @@ import { Stack } from "@mui/system";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { paymentActions } from "../../store/paymentSlice";
 import { useCreateBookingMutation } from "../../store/api/bookingSlice";
+import { useParams } from "react-router-dom";
 
 interface IPaymentFormProps {
   onReceiveForm: (data: any) => void;
@@ -24,6 +25,7 @@ export default function PaymentForm({ data, handleNext }: IPaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const clientSecret = data["payment_intent_client_secret"];
+  const { hotelId, userId } = useParams();
 
   const dispatch = useAppDispatch();
   console.log(clientSecret);
@@ -94,6 +96,8 @@ export default function PaymentForm({ data, handleNext }: IPaymentFormProps) {
       dispatch(paymentActions.setPaymentIntentId({ paymentIntentId }));
       await createBooking({
         ...bookDetail!,
+        user: userId as string,
+        hotel: hotelId as string,
         email: email,
         paymentIntentId,
       });
