@@ -11,17 +11,20 @@ import {
 
 import { useSaveStripeInfoMutation } from "../../store/api/payment-slice";
 import { Stack } from "@mui/system";
-import { useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { paymentActions } from "../../store/paymentSlice";
 
 interface IPaymentFormProps {
   onReceiveForm: (data: any) => void;
   data: { [key: string]: string };
+  handleNext: () => void;
 }
-export default function PaymentForm({ data }: IPaymentFormProps) {
+export default function PaymentForm({ data, handleNext }: IPaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const clientSecret = data["payment_intent_client_secret"];
 
+  const dispatch = useAppDispatch();
   console.log(clientSecret);
   const [email, setEmail] = useState<string>("");
   const [message, setMessage] = useState<string | undefined>(undefined);
@@ -56,32 +59,41 @@ export default function PaymentForm({ data }: IPaymentFormProps) {
       }
     });
   }, [stripe]);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!stripe || !elements) {
       return;
     }
     setLoading(true);
-    const { error } = await stripe.confirmPayment({
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         //   // Make sure to change this to your payment completion page
         return_url: "http://localhost:5173",
         receipt_email: email,
       },
+      redirect: "if_required",
     });
-    if (error.type === "card_error" || error.type === "validation_error") {
-      setMessage(error.message);
+    if (error) {
+      if (error.type === "card_error" || error.type === "validation_error") {
+        setMessage(error.message);
+      } else {
+        setMessage("An unexpected error occurred.");
+      }
     } else {
-      setMessage("An unexpected error occurred.");
+      const paymentMethod = paymentIntent.payment_method;
+      const paymentIntentId = paymentIntent.id;
+
+      dispatch(paymentActions.setPaymentIntentId({ paymentIntentId }));
+      await saveStripeInfo({
+        email: email,
+        paymentIntentId: paymentIntentId,
+        paymentMethodId: paymentMethod,
+        bookDetail,
+      });
+      handleNext();
     }
-
-    await saveStripeInfo({
-      email: email,
-      paymentIntentId: clientSecret,
-      bookDetail,
-    });
-
     setLoading(false);
   };
 

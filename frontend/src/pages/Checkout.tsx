@@ -80,7 +80,7 @@ const Checkout = () => {
         <Elements options={options} stripe={stripePromise}>
           {data && bookRoomsDetails && (
             <CheckoutForm
-              data={{ payment_intent_client_secret: data.clientSecret }}
+              data={{ paymentIntentClientSecret: data.clientSecret }}
               booking={convertFormat(bookRoomsDetails)}
             />
           )}

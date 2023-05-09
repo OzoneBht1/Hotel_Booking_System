@@ -199,3 +199,10 @@ export interface IUserQuery extends IFilterQuery {
 }
 
 export interface IHotelQuery extends IFilterQuery {}
+
+export interface IPayment {
+  paymentMethod?: string;
+  clientSecret?: string;
+  email?: string;
+  paymentIntentId?: string;
+}
