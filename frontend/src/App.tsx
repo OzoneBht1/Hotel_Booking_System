@@ -28,10 +28,11 @@ import Unauthorized from "./pages/Unauthorized";
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 function App() {
   const { user } = useAppSelector((state) => state.auth);
+  console.log(user);
   return (
     <Elements stripe={stripePromise}>
       <div>
-        {!user || (user?.user_type !== UserType.ADMIN && <NavBar />)}
+        {(!user || user?.user_type !== UserType.ADMIN) && <NavBar />}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/hotel/:id" element={<HotelPage />} />

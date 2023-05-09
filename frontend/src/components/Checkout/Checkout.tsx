@@ -27,12 +27,20 @@ interface ICheckout {
   };
   booking: ITempBookingModifiedFormat;
 }
+
+let isInitial = true;
 export default function Checkout({ data, booking }: ICheckout) {
   const [activeStep, setActiveStep] = React.useState(0);
+  console.log(booking);
 
   const dispatch = useAppDispatch();
 
-  dispatch(tempBookActions.setTempBooking({ bookDetail: booking }));
+  React.useEffect(() => {
+    if (isInitial) {
+      dispatch(tempBookActions.setTempBooking({ bookDetail: booking }));
+    }
+    isInitial = false;
+  }, [dispatch, booking]);
 
   const handleNext = () => {
     setActiveStep(activeStep + 1);

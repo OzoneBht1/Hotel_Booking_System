@@ -1,3 +1,4 @@
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useEffect } from "react";
@@ -33,15 +34,11 @@ const Checkout = () => {
   );
 
   const { data, isLoading, isError } = useCreatePaymentQuery(
-    bookRoomsDetails &&
-      bookRoomsDetails.rooms &&
-      convertFormat(bookRoomsDetails).rooms,
+    bookRoomsDetails && convertFormat(bookRoomsDetails),
     {
-      skip: !bookRoomsDetails || !bookRoomsDetails.rooms || !bookRoomsIsSuccess,
+      skip: !bookRoomsIsSuccess,
     }
   );
-
-  // dispatch(tempBookActions.setTempBooking({ bookDetail: convertedDetails! }));
 
   // if (bookRoomsIsError) {
   //   nav("/error");
@@ -62,11 +59,11 @@ const Checkout = () => {
   }
   console.log(data);
 
-  dispatch(
-    tempBookActions.setTempBooking({
-      bookDetail: convertFormat(bookRoomsDetails!),
-    })
-  );
+  // dispatch(
+  //   tempBookActions.setTempBooking({
+  //     bookDetail: convertFormat(bookRoomsDetails!),
+  //   })
+  // );
 
   type Theme = "stripe" | "night" | "flat" | "none" | undefined;
 
@@ -86,7 +83,7 @@ const Checkout = () => {
           {data && bookRoomsDetails && (
             <CheckoutForm
               data={{ payment_intent_client_secret: data.clientSecret }}
-              booking={bookRoomsDetails}
+              booking={convertFormat(bookRoomsDetails)}
             />
           )}
           )
