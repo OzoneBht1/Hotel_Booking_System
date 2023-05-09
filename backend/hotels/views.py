@@ -19,7 +19,6 @@ from .serializers import (
     FAQSerializer,
     HotelCreateWithDetailsSerializer,
     HotelSerializer,
-    BookingSerializer,
     HouseRules,
     HouseRulesSerializer,
     ReviewSerializer,
@@ -230,9 +229,21 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
 
 class BookingCreateApi(generics.CreateAPIView):
     queryset = Hotel.objects.all()
-    serializer_class = BookingSerializer
+    serializer_class = BookCreateSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)  # Assign the logged-in user to the booking
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            {"message": "Temporary Booking Created"},
+            status=status.HTTP_201_CREATED,
+            headers=headers,
+        )
 
 
 class HotelsByLocationApi(generics.ListAPIView):

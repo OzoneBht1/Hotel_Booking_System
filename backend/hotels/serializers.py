@@ -90,21 +90,6 @@ class HotelImagesSerializer(ModelSerializer):
         fields = "__all__"
 
 
-class BookingSerializer(ModelSerializer):
-    class Meta:
-        model = Booking
-        fields = [
-            "id",
-            "user",
-            "hotel",
-            "room",
-            "check_in",
-            "check_out",
-            "booking_date",
-            "booking_amount",
-        ]
-
-
 class RoomSerializer(ModelSerializer):
     image = Base64ImageField(required=False, allow_null=True)
 
@@ -231,6 +216,10 @@ class HotelCreateWithDetailsSerializer(serializers.ModelSerializer):
 class BookCreateSerializer(ModelSerializer):
     rooms = RoomTempSerializer(many=True)
 
+    class Meta:
+        model = Booking
+        fields = "__all__"
+
     def create(self, validated_data):
         rooms_data = validated_data.pop("rooms")
         bookings = Booking.objects.create(**validated_data)
@@ -238,7 +227,3 @@ class BookCreateSerializer(ModelSerializer):
             room = RoomTemp.objects.create(**room_data)
             bookings.rooms.add(room)
         return bookings
-
-    class Meta:
-        model: Booking
-        fields = "__all__"
