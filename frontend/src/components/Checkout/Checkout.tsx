@@ -38,6 +38,7 @@ export default function Checkout({ data, booking }: ICheckout) {
 
   React.useEffect(() => {
     if (isInitial) {
+      console.log(booking);
       dispatch(tempBookActions.setTempBooking({ bookDetail: booking }));
     }
     isInitial = false;

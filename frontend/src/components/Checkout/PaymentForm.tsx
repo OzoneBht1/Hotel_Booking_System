@@ -13,6 +13,7 @@ import { useSaveStripeInfoMutation } from "../../store/api/payment-slice";
 import { Stack } from "@mui/system";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { paymentActions } from "../../store/paymentSlice";
+import { useCreateBookingMutation } from "../../store/api/bookingSlice";
 
 interface IPaymentFormProps {
   onReceiveForm: (data: any) => void;
@@ -29,6 +30,11 @@ export default function PaymentForm({ data, handleNext }: IPaymentFormProps) {
   const [email, setEmail] = useState<string>("");
   const [message, setMessage] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
+  const [
+    createBooking,
+    { isLoading: createBookingIsLoading, isError: createBookingIsError },
+  ] = useCreateBookingMutation();
+
   const [saveStripeInfo, { isLoading, isError }] = useSaveStripeInfoMutation();
   const { bookDetail } = useAppSelector((state) => state.tempBook);
 
@@ -86,6 +92,11 @@ export default function PaymentForm({ data, handleNext }: IPaymentFormProps) {
       const paymentIntentId = paymentIntent.id;
 
       dispatch(paymentActions.setPaymentIntentId({ paymentIntentId }));
+      await createBooking({
+        ...bookDetail!,
+        email: email,
+        paymentIntentId,
+      });
       await saveStripeInfo({
         email: email,
         paymentIntentId: paymentIntentId,

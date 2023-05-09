@@ -1,6 +1,7 @@
 import {
   ITempBookingResponse,
   ITempBookingGet,
+  IBookingCreate,
 } from "../../components/types/types";
 import { apiSlice } from "./apiSlice";
 
@@ -24,10 +25,22 @@ export const bookingApiSlice = apiSlice.injectEndpoints({
         include: "booking",
       }),
     }),
+    createBooking: build.mutation<
+      { message: string; status: number },
+      IBookingCreate
+    >({
+      query: (data) => ({
+        url: `/hotels/${data.hotel}/create-booking/${data.user}`,
+        method: "POST",
+        include: "booking",
+        body: data,
+      }),
+    }),
   }),
 });
 
 export const {
   useSetBookClickedHistoryMutation,
   useGetBookClickedHistoryQuery,
+  useCreateBookingMutation,
 } = bookingApiSlice;

@@ -37,6 +37,7 @@ export const convertFormat = (
     ...booking,
     rooms: updatedRooms,
   };
+  console.log(updatedBooking);
 
   return updatedBooking;
 };

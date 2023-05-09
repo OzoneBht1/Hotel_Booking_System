@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { roomActions } from "../store/roomSlice";
 import { tempBookActions } from "../store/tempBookSlice";
 import { convertFormat } from "../utils/RoomUtils";
+// import { convertFormat } from "../utils/RoomUtils";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 
@@ -32,6 +33,7 @@ const Checkout = () => {
       skip: !hotelId || !userId,
     }
   );
+  console.log(bookRoomsDetails);
 
   const { data, isLoading, isError } = useCreatePaymentQuery(
     bookRoomsDetails && convertFormat(bookRoomsDetails),
