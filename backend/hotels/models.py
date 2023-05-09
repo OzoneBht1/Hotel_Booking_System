@@ -63,6 +63,8 @@ class BookTemp(BaseModel):
     rooms = models.ManyToManyField(
         "RoomTemp",
     )
+    check_in = models.DateTimeField(blank=True, null=True)
+    check_out = models.DateTimeField(blank=True, null=True)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
 
     class Meta:
@@ -90,18 +92,23 @@ def delete_rooms(sender, instance, **kwargs):
 class Booking(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    rooms = models.ManyToManyField(
+        RoomTemp,
+    )
     check_in = models.DateTimeField()
     check_out = models.DateTimeField()
-    booking_date = models.DateTimeField(auto_now_add=True)
-    cancelled = models.BooleanField(default=False)
-    cancelled_date = models.DateTimeField(null=True, blank=True)
-    # booking_status = models.ChoiceField(choices=[("Pending", "Pending"), ("Confirmed", "Confirmed"), ("Cancelled", "Cancelled")])
-    booking_status = models.CharField(max_length=200, default="Pending")
-    booking_amount = models.IntegerField(default=0)
+    booking_status = models.CharField(
+        max_length=100,
+        choices=[
+            ("Pending", "Pending"),
+            ("Confirmed", "Confirmed"),
+            ("Cancelled", "Cancelled"),
+        ],
+        default="Pending",
+    )
 
     def __str__(self):
-        return f"{self.hotel.name} - {self.room.room_number}"
+        return f"{self.hotel.name}"
 
 
 class Review(BaseModel):

@@ -12,6 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 # from account_manager.permissions import UserDetailPermission
 from .serializers import (
     FAQ,
+    BookCreateSerializer,
     BookTemp,
     BookTempCreateSerializer,
     BookTempWithDetailSerializer,
@@ -315,6 +316,11 @@ class GetBookingTempApi(generics.RetrieveAPIView):
     # permission_classes = [UserDetailPermission]
     lookup_field = "user_id"
 
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return BookTempWithDetailSerializer
+        return self.serializer_class
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
@@ -323,6 +329,23 @@ class GetBookingTempApi(generics.RetrieveAPIView):
         user_id = self.kwargs.get("user_id")
 
         return BookTemp.objects.filter(hotel=hotel_id, user=user_id)
+
+
+class CreateBooking(generics.CreateAPIView):
+    serializer_class = BookCreateSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)  # Assign the logged-in user to the booking
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            {"message": "Temporary Booking Created"},
+            status=status.HTTP_201_CREATED,
+            headers=headers,
+        )
 
 
 class FAQByHotelApi(generics.ListAPIView):

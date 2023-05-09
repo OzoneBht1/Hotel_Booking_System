@@ -65,7 +65,7 @@ urlpatterns = [
     path(
         "hotels/<int:hotel_id>/get-temp-booking/<int:user_id>/",
         GetBookingTempApi.as_view(),
-        name="create-booking",
+        name="get-booking",
     ),
     path(
         "hotels/<int:hotel_id>/create-temp-booking/<int:user_id>/",
