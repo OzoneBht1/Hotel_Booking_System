@@ -11,6 +11,7 @@ import {
 
 import { useSaveStripeInfoMutation } from "../../store/api/payment-slice";
 import { Stack } from "@mui/system";
+import { useAppSelector } from "../../store/hooks";
 
 interface IPaymentFormProps {
   onReceiveForm: (data: any) => void;
@@ -26,6 +27,7 @@ export default function PaymentForm({ data }: IPaymentFormProps) {
   const [message, setMessage] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [saveStripeInfo, { isLoading, isError }] = useSaveStripeInfoMutation();
+  const { bookDetail } = useAppSelector((state) => state.tempBook);
 
   useEffect(() => {
     console.log(stripe);
@@ -63,6 +65,7 @@ export default function PaymentForm({ data }: IPaymentFormProps) {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
+        //   // Make sure to change this to your payment completion page
         return_url: "http://localhost:5173",
         receipt_email: email,
       },
@@ -72,6 +75,12 @@ export default function PaymentForm({ data }: IPaymentFormProps) {
     } else {
       setMessage("An unexpected error occurred.");
     }
+
+    await saveStripeInfo({
+      email: email,
+      paymentIntentId: clientSecret,
+      bookDetail,
+    });
 
     setLoading(false);
   };

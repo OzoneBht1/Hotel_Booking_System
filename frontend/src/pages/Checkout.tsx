@@ -48,8 +48,6 @@ const Checkout = () => {
   //   return <Loading />;
   // }
 
-  const rooms = useAppSelector((state) => state.tempBook.bookDetail?.rooms);
-
   if (isLoading || bookRoomsIsLoading) {
     return <Loading />;
   }
