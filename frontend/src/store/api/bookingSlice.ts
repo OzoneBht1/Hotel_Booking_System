@@ -1,7 +1,8 @@
 import {
   ITempBookingResponse,
-  ITempBookingGet,
   IBookingCreate,
+  ITempBookingSet,
+  ITempBookingRequests,
 } from "../../components/types/types";
 import { apiSlice } from "./apiSlice";
 
@@ -9,7 +10,7 @@ export const bookingApiSlice = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     setBookClickedHistory: build.mutation<
       { message: string; status: number },
-      ITempBookingResponse
+      ITempBookingSet
     >({
       query: (data) => ({
         url: `/hotels/${data.hotel}/create-temp-booking/${data.user}/`,
@@ -18,7 +19,10 @@ export const bookingApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
-    getBookClickedHistory: build.query<ITempBookingResponse, ITempBookingGet>({
+    getBookClickedHistory: build.query<
+      ITempBookingResponse,
+      ITempBookingRequests
+    >({
       query: (data) => ({
         url: `/hotels/${data.hotel}/get-temp-booking/${data.user}`,
         method: "GET",
@@ -36,6 +40,16 @@ export const bookingApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    deleteTempBooking: build.mutation<
+      { message: string; status: number },
+      ITempBookingRequests
+    >({
+      query: (data) => ({
+        url: `/hotels/${data.hotel}/delete-temp-booking/${data.user}/`,
+        method: "DELETE",
+        include: "booking",
+      }),
+    }),
   }),
 });
 
@@ -43,4 +57,5 @@ export const {
   useSetBookClickedHistoryMutation,
   useGetBookClickedHistoryQuery,
   useCreateBookingMutation,
+  useDeleteTempBookingMutation,
 } = bookingApiSlice;

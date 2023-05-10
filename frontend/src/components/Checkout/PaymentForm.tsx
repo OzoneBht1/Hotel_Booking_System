@@ -13,8 +13,12 @@ import { useSaveStripeInfoMutation } from "../../store/api/payment-slice";
 import { Stack } from "@mui/system";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { paymentActions } from "../../store/paymentSlice";
-import { useCreateBookingMutation } from "../../store/api/bookingSlice";
+import {
+  useCreateBookingMutation,
+  useDeleteTempBookingMutation,
+} from "../../store/api/bookingSlice";
 import { useParams } from "react-router-dom";
+import { ITempBookingSet } from "../types/types";
 
 interface IPaymentFormProps {
   onReceiveForm: (data: any) => void;
@@ -38,6 +42,7 @@ export default function PaymentForm({ data, handleNext }: IPaymentFormProps) {
   ] = useCreateBookingMutation();
 
   const [saveStripeInfo, { isLoading, isError }] = useSaveStripeInfoMutation();
+  const [deleteTempBooking] = useDeleteTempBookingMutation();
   const { bookDetail } = useAppSelector((state) => state.tempBook);
 
   useEffect(() => {
@@ -94,8 +99,23 @@ export default function PaymentForm({ data, handleNext }: IPaymentFormProps) {
       const paymentIntentId = paymentIntent.id;
 
       dispatch(paymentActions.setPaymentIntentId({ paymentIntentId }));
-      await createBooking({
+      console.log(bookDetail);
+
+      const data = {
         ...bookDetail!,
+        rooms: bookDetail!.rooms!.map((room) => ({
+          room: room.id as number,
+          quantity: room.quantity as number,
+        })),
+      };
+
+      await deleteTempBooking({
+        user: userId as string,
+        hotel: hotelId as string,
+      });
+
+      await createBooking({
+        ...data,
         user: userId as string,
         hotel: hotelId as string,
         email: email,
@@ -112,9 +132,6 @@ export default function PaymentForm({ data, handleNext }: IPaymentFormProps) {
     setLoading(false);
   };
 
-  const paymentElementOptions = {
-    layout: "tabs",
-  };
   //
   return (
     <React.Fragment>
@@ -134,7 +151,13 @@ export default function PaymentForm({ data, handleNext }: IPaymentFormProps) {
         </Grid>
         <Stack alignItems="flex-end">
           <Button
-            disabled={loading || !stripe || !elements}
+            disabled={
+              loading ||
+              !stripe ||
+              !elements ||
+              createBookingIsLoading ||
+              isLoading
+            }
             type="submit"
             variant="contained"
             sx={{ mt: 3, ml: 1 }}

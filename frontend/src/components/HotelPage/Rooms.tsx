@@ -86,10 +86,10 @@ const Rooms = ({ rooms }: IRoomsProps) => {
     setTempBooking({
       user: user.user_id.toString(),
       hotel: hotelId as string,
-      name: "",
       rooms: tempRooms,
-      check_in_date: checkInDate,
-      check_out_date: checkOutDate,
+      hotel_name: "",
+      check_in: checkInDate,
+      check_out: checkOutDate,
     })
       .unwrap()
       .then(() => {

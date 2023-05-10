@@ -24,6 +24,7 @@ import UserManagement from "./pages/AdminSection/UserManagement";
 import AdminProfileMain from "./components/AdminComponents/AdminProfileMain";
 import HotelManagement from "./pages/AdminSection/HotelManagement";
 import Unauthorized from "./pages/Unauthorized";
+import Booking from "./components/Booking";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 function App() {
@@ -47,6 +48,7 @@ function App() {
             />
             <Route path="/add-property" element={<ListProperties />} />
             <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/bookings/:id" element={<Booking />} />
             <Route element={<VerifyAdmin />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/customers" element={<UserManagement />} />

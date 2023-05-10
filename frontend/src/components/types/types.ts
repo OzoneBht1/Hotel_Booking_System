@@ -145,6 +145,10 @@ export interface ITempRoom {
   // the model structure caused an incorrect response, so double quantity
 }
 
+export interface ITempBookingSet extends Omit<ITempBookingResponse, "rooms"> {
+  rooms: ITempRoom[];
+}
+
 export interface RoomResponseFromApi {
   id?: number;
   room: Omit<IHotelRoom, "quantity">;
@@ -157,8 +161,8 @@ export interface ITempBookingResponse {
   hotel_name: string;
   rooms: RoomResponseFromApi[];
   name?: string;
-  check_in_date: string;
-  check_out_date: string;
+  check_in: string;
+  check_out: string;
 }
 
 export interface ITempBookingModifiedFormat {
@@ -166,11 +170,11 @@ export interface ITempBookingModifiedFormat {
   hotel: string;
   rooms: IRoomWithQuantity[];
   hotel_name: string;
-  check_in_date: string;
-  check_out_date: string;
+  check_in: string;
+  check_out: string;
 }
 
-export interface ITempBookingGet {
+export interface ITempBookingRequests {
   hotel: string;
   user: string;
 }
@@ -221,7 +225,7 @@ export interface IPayment {
   paymentIntentId?: string;
 }
 
-export interface IBookingCreate extends ITempBookingModifiedFormat {
+export interface IBookingCreate extends ITempBookingSet {
   email: string;
   paymentIntentId: string;
 }

@@ -1,3 +1,4 @@
+import { ITempBookingModifiedFormat } from "../../components/types/types";
 import { paymentApiSlice } from "./paymentApiSlice";
 
 export const paymentSlice = paymentApiSlice.injectEndpoints({
@@ -18,14 +19,18 @@ export const paymentSlice = paymentApiSlice.injectEndpoints({
         body: data,
       }),
     }),
-    retrievePayment: build.query<any, string>({
-      query: (secret) => ({
+    retrievePayment: build.query<
+      any,
+      { secret: string; data: ITempBookingModifiedFormat }
+    >({
+      query: ({ secret, data }) => ({
         url: `http://localhost:8000/payment/retrieve-payment/`,
-        method: "GET",
+        method: "POST",
         include: "payment",
         params: {
           secret: secret,
         },
+        body: data,
       }),
     }),
   }),
