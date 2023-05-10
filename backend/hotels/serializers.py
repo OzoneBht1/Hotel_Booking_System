@@ -227,3 +227,23 @@ class BookCreateSerializer(ModelSerializer):
             room = RoomTemp.objects.create(**room_data)
             bookings.rooms.add(room)
         return bookings
+
+
+class BookingSerializer(ModelSerializer):
+    rooms = RoomTempSerializer(many=True)
+    hotel_name = SerializerMethodField()
+
+    class Meta:
+        model = Booking
+        fields = [
+            "id",
+            "check_in",
+            "check_out",
+            "rooms",
+            "hotel_name",
+            "email",
+            "paymentIntentId",
+        ]
+
+    def get_hotel_name(self, obj):
+        return obj.hotel.name

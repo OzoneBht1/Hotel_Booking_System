@@ -25,9 +25,5 @@ urlpatterns = [
     path("logout/", UserLogoutView.as_view(), name="logout"),
     path("verify/", verify_email, name="verify_email"),
     path("users/", UserListSerializer.as_view(), name="user_list"),
-]
-urlpatterns2 = [
     path("user/<int:id>/", views.UserDetailApi.as_view()),
 ]
-
-urlpatterns = format_suffix_patterns(urlpatterns)

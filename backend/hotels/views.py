@@ -8,6 +8,8 @@ from sentence_transformers.models.Pooling import json
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
+from account_manager.permissions import UserDetailPermission
+
 
 # from account_manager.permissions import UserDetailPermission
 from .serializers import (
@@ -16,6 +18,8 @@ from .serializers import (
     BookTemp,
     BookTempCreateSerializer,
     BookTempWithDetailSerializer,
+    Booking,
+    BookingSerializer,
     FAQSerializer,
     HotelCreateWithDetailsSerializer,
     HotelSerializer,
@@ -27,7 +31,7 @@ from .serializers import (
 )
 from rest_framework.decorators import api_view
 from .models import Hotel
-from .permissions import IsPartnerPermission
+from .permissions import IsCurrentUserPermission
 from .pagination import CustomPagination, CustomPagination
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
@@ -243,6 +247,18 @@ class BookingCreateApi(generics.CreateAPIView):
             status=status.HTTP_201_CREATED,
             headers=headers,
         )
+
+
+class BookingDetailsByUserApi(generics.ListAPIView):
+    serializer_class = BookingSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsCurrentUserPermission]
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.kwargs["user_id"]
+        queryset = Booking.objects.filter(user=user)
+        return queryset
 
 
 class HotelsByLocationApi(generics.ListAPIView):
