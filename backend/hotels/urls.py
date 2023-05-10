@@ -19,9 +19,9 @@ from .views import (
     SingleRoomByHotelApi,
 )
 
-
+# type: ignore
 urlpatterns = [
-    path("hotels/", HotelListApi.as_view(), name="hotels"),
+    path("hotels/", HotelListApi.as_view(), name="hotels"),  # type: ignore
     path("hotels/<int:id>", HotelDetailApi.as_view(), name="hotels"),
     path(
         "hotels/<int:id>/reviews",

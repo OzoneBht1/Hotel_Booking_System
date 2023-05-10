@@ -231,10 +231,9 @@ class BookingCreateApi(generics.CreateAPIView):
     queryset = Hotel.objects.all()
     serializer_class = BookCreateSerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    # permission_classes = [IsAuthenticated, IsAdminUser]
 
     def create(self, request, *args, **kwargs):
-        print(request.data)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user)  # Assign the logged-in user to the booking
