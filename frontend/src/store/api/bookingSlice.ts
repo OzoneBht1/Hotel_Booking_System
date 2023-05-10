@@ -3,6 +3,8 @@ import {
   IBookingCreate,
   ITempBookingSet,
   ITempBookingRequests,
+  IPaginated,
+  IBookingQuery,
 } from "../../components/types/types";
 import { apiSlice } from "./apiSlice";
 
@@ -50,6 +52,19 @@ export const bookingApiSlice = apiSlice.injectEndpoints({
         include: "booking",
       }),
     }),
+    getBookingsByUser: build.query<IPaginated<IBookingCreate>, IBookingQuery>({
+      query: ({ user_id, search, ordering, limit = 10, page }) => ({
+        url: `/booking/${user_id}`,
+        method: "GET",
+        include: "booking",
+        params: {
+          search,
+          ordering,
+          limit,
+          offset: page * limit,
+        },
+      }),
+    }),
   }),
 });
 
@@ -58,4 +73,5 @@ export const {
   useGetBookClickedHistoryQuery,
   useCreateBookingMutation,
   useDeleteTempBookingMutation,
+  useGetBookingsByUserQuery,
 } = bookingApiSlice;

@@ -82,10 +82,8 @@ def save_stripe_info(request):
 def send_bill(request):
     booking_data = request.data
     payment_intent = request.query_params.get("secret", None)
-    print(booking_data)
 
     bookingDetail = Booking.objects.get(paymentIntentId=payment_intent)
-    print(bookingDetail)
     # create booking
     # fetch the booking
     # products =
@@ -96,7 +94,6 @@ def send_bill(request):
     # stripe.Invoice.create(
     #     customer=data["customer"],
     # )
-    print(request.data)
     #
     # stripe.Invoice.send_invoice(
     #     data["invoice"],

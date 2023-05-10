@@ -156,6 +156,7 @@ export interface RoomResponseFromApi {
 }
 
 export interface ITempBookingResponse {
+  id?: string;
   user: string;
   hotel: string;
   hotel_name: string;
@@ -217,6 +218,10 @@ export interface IUserQuery extends IFilterQuery {
 }
 
 export interface IHotelQuery extends IFilterQuery {}
+
+export interface IBookingQuery extends IFilterQuery {
+  user_id?: number;
+}
 
 export interface IPayment {
   paymentMethod?: string;

@@ -254,6 +254,14 @@ class BookingDetailsByUserApi(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsCurrentUserPermission]
     pagination_class = CustomPagination
+    filter_backends = [
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        DjangoFilterBackend,
+    ]
+
+    search_fields = ["hotel__name"]
+    ordering = ["hotel__name"]
 
     def get_queryset(self):
         user = self.kwargs["user_id"]
