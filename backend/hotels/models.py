@@ -95,8 +95,8 @@ class Booking(BaseModel):
     rooms = models.ManyToManyField(
         RoomTemp,
     )
-    check_in = models.DateTimeField()
-    check_out = models.DateTimeField()
+    check_in = models.DateField()
+    check_out = models.DateField()
     booking_status = models.CharField(
         max_length=100,
         choices=[

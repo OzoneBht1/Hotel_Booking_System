@@ -2,6 +2,7 @@ from django.urls import path
 from .views import (
     BookingCreateApi,
     CreateBookingTempApi,
+    DeleteTempBookingApi,
     FAQByHotelApi,
     GetBookingTempApi,
     HotelCreateApi,
@@ -74,9 +75,14 @@ urlpatterns = [
         name="create-temp-booking",
     ),
     path(
+        "hotels/<int:hotel_id>/delete-temp-booking/<int:user_id>/",
+        DeleteTempBookingApi.as_view(),
+        name="delete-temp-booking",
+    ),
+    path(
         "hotels/<int:hotel_id>/create-booking/<int:user_id>/",
         BookingCreateApi.as_view(),
-        name="create-temp-booking",
+        name="create-booking",
     ),
     path("hotels/recommend-hotels/", recommend_hotels, name="recommend"),
 ]

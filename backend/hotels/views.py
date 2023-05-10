@@ -342,6 +342,19 @@ class GetBookingTempApi(generics.RetrieveAPIView):
         return BookTemp.objects.filter(hotel=hotel_id, user=user_id)
 
 
+class DeleteTempBookingApi(generics.DestroyAPIView):
+    serializer_class = BookTempWithDetailSerializer
+    lookup_field = "user_id"
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        hotel_id = self.kwargs.get("hotel_id")
+        user_id = self.kwargs.get("user_id")
+
+        return BookTemp.objects.filter(hotel=hotel_id, user=user_id)
+
+
 class CreateBooking(generics.CreateAPIView):
     serializer_class = BookCreateSerializer
     authentication_classes = [JWTAuthentication]
