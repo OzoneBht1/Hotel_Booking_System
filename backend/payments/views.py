@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import functools
 
 from account_manager.views import send_mail
+from hotels.serializers import Booking
 
 
 # Set your Stripe secret key
@@ -77,30 +78,52 @@ def save_stripe_info(request):
     return Response({"success": True, "extra_msg": extra_msg}, status=200)
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 def send_bill(request):
+    booking_data = request.data
     payment_intent = request.query_params.get("secret", None)
+
+    bookingDetail = Booking.objects.get(paymentIntentId=payment_intent)
     # create booking
     # fetch the booking
     # products =
 
-    print(payment_intent)
     data = stripe.PaymentIntent.retrieve(
         payment_intent,
     )
-    stripe.Invoice.create(
-        customer=data["customer"],
-    )
-    print()
+    # stripe.Invoice.create(
+    #     customer=data["customer"],
+    # )
     #
     # stripe.Invoice.send_invoice(
     #     data["invoice"],
     #
     # )
     #
+
+    message = (
+        f"Dear {bookingDetail.user.first_name} {bookingDetail.user.last_name},\n\n"
+        f"Thank you for your booking.\n"
+        f"Here are the details of your booking:\n\n"
+        f"Booking ID: {bookingDetail.pk}\n"
+        f"Check-in Date: {str(bookingDetail.check_in)}\n"
+        f"Check-out Date: {str(bookingDetail.check_out)}\n"
+        f"Hotel: {booking_data['hotel_name']}\n\n"
+        f"Rooms:\n"
+    )
+
+    for room in booking_data["rooms"]:
+        message += f"Room: {room['room_type']}, Quantity: {room['quantity']}\n"
+
+    message += (
+        f"\nPlease keep this information for your reference.\n"
+        f"Thank you for choosing our service!\n\n"
+        f"Best regards,\n"
+        f"Your Booking Team"
+    )
     send_mail(
-        "Your booking is confirmed",
         f"Hi",
+        message,
         "ozonebhattarai@gmail.com",
         [data["receipt_email"]],
         fail_silently=False,

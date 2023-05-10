@@ -1,7 +1,9 @@
 from django.urls import path
 from .views import (
     BookingCreateApi,
+    BookingDetailsByUserApi,
     CreateBookingTempApi,
+    DeleteTempBookingApi,
     FAQByHotelApi,
     GetBookingTempApi,
     HotelCreateApi,
@@ -18,9 +20,9 @@ from .views import (
     SingleRoomByHotelApi,
 )
 
-
+# type: ignore
 urlpatterns = [
-    path("hotels/", HotelListApi.as_view(), name="hotels"),
+    path("hotels/", HotelListApi.as_view(), name="hotels"),  # type: ignore
     path("hotels/<int:id>", HotelDetailApi.as_view(), name="hotels"),
     path(
         "hotels/<int:id>/reviews",
@@ -74,9 +76,19 @@ urlpatterns = [
         name="create-temp-booking",
     ),
     path(
+        "hotels/<int:hotel_id>/delete-temp-booking/<int:user_id>/",
+        DeleteTempBookingApi.as_view(),
+        name="delete-temp-booking",
+    ),
+    path(
         "hotels/<int:hotel_id>/create-booking/<int:user_id>/",
         BookingCreateApi.as_view(),
-        name="create-temp-booking",
+        name="create-booking",
+    ),
+    path(
+        "booking/<int:user_id>",
+        BookingDetailsByUserApi.as_view(),
+        name="booking",
     ),
     path("hotels/recommend-hotels/", recommend_hotels, name="recommend"),
 ]

@@ -28,19 +28,14 @@ import Settings from "@mui/icons-material/Settings";
 import { useLogoutUserMutation } from "../../store/api/authentication-api-slice";
 import { useQuery } from "react-query";
 import { useUserDetailQuery } from "../../store/api/authorization-api-slice";
+import PendingActionsIcon from "@mui/icons-material/PendingActions";
 
-const authenticatedPages = ["List your Property", "Support"];
-const unauthenticatedPages = [
-  "List your Property",
-  "Support",
-  "Login",
-  "Register",
-];
+const authenticatedPages = ["List your Property"];
+const unauthenticatedPages = ["List your Property", "Login", "Register"];
 
 enum Page {
   Home = "/",
   "List your Property" = "/add-property",
-  Support = "support",
   Login = "/login",
   Register = "/register",
 }
@@ -93,7 +88,8 @@ const NavBar = () => {
   const navigationItems = (
     <Stack
       direction="row"
-      spacing={{ sm: 1, md: 2 }}
+      spacing={{ sm: 1, md: 2, lg: 3 }}
+      // gap={1}
       sx={{
         display: { xs: "none", sm: "flex" },
         alignItems: "center",
@@ -117,6 +113,12 @@ const NavBar = () => {
           {page}
         </Button>
       ))}
+
+      {user && (
+        <Box component={Link} to={`/bookings/${user.user_id}`}>
+          <PendingActionsIcon sx={{ width: 40, height: 40 }} color="primary" />
+        </Box>
+      )}
 
       {user && (
         <Box>

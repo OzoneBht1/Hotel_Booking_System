@@ -63,12 +63,15 @@ class BookTemp(BaseModel):
     rooms = models.ManyToManyField(
         "RoomTemp",
     )
-    check_in = models.DateTimeField(blank=True, null=True)
-    check_out = models.DateTimeField(blank=True, null=True)
+    check_in = models.DateField(blank=True, null=True)
+    check_out = models.DateField(blank=True, null=True)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ["hotel"]
+        unique_together = ["user", "hotel"]
+
+    def __str__(self):
+        return f"{self.user.first_name} - {self.hotel.name}"
 
 
 #
@@ -95,8 +98,8 @@ class Booking(BaseModel):
     rooms = models.ManyToManyField(
         RoomTemp,
     )
-    check_in = models.DateTimeField()
-    check_out = models.DateTimeField()
+    check_in = models.DateField()
+    check_out = models.DateField()
     booking_status = models.CharField(
         max_length=100,
         choices=[

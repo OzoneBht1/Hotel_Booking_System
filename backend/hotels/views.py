@@ -8,6 +8,8 @@ from sentence_transformers.models.Pooling import json
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
+from account_manager.permissions import UserDetailPermission
+
 
 # from account_manager.permissions import UserDetailPermission
 from .serializers import (
@@ -16,6 +18,8 @@ from .serializers import (
     BookTemp,
     BookTempCreateSerializer,
     BookTempWithDetailSerializer,
+    Booking,
+    BookingSerializer,
     FAQSerializer,
     HotelCreateWithDetailsSerializer,
     HotelSerializer,
@@ -27,7 +31,7 @@ from .serializers import (
 )
 from rest_framework.decorators import api_view
 from .models import Hotel
-from .permissions import IsPartnerPermission
+from .permissions import IsCurrentUserPermission
 from .pagination import CustomPagination, CustomPagination
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
@@ -231,10 +235,9 @@ class BookingCreateApi(generics.CreateAPIView):
     queryset = Hotel.objects.all()
     serializer_class = BookCreateSerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    # permission_classes = [IsAuthenticated, IsAdminUser]
 
     def create(self, request, *args, **kwargs):
-        print(request.data)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user)  # Assign the logged-in user to the booking
@@ -244,6 +247,26 @@ class BookingCreateApi(generics.CreateAPIView):
             status=status.HTTP_201_CREATED,
             headers=headers,
         )
+
+
+class BookingDetailsByUserApi(generics.ListAPIView):
+    serializer_class = BookingSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsCurrentUserPermission]
+    pagination_class = CustomPagination
+    filter_backends = [
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        DjangoFilterBackend,
+    ]
+
+    search_fields = ["hotel__name"]
+    ordering = ["hotel__name"]
+
+    def get_queryset(self):
+        user = self.kwargs["user_id"]
+        queryset = Booking.objects.filter(user=user)
+        return queryset
 
 
 class HotelsByLocationApi(generics.ListAPIView):
@@ -334,6 +357,19 @@ class GetBookingTempApi(generics.RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
+
+    def get_queryset(self):
+        hotel_id = self.kwargs.get("hotel_id")
+        user_id = self.kwargs.get("user_id")
+
+        return BookTemp.objects.filter(hotel=hotel_id, user=user_id)
+
+
+class DeleteTempBookingApi(generics.DestroyAPIView):
+    serializer_class = BookTempWithDetailSerializer
+    lookup_field = "user_id"
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         hotel_id = self.kwargs.get("hotel_id")

@@ -22,7 +22,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     gender = models.CharField(choices=GENDER_CHOICES, max_length=10)
-    objects = UserProfileManager()
+    objects: UserProfileManager = UserProfileManager()
     country = models.CharField(max_length=150)
     image = models.ImageField(upload_to="profile_images/", null=True, blank=True)
     default_pic_mapping = {
@@ -39,7 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return super().set_password(raw_password)
 
     def __str__(self) -> str:
-        return f"{str(self.id)}, {self.first_name},{self.email}, {self.user_type}"
+        return f"{str(self.pk)}, {self.first_name},{self.email}, {self.user_type}"
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
