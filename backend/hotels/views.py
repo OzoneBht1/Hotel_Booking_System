@@ -1,5 +1,6 @@
 from django.db import models
 from rest_framework import generics
+from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework import status
@@ -28,10 +29,11 @@ from .serializers import (
     ReviewSerializer,
     Room,
     RoomSerializer,
+    User,
 )
 from rest_framework.decorators import api_view
 from .models import Hotel
-from .permissions import IsCurrentUserPermission
+from .permissions import CanLeaveReview, IsCurrentUserPermission
 from .pagination import CustomPagination, CustomPagination
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
@@ -61,6 +63,11 @@ class HotelDetailApi(generics.RetrieveUpdateDestroyAPIView):
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
     lookup_field = "id"
+
+    filterset_fields = ["hotel_score"]
+    search_fields = ["name", "address", "id", "rooms__room_type"]
+    ordering_fields = ["id", "name", "hotel_score"]
+    ordering = ["name"]
 
 
 class HotelCreateApi(generics.CreateAPIView):
@@ -287,6 +294,71 @@ class HotelsByLocationApi(generics.ListAPIView):
             hotels.extend(country_hotels)
 
         return hotels
+
+
+class CheckPermissionAPIView(APIView):
+    permission_classes = [CanLeaveReview]
+
+    def get(self, request, hotel_id, user_id):
+        has_permission = all(
+            perm.has_permission(request, self) for perm in self.get_permissions()
+        )
+
+        return Response({"hasPermission": has_permission}, status=status.HTTP_200_OK)
+
+
+class ReviewCreateApi(generics.CreateAPIView):
+    serializer_class = ReviewSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, CanLeaveReview]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        hotel = self.kwargs["hotel_id"]
+        user = self.kwargs["user_id"]
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=user, hotel=hotel)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            {"message": "Review Created"},
+            status=status.HTTP_201_CREATED,
+            headers=headers,
+        )
+
+
+class ReviewsOfAUserApi(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsCurrentUserPermission]
+
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.kwargs["user_id"]
+        hotel = self.kwargs["hotel_id"]
+        queryset = Review.objects.filter(user=user, hotel=hotel)
+        return queryset
+
+
+class ReviewsNotByUser(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsCurrentUserPermission]
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.kwargs["user_id"]
+        hotel = self.kwargs["hotel_id"]
+        queryset = Review.objects.filter(hotel=hotel).exclude(user=user)
+
+        return queryset
+
+
+class ModifyReviewApi(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ReviewSerializer
+    lookup_field = "id"
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsCurrentUserPermission]
 
 
 class ReviewByHotelApi(generics.ListAPIView):
