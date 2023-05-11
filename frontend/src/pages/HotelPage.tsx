@@ -9,7 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   useGetFaqsQuery,
   useGetHotelDetailsQuery,
-  useGetReviewsQuery,
+  // useGetReviewsQuery,
   useGetRoomsQuery,
 } from "../store/api/hotelSlice";
 import Loading from "../components/Loading";
@@ -29,6 +29,11 @@ import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { Dining, Sanitizer } from "@mui/icons-material";
 import Reviews from "../components/HotelPage/Reviews";
 import Rooms from "../components/HotelPage/Rooms";
+import { useAppSelector } from "../store/hooks";
+import {
+  useGetReviewsByHotelNotUserQuery,
+  useGetReviewsByHotelUserQuery,
+} from "../store/api/review-slice";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -45,6 +50,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
 const HotelPage = () => {
   const [rating, setRating] = useState(3);
   const { id } = useParams();
+  const user = useAppSelector((state) => state.auth.user);
   const theme = useTheme();
   const nav = useNavigate();
 
@@ -53,12 +59,40 @@ const HotelPage = () => {
     isLoading: hotelIsLoading,
     isError: hotelHasError,
   } = useGetHotelDetailsQuery({ id });
+  //
+  // const {
+  //   data: reviews,
+  //   isLoading: reviewsIsLoading,
+  //   isError: reviewsIsError,
+  // } = useGetReviewsQuery({ id });
+  //
+  const {
+    data: reviewsByUser,
+    isLoading: reviewsByUserIsLoading,
+    isError: reviewsByUserIsError,
+  } = useGetReviewsByHotelUserQuery(
+    {
+      hotelId: id as string,
+      userId: user?.user_id.toString(),
+    },
+    {
+      skip: !id || !user?.user_id,
+    }
+  );
 
   const {
-    data: reviews,
-    isLoading: reviewsIsLoading,
-    isError: reviewsIsError,
-  } = useGetReviewsQuery({ id });
+    data: reviewsNotByUser,
+    isLoading: reviewsNotByUserIsLoading,
+    isError: reviewsNotByUserIsError,
+  } = useGetReviewsByHotelNotUserQuery(
+    {
+      hotelId: id as string,
+      userId: user?.user_id.toString(),
+    },
+    {
+      skip: !id || !user?.user_id,
+    }
+  );
 
   const {
     data: rooms,
@@ -72,19 +106,26 @@ const HotelPage = () => {
     isError: faqsIsError,
   } = useGetFaqsQuery({ id });
 
-  console.log(rooms);
-
   const overviewRef = React.useRef<HTMLDivElement>(null);
   const roomsRef = React.useRef<HTMLDivElement>(null);
   const reviewsRef = React.useRef<HTMLDivElement>(null);
-  console.log(hotel);
 
   useEffect(() => {
-    if (hotelHasError || reviewsIsError || roomsIsError) {
+    if (
+      hotelHasError ||
+      reviewsByUserIsError ||
+      reviewsNotByUserIsError ||
+      roomsIsError
+    ) {
       nav("/404");
     }
   }, [hotelHasError]);
-  if (hotelIsLoading || roomsIsLoading || reviewsIsLoading) {
+  if (
+    hotelIsLoading ||
+    roomsIsLoading ||
+    reviewsByUserIsLoading ||
+    reviewsNotByUserIsError
+  ) {
     return <Loading />;
   }
 
@@ -361,7 +402,11 @@ const HotelPage = () => {
                   <Rating name="disabled" value={rating} disabled max={10} />
                 </ListItem>
               </List>
-              <Reviews reviews={reviews} hotel={hotel} />
+              <Reviews
+                reviewsByUser={reviewsByUser}
+                reviewsNotByUser={reviewsNotByUser}
+                hotel={hotel}
+              />
             </Box>
           </Box>
         </Box>

@@ -57,12 +57,6 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         },
       }),
     }),
-    getReviews: build.query<IPaginated<IHotelReview>, { id?: string }>({
-      query: ({ id }) => ({
-        url: `/hotels/${id}/reviews`,
-        method: "GET",
-      }),
-    }),
     getRooms: build.query<IPaginated<IHotelRoom>, { id?: string }>({
       query: ({ id }) => ({
         url: `/hotels/${id}/rooms`,
@@ -103,7 +97,6 @@ export const {
   useGetHomePageItemsQuery,
   useGetHotelDetailsQuery,
   useGetSearchedResultsQuery,
-  useGetReviewsQuery,
   useGetRoomsQuery,
   useGetFaqsQuery,
   useCreateHotelMutation,
