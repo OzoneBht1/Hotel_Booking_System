@@ -1,5 +1,5 @@
 import { apiSlice } from "./apiSlice";
-import { IHotelReview, IPaginated } from "../../components/types/types";
+import { IHotelReview } from "../../components/types/types";
 
 export const reviewApiSlice = apiSlice.injectEndpoints({
   endpoints: (build) => ({
@@ -27,6 +27,15 @@ export const reviewApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    getUserCanReview: build.query<
+      { hasPermission: boolean } | { detail: string },
+      { userId: number; hotelId: string }
+    >({
+      query: ({ userId, hotelId }) => ({
+        url: `${hotelId}/reviews/${userId}/has-perm`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -34,4 +43,5 @@ export const {
   useGetReviewsQuery,
   useGetReviewsByHotelUserQuery,
   useGetReviewsByHotelNotUserQuery,
+  useGetUserCanReviewQuery,
 } = reviewApiSlice;

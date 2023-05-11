@@ -14,7 +14,7 @@ import {
 } from "../store/api/hotelSlice";
 import Loading from "../components/Loading";
 import { BASEURL } from "../store/api/apiSlice";
-import { Rating, Tab, Tabs } from "@mui/material";
+import { Button, Rating, Tab, Tabs, Tooltip } from "@mui/material";
 import { ScoreBadge } from "../components/HomePageItem";
 import getHotelRating from "../utils/GetScoreRating";
 import getBookingRating from "../utils/GetScoreRating";
@@ -33,7 +33,10 @@ import { useAppSelector } from "../store/hooks";
 import {
   useGetReviewsByHotelNotUserQuery,
   useGetReviewsByHotelUserQuery,
+  useGetUserCanReviewQuery,
 } from "../store/api/review-slice";
+import AddIcon from "@mui/icons-material/Add";
+import CreateReview from "../components/HotelPage/CreateReview";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -47,8 +50,12 @@ const StyledBox = styled(Box)(({ theme }) => ({
   gap: "32px",
   // maxWidth: "1100px",
 }));
+
+let enableReview = false;
+let enabledMessage: null | string = null;
 const HotelPage = () => {
   const [rating, setRating] = useState(3);
+  const [showModal, setShowModal] = useState(false);
   const { id } = useParams();
   const user = useAppSelector((state) => state.auth.user);
   const theme = useTheme();
@@ -106,7 +113,42 @@ const HotelPage = () => {
     isError: faqsIsError,
   } = useGetFaqsQuery({ id });
 
+  const {
+    data: userCanReview,
+    isLoading: userCanReviewIsLoading,
+    isError: userCanReviewIsError,
+    error: userCanReviewError,
+  } = useGetUserCanReviewQuery(
+    {
+      userId: user?.user_id as number,
+      hotelId: id as string,
+    },
+    {
+      skip: !id || !user?.user_id,
+    }
+  );
+
+  if (userCanReviewIsError && !userCanReviewIsLoading) {
+    console.log("hello");
+    console.log(userCanReviewError);
+    console.log(userCanReview);
+    if (typeof userCanReview === "object" && "detail" in userCanReview) {
+      console.log("hi mom ");
+      enableReview = false;
+      enabledMessage = userCanReview.detail;
+    }
+  } else if (
+    typeof userCanReview === "object" &&
+    "hasPermission" in userCanReview
+  ) {
+    console.log(userCanReview.hasPermission);
+    enableReview = userCanReview.hasPermission;
+    enabledMessage = userCanReview.hasPermission
+      ? "You are eligible to leave a review!"
+      : "You do not have permission to leave a review.";
+  }
   const overviewRef = React.useRef<HTMLDivElement>(null);
+
   const roomsRef = React.useRef<HTMLDivElement>(null);
   const reviewsRef = React.useRef<HTMLDivElement>(null);
 
@@ -120,12 +162,8 @@ const HotelPage = () => {
       nav("/404");
     }
   }, [hotelHasError]);
-  if (
-    hotelIsLoading ||
-    roomsIsLoading ||
-    reviewsByUserIsLoading ||
-    reviewsNotByUserIsError
-  ) {
+
+  if (hotelIsLoading || roomsIsLoading || reviewsByUserIsLoading) {
     return <Loading />;
   }
 
@@ -371,8 +409,28 @@ const HotelPage = () => {
             <Typography component="h4" variant="h5">
               Reviews
             </Typography>
+
             <Box display="flex" width="100%">
               <List>
+                <ListItem>
+                  <Tooltip title={enabledMessage}>
+                    <Button
+                      onClick={() => setShowModal(true)}
+                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      variant="outlined"
+                      disabled={!enableReview}
+                    >
+                      <AddIcon />
+                      Create Review
+                    </Button>
+                  </Tooltip>
+                  {showModal && (
+                    <CreateReview
+                      openModal={showModal}
+                      onClose={() => setShowModal(false)}
+                    />
+                  )}
+                </ListItem>
                 <ListItem sx={{ display: "flex", gap: 3 }}>
                   {hotel?.hotel_score && (
                     <ScoreBadge score={hotel.hotel_score} />

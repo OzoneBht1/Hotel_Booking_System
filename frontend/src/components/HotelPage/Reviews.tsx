@@ -9,6 +9,9 @@ import { IHotelData, IHotelReview, IPaginated } from "../types/types";
 import { CalendarMonth, Bed } from "@mui/icons-material";
 import noReview from "../../assets/noReviewVector.webp";
 import { useTheme } from "@mui/material/styles";
+import { useGetUserCanReviewQuery } from "../../store/api/review-slice";
+import { useParams } from "react-router-dom";
+import Loading from "../Loading";
 
 interface IReviews {
   hotel: IHotelData | undefined;
@@ -19,14 +22,7 @@ interface IReviews {
 const Reviews = ({ reviewsByUser, reviewsNotByUser, hotel }: IReviews) => {
   const theme = useTheme();
   return (
-    <Box
-      display="flex"
-      // alignItems="flex-start"
-      height="fit-content"
-      // width="100%"
-      padding={3}
-      border={1}
-    >
+    <Box display="flex" height="fit-content" padding={3} border={1}>
       {reviewsByUser &&
         reviewsByUser.length > 0 &&
         reviewsByUser?.map((review) => {
