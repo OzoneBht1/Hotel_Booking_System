@@ -62,6 +62,11 @@ class HotelDetailApi(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = HotelSerializer
     lookup_field = "id"
 
+    filterset_fields = ["hotel_score"]
+    search_fields = ["name", "address", "id", "rooms__room_type"]
+    ordering_fields = ["id", "name", "hotel_score"]
+    ordering = ["name"]
+
 
 class HotelCreateApi(generics.CreateAPIView):
     queryset = Hotel.objects.all()
@@ -287,6 +292,38 @@ class HotelsByLocationApi(generics.ListAPIView):
             hotels.extend(country_hotels)
 
         return hotels
+
+
+class ReviewsOfAUserApi(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsCurrentUserPermission]
+
+    def get_queryset(self):
+        user = self.kwargs["user_id"]
+        hotel = self.kwargs["hotel_id"]
+        queryset = Review.objects.filter(user=user, hotel=hotel)
+        return queryset
+
+
+class ReviewsNotByUser(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsCurrentUserPermission]
+
+    def get_queryset(self):
+        user = self.kwargs["user_id"]
+        hotel = self.kwargs["hotel_id"]
+        queryset = Review.objects.filter(user != user, hotel=hotel)
+
+        return queryset
+
+
+class ModifyReviewApi(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ReviewSerializer
+    lookup_field = "id"
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsCurrentUserPermission]
 
 
 class ReviewByHotelApi(generics.ListAPIView):
