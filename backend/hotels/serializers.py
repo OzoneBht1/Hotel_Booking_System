@@ -17,15 +17,16 @@ from account_manager.serializers import Base64ImageField, UserDetailForReviewSer
 
 
 class ReviewSerializer(ModelSerializer):
-    user = serializers.SerializerMethodField()
+    # user = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
         fields = "__all__"
 
-    def get_user(self, obj):
-        user = obj.user
-        return UserDetailForReviewSerializer(user).data
+    # def get_user(self, obj):
+    #     user = obj.user
+    #     return UserDetailForReviewSerializer(user).data
+    #
 
 
 class HotelSerializer(ModelSerializer):

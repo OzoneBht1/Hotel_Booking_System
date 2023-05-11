@@ -2,6 +2,7 @@ from django.urls import path
 from .views import (
     BookingCreateApi,
     BookingDetailsByUserApi,
+    CheckPermissionAPIView,
     CreateBookingTempApi,
     DeleteTempBookingApi,
     FAQByHotelApi,
@@ -16,6 +17,7 @@ from .views import (
     HouseRulesByHotelApi,
     ModifyReviewApi,
     ReviewByHotelApi,
+    ReviewCreateApi,
     ReviewsNotByUser,
     ReviewsOfAUserApi,
     recommend_hotels,
@@ -105,8 +107,13 @@ urlpatterns = [
     ),
     path(
         "<int:hotel_id>/reviews/<int:user_id>/create-review",
-        .as_view(),
-        name="",
+        ReviewCreateApi.as_view(),
+        name="review-create",
+    ),
+    path(
+        "<int:hotel_id>/reviews/<int:user_id>/has-perm",
+        CheckPermissionAPIView.as_view(),
+        name="check-perm",
     ),
     path(
         "reviews/<int:review_id>",

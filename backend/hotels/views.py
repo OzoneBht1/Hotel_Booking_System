@@ -1,5 +1,6 @@
 from django.db import models
 from rest_framework import generics
+from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework import status
@@ -28,6 +29,7 @@ from .serializers import (
     ReviewSerializer,
     Room,
     RoomSerializer,
+    User,
 )
 from rest_framework.decorators import api_view
 from .models import Hotel
@@ -292,6 +294,17 @@ class HotelsByLocationApi(generics.ListAPIView):
             hotels.extend(country_hotels)
 
         return hotels
+
+
+class CheckPermissionAPIView(APIView):
+    permission_classes = [CanLeaveReview]
+
+    def get(self, request, hotel_id, user_id):
+        has_permission = all(
+            perm.has_permission(request, self) for perm in self.get_permissions()
+        )
+
+        return Response({"hasPermission": has_permission}, status=status.HTTP_200_OK)
 
 
 class ReviewCreateApi(generics.CreateAPIView):
