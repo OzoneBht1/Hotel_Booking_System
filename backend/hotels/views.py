@@ -31,7 +31,7 @@ from .serializers import (
 )
 from rest_framework.decorators import api_view
 from .models import Hotel
-from .permissions import IsCurrentUserPermission
+from .permissions import CanLeaveReview, IsCurrentUserPermission
 from .pagination import CustomPagination, CustomPagination
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
@@ -294,10 +294,31 @@ class HotelsByLocationApi(generics.ListAPIView):
         return hotels
 
 
+class ReviewCreateApi(generics.CreateAPIView):
+    serializer_class = ReviewSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, CanLeaveReview]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        hotel = self.kwargs["hotel_id"]
+        user = self.kwargs["user_id"]
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=user, hotel=hotel)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            {"message": "Review Created"},
+            status=status.HTTP_201_CREATED,
+            headers=headers,
+        )
+
+
 class ReviewsOfAUserApi(generics.ListAPIView):
     serializer_class = ReviewSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsCurrentUserPermission]
+
+    pagination_class = None
 
     def get_queryset(self):
         user = self.kwargs["user_id"]
@@ -310,11 +331,12 @@ class ReviewsNotByUser(generics.ListAPIView):
     serializer_class = ReviewSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsCurrentUserPermission]
+    pagination_class = None
 
     def get_queryset(self):
         user = self.kwargs["user_id"]
         hotel = self.kwargs["hotel_id"]
-        queryset = Review.objects.filter(user != user, hotel=hotel)
+        queryset = Review.objects.filter(hotel=hotel).exclude(user=user)
 
         return queryset
 

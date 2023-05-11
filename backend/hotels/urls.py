@@ -104,6 +104,11 @@ urlpatterns = [
         name="reviews-not-by-user",
     ),
     path(
+        "<int:hotel_id>/reviews/<int:user_id>/create-review",
+        .as_view(),
+        name="",
+    ),
+    path(
         "reviews/<int:review_id>",
         ModifyReviewApi.as_view(),
         name="modify-reviews",
