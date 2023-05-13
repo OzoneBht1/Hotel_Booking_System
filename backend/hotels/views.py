@@ -354,6 +354,12 @@ class ReviewsNotByUser(generics.ListAPIView):
         return queryset
 
 
+class CreateReviewApi(generics.CreateAPIView):
+    serializer_class = ReviewSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, CanLeaveReview]
+
+
 class ModifyReviewApi(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ReviewSerializer
     lookup_field = "id"
@@ -372,6 +378,25 @@ class ReviewByHotelApi(generics.ListAPIView):
     def get_queryset(self):
         hotel_id = self.kwargs.get("id")
         return Review.objects.filter(hotel=hotel_id)
+
+
+# class CreateReviewApi(generics.CreateAPIView):
+
+
+class GetBookingApi(generics.RetrieveAPIView):
+    serializer_class = BookingSerializer
+    lookup_field = "hotel_id"
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def get_queryset(self):
+        hotel_id = self.kwargs.get("hotel_id")
+        user_id = self.kwargs.get("user_id")
+        return Booking.objects.filter(hotel=hotel_id, user=user_id)
+
+
+# class ReviewApi(generics.RetrieveUpdateDestroyAPIView)
 
 
 class RoomByHotelApi(generics.ListAPIView):

@@ -6,6 +6,7 @@ import paymentReducer from "./paymentSlice";
 import tempBookReducer from "./tempBookSlice";
 import { apiSlice } from "./api/apiSlice";
 import { paymentSlice } from "./api/payment-slice";
+import { reviewApiSlice } from "./api/review-slice";
 
 const store = configureStore({
   reducer: {

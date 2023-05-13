@@ -6,6 +6,7 @@ from .views import (
     CreateBookingTempApi,
     DeleteTempBookingApi,
     FAQByHotelApi,
+    GetBookingApi,
     GetBookingTempApi,
     HotelCreateApi,
     HotelCreateWithDetailApi,
@@ -121,4 +122,9 @@ urlpatterns = [
         name="modify-reviews",
     ),
     path("hotels/recommend-hotels/", recommend_hotels, name="recommend"),
+    path(
+        "booking/<int:hotel_id>/<int:user_id>",
+        GetBookingApi.as_view(),
+        name="get-single-booking",
+    ),
 ]
