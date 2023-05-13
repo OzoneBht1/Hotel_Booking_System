@@ -7,6 +7,7 @@ import {
   IHotelRoom,
   IFAQ,
   IHotelQuery,
+  IHotelSearchQuery,
 } from "../../components/types/types";
 import { IHotelReview } from "../../components/types/types";
 
@@ -35,14 +36,19 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
-    getSearchedResults: build.query<IPaginated<IHotelData>, IQuery>({
+    getSearchedResults: build.query<IPaginated<IHotelData>, IHotelSearchQuery>({
       query: ({
         searchQuery,
         checkInDate,
         checkOutDate,
+        ordering,
         people = 0,
         rooms = 0,
         page = 1,
+        min_price = 0,
+        max_price = 1500,
+        min_score = 2.5,
+        max_score = 10,
       }) => ({
         url: `/hotels/hotels-by-name-location`,
         method: "GET",
@@ -52,8 +58,13 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
           checkOutDate: checkOutDate,
           people: people,
           rooms: rooms,
+          ordering,
           limit: 10,
           offset: (page - 1) * 10,
+          min_price,
+          max_price,
+          min_score,
+          max_score,
         },
       }),
     }),

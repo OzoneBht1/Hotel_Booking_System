@@ -121,8 +121,15 @@ export interface IQuery {
   checkOutDate: string;
   searchQuery: string;
   people: number;
+  ordering?: string;
   rooms: number;
   page?: number;
+}
+export interface IHotelSearchQuery extends IQuery {
+  min_price?: number;
+  max_price?: number;
+  min_score?: number;
+  max_score?: number;
 }
 
 export interface IHotelRoom {

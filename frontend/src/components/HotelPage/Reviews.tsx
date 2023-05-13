@@ -9,9 +9,7 @@ import { IHotelData, IHotelReview, IPaginated } from "../types/types";
 import { CalendarMonth, Bed } from "@mui/icons-material";
 import noReview from "../../assets/noReviewVector.webp";
 import { useTheme } from "@mui/material/styles";
-import { useGetUserCanReviewQuery } from "../../store/api/review-slice";
-import { useParams } from "react-router-dom";
-import Loading from "../Loading";
+import { Stack } from "@mui/system";
 
 interface IReviews {
   hotel: IHotelData | undefined;
@@ -22,12 +20,19 @@ interface IReviews {
 const Reviews = ({ reviewsByUser, reviewsNotByUser, hotel }: IReviews) => {
   const theme = useTheme();
   return (
-    <Box display="flex" height="fit-content" padding={3} border={1}>
+    <Box
+      display="flex"
+      flexDirection="column"
+      gap={2}
+      width="900px"
+      height="fit-content"
+      margin={3}
+    >
       {reviewsByUser &&
         reviewsByUser.length > 0 &&
         reviewsByUser?.map((review) => {
           return (
-            <>
+            <Box width="100%" display="flex" border={1} padding={5}>
               <Box
                 display="flex"
                 flexDirection="column"
@@ -46,14 +51,16 @@ const Reviews = ({ reviewsByUser, reviewsNotByUser, hotel }: IReviews) => {
                       fontSize={16}
                       color={theme.palette.text.primary}
                     >
-                      hi
+                      name
                     </Typography>
                     <Typography
                       component="span"
                       variant="caption"
                       fontSize={14}
                       color={theme.palette.text.secondary}
-                    ></Typography>
+                    >
+                      country
+                    </Typography>
                   </Box>
                 </Box>
 
@@ -68,7 +75,7 @@ const Reviews = ({ reviewsByUser, reviewsNotByUser, hotel }: IReviews) => {
                         variant="caption"
                         fontSize={14}
                       >
-                        Duplex Suite
+                        room name
                       </Typography>
                     </ListItemText>
                   </ListItem>
@@ -82,13 +89,13 @@ const Reviews = ({ reviewsByUser, reviewsNotByUser, hotel }: IReviews) => {
                         variant="caption"
                         fontSize={14}
                       >
-                        Stayed 3 nights
+                        Stayed x nights
                       </Typography>
                     </ListItemText>
                   </ListItem>
                 </List>
               </Box>
-              <Box width="60%" display="flex" gap={3} flexDirection="column">
+              <Box display="flex" flex={1} gap={3} flexDirection="column">
                 <Typography component="span" variant="caption">
                   Reviewed: {new Date(review.created_at).toLocaleString()}
                 </Typography>
@@ -106,14 +113,14 @@ const Reviews = ({ reviewsByUser, reviewsNotByUser, hotel }: IReviews) => {
               >
                 {hotel?.hotel_score && <ScoreBadge score={hotel.hotel_score} />}
               </Box>
-            </>
+            </Box>
           );
         })}
       {reviewsNotByUser &&
         reviewsNotByUser.length > 0 &&
         reviewsNotByUser.map((review) => {
           return (
-            <>
+            <Box width="100%" display="flex" border={1} padding={3}>
               <Box
                 display="flex"
                 flexDirection="column"
@@ -192,7 +199,7 @@ const Reviews = ({ reviewsByUser, reviewsNotByUser, hotel }: IReviews) => {
               >
                 {hotel?.hotel_score && <ScoreBadge score={hotel.hotel_score} />}
               </Box>
-            </>
+            </Box>
           );
         })}
 
@@ -201,6 +208,8 @@ const Reviews = ({ reviewsByUser, reviewsNotByUser, hotel }: IReviews) => {
           display="flex"
           flexDirection="column"
           alignItems="center"
+          border={1}
+          padding={3}
           justifyContent="center"
         >
           <Box component="img" src={noReview} width="350px" height="250px" />
