@@ -120,7 +120,7 @@ class Review(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     review = models.TextField()
-    score = models.IntegerField()
+    score = models.FloatField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     stay_duration = models.IntegerField(default=1)
 

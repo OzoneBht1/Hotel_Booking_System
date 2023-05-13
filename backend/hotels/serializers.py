@@ -1,4 +1,9 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.generics import get_object_or_404
+from rest_framework.serializers import (
+    ModelSerializer,
+    PrimaryKeyRelatedField,
+    SerializerMethodField,
+)
 from rest_framework import serializers
 from .models import (
     FAQ,
@@ -17,16 +22,20 @@ from account_manager.serializers import Base64ImageField, UserDetailForReviewSer
 
 
 class ReviewSerializer(ModelSerializer):
-    # user = serializers.SerializerMethodField()
-
     class Meta:
         model = Review
         fields = "__all__"
 
-    # def get_user(self, obj):
-    #     user = obj.user
-    #     return UserDetailForReviewSerializer(user).data
-    #
+    def create(self, validated_data):
+        print("here")
+        user_id = validated_data.pop("user")
+        hotel_id = validated_data.pop("hotel")
+        user = get_object_or_404(User, pk=user_id)
+        hotel = get_object_or_404(Hotel, pk=hotel_id)
+        validated_data["user"] = user
+        validated_data["hotel"] = hotel
+        review = super().create(validated_data)
+        return review
 
 
 class HotelSerializer(ModelSerializer):
@@ -108,9 +117,14 @@ class RoomWithoutHotelSerializer(ModelSerializer):
 
 
 class RoomTempSerializer(ModelSerializer):
+    room_type = serializers.SerializerMethodField()
+
     class Meta:
         model = RoomTemp
         fields = "__all__"
+
+    def get_room_type(self, obj):
+        return obj.room.room_type
 
 
 class BookTempCreateSerializer(ModelSerializer):
