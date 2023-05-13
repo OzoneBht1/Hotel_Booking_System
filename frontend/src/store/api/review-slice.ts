@@ -28,7 +28,7 @@ export const reviewApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     getUserCanReview: build.query<
-      { hasPermission: boolean } | { detail: string },
+      { hasPermission: boolean },
       { userId: number; hotelId: string }
     >({
       query: ({ userId, hotelId }) => ({

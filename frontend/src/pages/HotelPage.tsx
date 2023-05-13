@@ -129,23 +129,26 @@ const HotelPage = () => {
   );
 
   if (userCanReviewIsError && !userCanReviewIsLoading) {
-    console.log("hello");
     console.log(userCanReviewError);
-    console.log(userCanReview);
-    if (typeof userCanReview === "object" && "detail" in userCanReview) {
-      console.log("hi mom ");
+    if (
+      typeof userCanReviewError === "object" &&
+      (("detail" in userCanReviewError.data) as any)
+    ) {
+      console.log("yaha cha");
       enableReview = false;
-      enabledMessage = userCanReview.detail;
+      enabledMessage = userCanReviewError.data.detail;
     }
   } else if (
     typeof userCanReview === "object" &&
     "hasPermission" in userCanReview
   ) {
-    console.log(userCanReview.hasPermission);
     enableReview = userCanReview.hasPermission;
     enabledMessage = userCanReview.hasPermission
       ? "You are eligible to leave a review!"
       : "You do not have permission to leave a review.";
+  } else {
+    enableReview = false;
+    enabledMessage = "You do not have permission to leave a review.";
   }
   const overviewRef = React.useRef<HTMLDivElement>(null);
 
@@ -414,15 +417,17 @@ const HotelPage = () => {
               <List>
                 <ListItem>
                   <Tooltip title={enabledMessage}>
-                    <Button
-                      onClick={() => setShowModal(true)}
-                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      variant="outlined"
-                      disabled={!enableReview}
-                    >
-                      <AddIcon />
-                      Create Review
-                    </Button>
+                    <span>
+                      <Button
+                        onClick={() => setShowModal(true)}
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        variant="outlined"
+                        disabled={!enableReview}
+                      >
+                        <AddIcon />
+                        Create Review
+                      </Button>
+                    </span>
                   </Tooltip>
                   {showModal && (
                     <CreateReview
