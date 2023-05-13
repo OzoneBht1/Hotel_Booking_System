@@ -7,6 +7,7 @@ export const reviewApiSlice = apiSlice.injectEndpoints({
       query: ({ id }) => ({
         url: `/hotels/${id}/reviews`,
         method: "GET",
+        providesTags: ["Review"],
       }),
     }),
     getReviewsByHotelUser: build.query<
@@ -17,6 +18,7 @@ export const reviewApiSlice = apiSlice.injectEndpoints({
         url: `${hotelId}/reviews/user/${userId}`,
         method: "GET",
       }),
+      providesTags: ["UserReviews"],
     }),
     getReviewsByHotelNotUser: build.query<
       IHotelReview[],
@@ -35,6 +37,22 @@ export const reviewApiSlice = apiSlice.injectEndpoints({
         url: `${hotelId}/reviews/${userId}/has-perm`,
         method: "GET",
       }),
+
+      providesTags: ["UserReviews"],
+    }),
+    getSingleBooking: build.query<any, any>({
+      query: ({ userId, hotelId }) => ({
+        url: `booking/${hotelId}/${userId}`,
+        method: "GET",
+      }),
+    }),
+    createReview: build.mutation<any, any>({
+      query: (review) => ({
+        url: `${review.hotel}/reviews/${review.user}/create-review`,
+        method: "POST",
+        body: review,
+      }),
+      invalidatesTags: ["UserReviews"],
     }),
   }),
 });
@@ -44,4 +62,6 @@ export const {
   useGetReviewsByHotelUserQuery,
   useGetReviewsByHotelNotUserQuery,
   useGetUserCanReviewQuery,
+  useGetSingleBookingQuery,
+  useCreateReviewMutation,
 } = reviewApiSlice;

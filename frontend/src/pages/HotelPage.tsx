@@ -429,13 +429,8 @@ const HotelPage = () => {
                       </Button>
                     </span>
                   </Tooltip>
-                  {showModal && (
-                    <CreateReview
-                      openModal={showModal}
-                      onClose={() => setShowModal(false)}
-                    />
-                  )}
                 </ListItem>
+
                 <ListItem sx={{ display: "flex", gap: 3 }}>
                   {hotel?.hotel_score && (
                     <ScoreBadge score={hotel.hotel_score} />
@@ -470,6 +465,15 @@ const HotelPage = () => {
                 reviewsNotByUser={reviewsNotByUser}
                 hotel={hotel}
               />
+              {showModal && (
+                <CreateReview
+                  openModal={showModal}
+                  onClose={() => {
+                  setShowModal(false)
+                  }
+                  }
+                />
+              )}
             </Box>
           </Box>
         </Box>
