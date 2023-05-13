@@ -31,8 +31,9 @@ let HEIGHT_OF_NAVBAR = 68;
 
 const Login = () => {
   const { state } = useLocation();
+  console.log(state);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(
-    state?.from?.state ? true : false
+    state?.open ? true : false
   );
 
   const [verifyEmail, { isLoading: verificationApiIsLoading, isSuccess }] =
@@ -139,7 +140,7 @@ const Login = () => {
           open={showModal}
           onClose={() => setShowModal(false)}
         >
-          <Box {...style}>
+          <Box sx={style}>
             <Typography>Enter the code sent to your email </Typography>
             <VerifyEmail onCodeReceieve={codeReceiveHandler} email={email} />
           </Box>

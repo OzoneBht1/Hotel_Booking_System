@@ -404,16 +404,15 @@ const HotelPage = () => {
         display="flex"
         width="75%"
         alignItems="flex-start"
-        gap={2}
         sx={{ backgroundColor: "white" }}
       >
-        <Box display="flex" flexDirection="column" gap={1}>
-          <Box>
+        <Box display="flex" gap={3}>
+          <Box display="flex" flexDirection="column">
             <Typography component="h4" variant="h5">
               Reviews
             </Typography>
 
-            <Box display="flex" width="100%">
+            <Box display="flex" gap={6}>
               <List>
                 <ListItem>
                   <Tooltip title={enabledMessage}>
@@ -469,9 +468,8 @@ const HotelPage = () => {
                 <CreateReview
                   openModal={showModal}
                   onClose={() => {
-                  setShowModal(false)
-                  }
-                  }
+                    setShowModal(false);
+                  }}
                 />
               )}
             </Box>

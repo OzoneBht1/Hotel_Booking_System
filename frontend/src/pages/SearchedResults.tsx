@@ -8,6 +8,8 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
+  Menu,
+  MenuItem,
   Pagination,
   Typography,
 } from "@mui/material";
@@ -22,6 +24,14 @@ import Loading from "../components/Loading";
 import { Stack } from "@mui/system";
 import getBookingRating from "../utils/GetScoreRating";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+import TocIcon from "@mui/icons-material/Toc";
+import CheckIcon from "@mui/icons-material/Check";
+
+enum OrderOptions {
+  Name = "name",
+  Cheapest = "cheapest_price",
+  Score = "hotel_score",
+}
 
 const SearchedResults = () => {
   const [params, setSearchParams] = useSearchParams();
@@ -29,6 +39,25 @@ const SearchedResults = () => {
   const checkInDate = params.get("checkInDate") || "";
 
   const checkOutDate = params.get("checkOutDate") || "";
+
+  const [orderBy, setOrderBy] = useState<OrderOptions>(OrderOptions.Name);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLButtonElement>(null);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1500]);
+  const [starRating, setStarRating] = useState<null | string>(null);
+  const open = Boolean(anchorEl);
+
+  const handleOrderBy = (orderBy: OrderOptions) => {
+    setOrderBy(orderBy);
+    setPage(1);
+  };
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const people =
     params && params.get("people")
       ? parseInt(params.get("people") as string)
@@ -45,6 +74,11 @@ const SearchedResults = () => {
     people,
     rooms,
     page,
+    ordering: orderBy,
+    min_price: priceRange[0],
+    max_price: priceRange[1],
+    min_score: starRating?.split("-")[0],
+    max_score: starRating?.split("-")[1],
   } as IQuery);
 
   console.log(data);
@@ -70,6 +104,17 @@ const SearchedResults = () => {
   const searchHandler = () => {
     console.log("something");
   };
+
+  const handleFilter = (price: [number, number], newRating: null | string) => {
+    setPriceRange(price);
+
+    if (newRating) {
+      setStarRating(newRating);
+    }
+
+    setPage(1);
+  };
+
   return (
     <>
       <Box
@@ -89,12 +134,86 @@ const SearchedResults = () => {
       </Box>
       <Box padding={2} display="flex" justifyContent={"center"} width="100%">
         <Box display="flex" width="80%" gap={4} justifyContent={"center"}>
-          <HotelListingFilter />
+          <HotelListingFilter onFilter={handleFilter} />
 
           <Box display="flex" flexDirection="column" gap={3}>
-            <Typography variant="h5" component="h2">
-              Search Results : {data?.count} results found
-            </Typography>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Typography variant="h5" component="h2">
+                Search Results : {data?.count} results found
+              </Typography>
+              <Button
+                variant="contained"
+                aria-controls={open ? "basic-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? "true" : undefined}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+                onClick={handleClick}
+                size="large"
+              >
+                Order
+                <TocIcon color="inherit" />
+              </Button>
+            </Box>
+
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+            >
+              <MenuItem
+                onClick={() => {
+                  handleOrderBy(OrderOptions.Name);
+                  handleClose();
+                }}
+              >
+                <Box display="flex" alignItems="center" gap={2}>
+                  Name
+                  {orderBy === OrderOptions.Name && (
+                    <CheckIcon color="primary" />
+                  )}
+                </Box>
+              </MenuItem>
+
+              <MenuItem
+                onClick={() => {
+                  handleOrderBy(OrderOptions.Cheapest);
+                  handleClose();
+                }}
+              >
+                <Box display="flex" alignItems="center" gap={2}>
+                  Cheapest
+                  {orderBy === OrderOptions.Cheapest && (
+                    <CheckIcon color="primary" />
+                  )}
+                </Box>
+              </MenuItem>
+
+              <MenuItem
+                onClick={() => {
+                  handleOrderBy(OrderOptions.Score);
+                  handleClose();
+                }}
+              >
+                <Box display="flex" alignItems="center" gap={2}>
+                  Score
+                  {orderBy === OrderOptions.Score && (
+                    <CheckIcon color="primary" />
+                  )}
+                </Box>
+              </MenuItem>
+            </Menu>
             {data?.results?.map((listing, index) => (
               <Box key={index}>
                 <Card
