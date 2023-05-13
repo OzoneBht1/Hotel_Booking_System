@@ -5,6 +5,8 @@ from rest_framework.serializers import (
     SerializerMethodField,
 )
 from rest_framework import serializers
+from django.db.models import Min
+
 from .models import (
     FAQ,
     Amenity,
@@ -71,9 +73,9 @@ class HotelSerializer(ModelSerializer):
         return count
 
     def get_cheapest_price(self, obj):
-        room = Room.objects.filter(hotel=obj).order_by("?").first()
-        if room:
-            return room.price
+        cheapest_price = obj.rooms.aggregate(min_price=Min("price"))["min_price"]
+        if cheapest_price:
+            return cheapest_price
         else:
             return "N/A"
 

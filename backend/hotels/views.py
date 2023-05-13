@@ -40,7 +40,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from rest_framework.response import Response
-from django.db.models import Q
+from django.db.models import Q, Min
 from .models import Review
 
 
@@ -184,17 +184,11 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
     authentication_classes = []
     permission_classes = []
     pagination_class = CustomPagination
-    filterset_fields = [
-        "hotel_score",
-        "cheapest_price",
-        "amenities" "check_in_date",
-        "check_out_date",
-    ]
+    filterset_fields = ["hotel_score"]
     ordering_fields = [
         "name",
         "hotel_score",
-        "num_people",
-        "num_rooms",
+        "cheapest_price",
     ]
     search_fields = [
         "name",
@@ -207,33 +201,34 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
     def get_queryset(self):
         queryset = Hotel.objects.all()
         search_query = self.request.query_params.get("term", None)
-        check_in_date = self.request.query_params.get("checkinDate", None)
-        check_out_date = self.request.query_params.get("checkoutDate", None)
-        num_people = self.request.query_params.get("people", None)
-        num_rooms = self.request.query_params.get("rooms", None)
         ordering = self.request.query_params.get("ordering", None)
+        min_price = self.request.query_params.get("min_price", None)
+        max_price = self.request.query_params.get("max_price", None)
+        min_score = self.request.query_params.get("min_score", None)
+        max_score = self.request.query_params.get("max_score", None)
 
         if search_query:
             queryset = queryset.filter(
                 Q(name__icontains=search_query) | Q(address__icontains=search_query)
             )
 
-        if check_in_date:
-            queryset = queryset.filter(check_in_date=check_in_date)
-
-        if check_out_date:
-            queryset = queryset.filter(check_out_date=check_out_date)
-
-        if num_people:
-            queryset = queryset.filter(num_people=num_people)
-
-        if num_rooms:
-            queryset = queryset.filter(num_rooms=num_rooms)
-
         queryset = self.filter_queryset(queryset)
-        # ordering = self.get_ordering()
+
+        if min_price and max_price:
+            queryset = queryset.filter(rooms__price__range=(min_price, max_price))
+
+        if min_score and max_score:
+            queryset = queryset.filter(hotel_score__range=(min_score, max_score))
+
         if ordering:
-            queryset = queryset.order_by(*ordering)
+            if ordering == "cheapest_price":
+                # Order by cheapest price
+                queryset = queryset.annotate(
+                    cheapest_price=Min("rooms__price")
+                ).order_by("cheapest_price")
+            else:
+                # Order by other fields
+                queryset = queryset.order_by(ordering)
 
         return queryset
 
