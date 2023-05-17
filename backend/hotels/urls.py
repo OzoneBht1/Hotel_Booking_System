@@ -22,6 +22,7 @@ from .views import (
     ReviewsNotByUser,
     ReviewsOfAUserApi,
     recommend_hotels,
+    get_next_available_date,
     RoomByHotelApi,
     SingleRoomByHotelApi,
 )
@@ -49,6 +50,11 @@ urlpatterns = [
         "hotels/<int:id>/rooms",
         RoomByHotelApi.as_view(),
         name="hotel_rooms",
+    ),
+    path(
+        "rooms/<int:room_id>/availability",
+        get_next_available_date,
+        name="room_availability",
     ),
     path(
         "hotels/<int:hotel_id>/rooms/<int:id>",

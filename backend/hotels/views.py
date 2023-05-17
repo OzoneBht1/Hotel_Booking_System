@@ -1,4 +1,5 @@
 from django.db import models
+from django.http.response import JsonResponse
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -10,6 +11,8 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 from account_manager.permissions import UserDetailPermission
+from django.core.serializers import serialize
+import json
 
 
 # from account_manager.permissions import UserDetailPermission
@@ -33,7 +36,7 @@ from .serializers import (
 )
 from rest_framework.decorators import api_view
 from .models import Hotel
-from .permissions import CanLeaveReview, IsCurrentUserPermission
+from .permissions import CanLeaveReview, IsCurrentUserPermission, datetime
 from .pagination import CustomPagination, CustomPagination
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
@@ -214,9 +217,9 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
 
         queryset = self.filter_queryset(queryset)
 
-        if min_price and max_price:
-            queryset = queryset.filter(rooms__price__range=(min_price, max_price))
-
+        # if min_price and max_price:
+        # queryset = queryset.filter(rooms__price__range=(min_price, max_price))
+        #
         if min_score and max_score:
             queryset = queryset.filter(hotel_score__range=(min_score, max_score))
 
@@ -242,13 +245,25 @@ class BookingCreateApi(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user)  # Assign the logged-in user to the booking
+        booking = serializer.save(
+            user=request.user
+        )  # Assign the logged-in user to the booking
         headers = self.get_success_headers(serializer.data)
+        update_available_rooms(request.data)
         return Response(
             {"message": "Temporary Booking Created"},
             status=status.HTTP_201_CREATED,
             headers=headers,
         )
+
+
+def update_available_rooms(booking):
+    print("booking", booking)
+    for rooms in booking["rooms"]:
+        room_id = rooms["room"]
+        room_obj = Room.objects.get(id=room_id)
+        room_obj.quantity -= rooms["quantity"]
+        room_obj.save()
 
 
 class BookingDetailsByUserApi(generics.ListAPIView):
@@ -437,6 +452,25 @@ class CreateBookingTempApi(generics.CreateAPIView):
         )
 
 
+@api_view(["GET"])
+def get_next_available_date(request, room_id):
+    print("hi mom")
+    print(room_id)
+    now = datetime.now().date()
+    bookings = Booking.objects.filter(rooms__room=room_id, check_out__gte=now).order_by(
+        "check_out"
+    )
+    print(bookings)
+    earliest_booking = bookings.first()
+    if earliest_booking is not None:
+        earliest_check_out_date = earliest_booking.check_out
+        return Response(
+            {"earliest": earliest_check_out_date}, status=status.HTTP_200_OK
+        )
+
+    return Response({"earliest": None}, status=status.HTTP_200_OK)
+
+
 class GetBookingTempApi(generics.RetrieveAPIView):
     serializer_class = BookTempWithDetailSerializer
     # permission_classes = [UserDetailPermission]
@@ -528,8 +562,12 @@ def recommend_hotels(request):
         sim_scores = sim_scores[1:11]
         hotel_indices = [i[0] for i in sim_scores]
         hotel_names = [idx_to_name[i] for i in hotel_indices]
+        hotels = Hotel.objects.filter(name__in=hotel_names)
 
-        return Response(hotel_names)
+        serialized_data = serialize("json", hotels)
+        serialized_data = json.loads(serialized_data)
+
+        return JsonResponse(serialized_data, safe=False)
 
     idx = name_to_idx[hotel_name]
     sim_scores = list(enumerate(sim_matrix[idx]))
@@ -537,4 +575,8 @@ def recommend_hotels(request):
     sim_scores = sim_scores[1:11]
     hotel_indices = [i[0] for i in sim_scores]
     hotel_names = [idx_to_name[i] for i in hotel_indices]
-    return Response(hotel_names)
+    hotels = Hotel.objects.filter(name__in=hotel_names)
+    serialized_data = serialize("json", hotels)
+    serialized_data = json.loads(serialized_data)
+
+    return JsonResponse(serialized_data, safe=False)

@@ -100,17 +100,9 @@ class Booking(BaseModel):
     )
     check_in = models.DateField()
     check_out = models.DateField()
-    booking_status = models.CharField(
-        max_length=100,
-        choices=[
-            ("Pending", "Pending"),
-            ("Confirmed", "Confirmed"),
-            ("Cancelled", "Cancelled"),
-        ],
-        default="Pending",
-    )
     email = models.EmailField()
     paymentIntentId = models.CharField(max_length=200, null=True, blank=True)
+    duration_complete = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.hotel.name}"

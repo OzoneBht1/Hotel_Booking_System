@@ -10,6 +10,7 @@ export const reviewApiSlice = apiSlice.injectEndpoints({
         providesTags: ["Review"],
       }),
     }),
+
     getReviewsByHotelUser: build.query<
       IHotelReview[],
       { userId?: string; hotelId?: string }
@@ -29,6 +30,16 @@ export const reviewApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    getNextAvailableDate: build.query<
+      { earliest: string | null },
+      { roomId: string }
+    >({
+      query: ({ roomId }) => ({
+        url: `rooms/${roomId}/availability`,
+        method: "GET",
+      }),
+    }),
+
     getUserCanReview: build.query<
       { hasPermission: boolean },
       { userId: number; hotelId: string }
@@ -64,4 +75,5 @@ export const {
   useGetUserCanReviewQuery,
   useGetSingleBookingQuery,
   useCreateReviewMutation,
+  useGetNextAvailableDateQuery,
 } = reviewApiSlice;

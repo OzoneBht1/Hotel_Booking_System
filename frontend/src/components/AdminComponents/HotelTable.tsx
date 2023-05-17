@@ -71,10 +71,10 @@ export const HotelTable = (props: IHotelTableProps) => {
                         height="60px"
                         width="60px"
                         loading="lazy"
-                        // src={
-                        //   hotel.hotel_images &&
-                        //   `${BASEURL}/${hotel.hotel_images[0].image}`
-                        // }
+                        src={
+                          hotel.hotel_images &&
+                          `${BASEURL}/${hotel.hotel_images[0].image}`
+                        }
                       />
 
                       <Typography variant="subtitle2">{hotel.name}</Typography>

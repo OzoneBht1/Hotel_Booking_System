@@ -118,7 +118,7 @@ const Rooms = ({ rooms }: IRoomsProps) => {
               </TableCell>
               <TableCell
                 sx={{ color: theme.palette.primary.contrastText }}
-                align="right"
+                align="center"
               >
                 Amount Available
               </TableCell>

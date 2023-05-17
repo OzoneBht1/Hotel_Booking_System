@@ -1,3 +1,4 @@
+from django.db.models.fields import json
 from django.test import TestCase
 from rest_framework.test import APITestCase
 from django.urls import reverse
@@ -7,6 +8,7 @@ from .serializers import UserCreateSerializer
 from django.core.files import File
 from django.conf import settings
 import os
+from django.contrib.auth.hashers import make_password
 
 
 # first_name = models.CharField(max_length=200)
@@ -41,8 +43,10 @@ class TestSetUp(APITestCase):
     def setUp(self) -> None:
         self.register_url = reverse("register")
         self.login_url = reverse("token_obtain_pair")
+        self.profile_url = reverse("profile", kwargs={"id": 1})
 
         self.data = {
+            "id": 1,
             "first_name": "test",
             "last_name": "test",
             "email": "test@testin.com",
@@ -99,6 +103,7 @@ class TestRegistration(TestSetUp):
         regex_pattern = r"^image_[a-zA-Z0-9]+\.\w+$"
         self.assertRegex(os.path.basename(self.user.image.path), regex_pattern)
         self.assertTrue(os.path.isfile(self.user.image.path))
+        return self.user.email, self.user.password
 
     #
     def test_user_model_save_method_without_image(self):
@@ -116,7 +121,6 @@ class TestRegistration(TestSetUp):
         )
 
         user.save()
-        print(user)
 
         user.refresh_from_db(using="default")
 
@@ -124,3 +128,24 @@ class TestRegistration(TestSetUp):
             user.image.path, f"{settings.MEDIA_ROOT}profile_images/def_male.jpg"
         )
         self.assertTrue(os.path.isfile(user.image.path))
+
+    def test_user_can_login(self):
+        self.test_user_model_save_method_with_image()
+        response = self.client.post(
+            self.login_url,
+            {"email": self.data["email"], "password": self.data["password"]},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print(response.data["access"])
+        return response.data
+        # get data from response and convert to json
+        # self.assertContains(response.data, "access")
+        # self.assertContains(response.data, "refresh")
+
+    def test_user_can_not_view_profile_without_tokens(self):
+        self.test_user_can_login()
+        response = self.client.get(
+            reverse("profile", kwargs={"id": 1}),
+        )
+        self.assertNotEqual(response.status_code, status.HTTP_200_OK)

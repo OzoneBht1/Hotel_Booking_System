@@ -37,6 +37,7 @@ import {
 } from "../store/api/review-slice";
 import AddIcon from "@mui/icons-material/Add";
 import CreateReview from "../components/HotelPage/CreateReview";
+import Error from "./404";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -132,11 +133,12 @@ const HotelPage = () => {
     console.log(userCanReviewError);
     if (
       typeof userCanReviewError === "object" &&
+      "data" in userCanReviewError &&
+      typeof userCanReviewError.data === "object" &&
       (("detail" in userCanReviewError.data) as any)
     ) {
-      console.log("yaha cha");
       enableReview = false;
-      enabledMessage = userCanReviewError.data.detail;
+      enabledMessage = userCanReviewError.data.detail as string;
     }
   } else if (
     typeof userCanReview === "object" &&
@@ -150,21 +152,20 @@ const HotelPage = () => {
     enableReview = false;
     enabledMessage = "You do not have permission to leave a review.";
   }
+
   const overviewRef = React.useRef<HTMLDivElement>(null);
 
   const roomsRef = React.useRef<HTMLDivElement>(null);
   const reviewsRef = React.useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (
-      hotelHasError ||
-      reviewsByUserIsError ||
-      reviewsNotByUserIsError ||
-      roomsIsError
-    ) {
-      nav("/404");
-    }
-  }, [hotelHasError]);
+  if (
+    hotelHasError ||
+    reviewsByUserIsError ||
+    reviewsNotByUserIsError ||
+    roomsIsError
+  ) {
+    return <Error />;
+  }
 
   if (hotelIsLoading || roomsIsLoading || reviewsByUserIsLoading) {
     return <Loading />;
