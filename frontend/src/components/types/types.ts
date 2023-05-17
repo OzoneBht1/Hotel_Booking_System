@@ -87,6 +87,7 @@ export interface IHotelData {
   room_count: number;
   lat: number;
   lng: number;
+  approved?: boolean;
 }
 
 export interface IPaginated<T> {
