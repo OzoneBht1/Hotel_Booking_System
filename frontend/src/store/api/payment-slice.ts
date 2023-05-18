@@ -11,12 +11,15 @@ export const paymentSlice = paymentApiSlice.injectEndpoints({
         body: data,
       }),
     }),
-    createPayment: build.query<any, any>({
-      query: (data: any) => ({
+    createPayment: build.query<
+      any,
+      { data: ITempBookingModifiedFormat; stayDuration: number }
+    >({
+      query: ({ data, stayDuration }) => ({
         url: "http://localhost:8000/payment/test-payment/",
         method: "POST",
         include: "payment",
-        body: data,
+        body: { ...data, stayDuration },
       }),
     }),
     retrievePayment: build.query<

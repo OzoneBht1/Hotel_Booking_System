@@ -5,13 +5,19 @@ import ListItemText from "@mui/material/ListItemText";
 import { useAppSelector } from "../../store/hooks";
 import { getTotalPrice } from "../../utils/RoomUtils";
 import { Avatar, Box, Button, ListItemAvatar } from "@mui/material";
+import { getDays } from "../../utils/RoomUtils";
 
 interface IReview {
   handleNext: () => void;
 }
-
+let stayDuration = 0;
 export default function Review({ handleNext }: IReview) {
   const { bookDetail } = useAppSelector((state) => state.tempBook);
+
+  if (bookDetail) {
+    stayDuration = getDays(bookDetail.check_in, bookDetail.check_out);
+    console.log(stayDuration);
+  }
   console.log(bookDetail);
   return (
     <>
@@ -22,6 +28,9 @@ export default function Review({ handleNext }: IReview) {
 
         <Typography variant="h6" fontSize={17} gutterBottom>
           Hotel : {bookDetail?.hotel_name}
+        </Typography>
+        <Typography variant="h6" fontSize={16} gutterBottom>
+          Stay Duration : {stayDuration} Days
         </Typography>
 
         <List disablePadding>
@@ -47,10 +56,14 @@ export default function Review({ handleNext }: IReview) {
           <ListItem sx={{ py: 1, px: 0 }}>
             <ListItemText primary="Total" />
 
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+            <Typography
+              variant="subtitle1"
+              sx={{ fontSize: 20, fontWeight: 700 }}
+            >
+              ${" "}
               {bookDetail &&
                 bookDetail?.rooms &&
-                getTotalPrice(bookDetail?.rooms)}
+                getTotalPrice(bookDetail?.rooms, stayDuration)}
             </Typography>
           </ListItem>
         </List>

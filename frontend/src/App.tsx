@@ -18,12 +18,8 @@ import VerifyAdmin from "./utils/VerifyAdmin";
 import Dashboard from "./pages/AdminSection/Dashboard";
 import { useAppSelector } from "./store/hooks";
 import { UserType } from "./components/types/types";
-import Layout from "./components/AdminComponents/Layout";
-import { Box } from "@mui/system";
 import UserManagement from "./pages/AdminSection/UserManagement";
-import AdminProfileMain from "./components/AdminComponents/AdminProfileMain";
 import HotelManagement from "./pages/AdminSection/HotelManagement";
-import Unauthorized from "./pages/Unauthorized";
 import Booking from "./components/Booking";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);

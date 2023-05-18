@@ -14,11 +14,11 @@ export const getTotalQuantity = (rooms: IRoomWithQuantity[]) => {
   return totalQuantity;
 };
 
-export const getTotalPrice = (rooms: IRoomWithQuantity[]) => {
+export const getTotalPrice = (rooms: IRoomWithQuantity[], days: number) => {
   let totalPrice = 0;
 
   for (const room of rooms) {
-    totalPrice += room.quantity * room.price;
+    totalPrice += room.quantity * room.price * days;
   }
 
   return totalPrice;
@@ -40,4 +40,13 @@ export const convertFormat = (
   console.log(updatedBooking);
 
   return updatedBooking;
+};
+
+export const getDays = (checkIn: string | Date, checkOut: string | Date) => {
+  const checkInDate = new Date(checkIn);
+  const checkOutDate = new Date(checkOut);
+  const days =
+    (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 3600 * 24);
+
+  return days;
 };

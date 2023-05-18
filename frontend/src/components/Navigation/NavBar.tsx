@@ -108,14 +108,27 @@ const NavBar = () => {
   const navigationItems = (
     <Stack
       direction="row"
-      spacing={{ sm: 1, md: 2, lg: 5 }}
-      gap={1}
+      spacing={{ sm: 1, md: 2, lg: 3 }}
+      // gap={1}
       paddingRight={5}
       sx={{
         display: { xs: "none", sm: "flex" },
         alignItems: "center",
       }}
     >
+      {!user &&
+        pagesToRender.map((page: string) => {
+          return (
+            <Button
+              variant="text"
+              sx={{ fontSize: 16 }}
+              component={NavLink}
+              to={Page[page as keyof typeof Page]}
+            >
+              {page}
+            </Button>
+          );
+        })}
       {user && (
         <Box onClick={handleActionsClick}>
           <PendingActionsIcon sx={{ width: 40, height: 40 }} color="primary" />
@@ -253,14 +266,14 @@ const NavBar = () => {
             transformOrigin={{ horizontal: "center", vertical: "top" }}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           >
-            <MenuItem component={Link} to="/list-properties">
+            <MenuItem component={Link} to="/add-property">
               <Avatar /> List Properties
             </MenuItem>
             <MenuItem component={Link} to="/listings">
               <Avatar /> View my Hotels
             </MenuItem>
             <Divider />
-            <MenuItem component={Link} to="/booking-history">
+            <MenuItem component={Link} to={`bookings/${user.user_id}`}>
               <ListItemIcon>
                 <PersonAdd fontSize="small" />
               </ListItemIcon>

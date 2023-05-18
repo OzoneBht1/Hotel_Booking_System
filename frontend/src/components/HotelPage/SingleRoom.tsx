@@ -8,7 +8,7 @@ import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import MenuItem from "@mui/material/MenuItem";
 import { IHotelRoom } from "../types/types";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useAppDispatch } from "../../store/hooks";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { roomActions } from "../../store/roomSlice";
 import { useGetNextAvailableDateQuery } from "../../store/api/review-slice";
@@ -24,6 +24,7 @@ interface ISingleRoom {
 
 const SingleRoom = ({ room, reset, setReset }: ISingleRoom) => {
   const [roomQuantity, setRoomQuantity] = useState("0");
+  console.log(room);
   const { data: availability, isLoading: availabilityIsLoading } =
     useGetNextAvailableDateQuery(
       { roomId: room.id?.toString()! },
@@ -32,8 +33,6 @@ const SingleRoom = ({ room, reset, setReset }: ISingleRoom) => {
       }
     );
 
-  const rooms = useAppSelector((state) => state.room.rooms);
-  console.log(rooms);
   const dispatch = useAppDispatch();
 
   const handleRoomChange = (event: SelectChangeEvent) => {
@@ -91,7 +90,7 @@ const SingleRoom = ({ room, reset, setReset }: ISingleRoom) => {
           )}
         </Box>
       </TableCell>
-      <TableCell align="right">${room.price}</TableCell>
+      <TableCell align="center">${room.price}</TableCell>
       <TableCell align="center">
         <FormControl sx={{ minWidth: 120 }} size="small">
           <InputLabel id="demo-simple-select-label">Quantity</InputLabel>

@@ -63,7 +63,7 @@ const SearchedResults = () => {
       ? parseInt(params.get("people") as string)
       : 0;
 
-  const rooms =
+  const room_count =
     params && params.get("rooms") ? parseInt(params.get("rooms") as string) : 0;
 
   const [page, setPage] = useState(1);
@@ -72,7 +72,7 @@ const SearchedResults = () => {
     checkInDate,
     checkOutDate,
     people,
-    rooms,
+    room_count,
     page,
     ordering: orderBy,
     min_price: priceRange[0],

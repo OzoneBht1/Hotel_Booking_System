@@ -10,6 +10,7 @@ import {
 import { useAppSelector } from "../../store/hooks";
 import { useParams } from "react-router-dom";
 import Button from "@mui/material/Button";
+import { getDays } from "../../utils/RoomUtils";
 
 interface ICreateReview {
   openModal: boolean;
@@ -50,12 +51,7 @@ const CreateReview = ({ openModal, onClose }: ICreateReview) => {
     useCreateReviewMutation();
 
   const handleSubmit = () => {
-    console.log(value, reviewText);
-    const checkInDate = new Date(data?.check_in);
-    const checkOutDate = new Date(data?.check_out);
-
-    const timeDifference = checkOutDate.getTime() - checkInDate.getTime();
-    const numberOfDays = Math.ceil(timeDifference / (1000 * 3600 * 24));
+    const numberOfDays = getDays(data?.check_in, data?.check_out);
     console.log(user?.user_id);
     console.log(id);
     if (value && reviewText.length) {

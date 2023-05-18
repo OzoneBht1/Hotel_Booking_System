@@ -11,11 +11,12 @@ import { useCreatePaymentQuery } from "../store/api/payment-slice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { roomActions } from "../store/roomSlice";
 import { tempBookActions } from "../store/tempBookSlice";
-import { convertFormat } from "../utils/RoomUtils";
+import { convertFormat, getDays } from "../utils/RoomUtils";
 // import { convertFormat } from "../utils/RoomUtils";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 
+let stayDuration = 0;
 const Checkout = () => {
   const { hotelId, userId } = useParams();
   const dispatch = useAppDispatch();
@@ -33,15 +34,24 @@ const Checkout = () => {
       skip: !hotelId || !userId,
     }
   );
-  console.log(bookRoomsDetails);
 
+  if (bookRoomsDetails) {
+    stayDuration = getDays(
+      bookRoomsDetails.check_in,
+      bookRoomsDetails.check_out
+    );
+  }
   const { data, isLoading, isError } = useCreatePaymentQuery(
-    bookRoomsDetails && convertFormat(bookRoomsDetails),
+    bookRoomsDetails &&
+      ({
+        data: convertFormat(bookRoomsDetails),
+        stayDuration: stayDuration,
+      } as any),
+
     {
       skip: !bookRoomsIsSuccess,
     }
   );
-
   // if (bookRoomsIsError) {
   //   nav("/error");
   // }
