@@ -207,8 +207,11 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
         ordering = self.request.query_params.get("ordering", None)
         min_price = self.request.query_params.get("min_price", None)
         max_price = self.request.query_params.get("max_price", None)
+        check_in = self.request.query_params.get("check_in", None)
+        check_out = self.request.query_params.get("check_out", None)
         min_score = self.request.query_params.get("min_score", None)
         max_score = self.request.query_params.get("max_score", None)
+        room_count = self.request.query_params.get("room_count", None)
 
         if search_query:
             queryset = queryset.filter(
@@ -232,6 +235,9 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
             else:
                 # Order by other fields
                 queryset = queryset.order_by(ordering)
+
+        if room_count:
+            queryset = queryset.filter(room_count__gte=room_count)
 
         return queryset
 
@@ -454,8 +460,6 @@ class CreateBookingTempApi(generics.CreateAPIView):
 
 @api_view(["GET"])
 def get_next_available_date(request, room_id):
-    print("hi mom")
-    print(room_id)
     now = datetime.now().date()
     bookings = Booking.objects.filter(rooms__room=room_id, check_out__gte=now).order_by(
         "check_out"

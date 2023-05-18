@@ -31,12 +31,15 @@ export const HotelTable = (props: IHotelTableProps) => {
   const { count = 0, items, page = 0, rowsPerPage = 0 } = props;
   const [showAmenitiesModal, setShowAmenitiesModal] = useState(false);
   const [showRoomsModal, setShowRoomsModal] = useState(false);
+  const [amenitiesData, setAmenitiesData] = useState<string[] | null>(null);
+  console.log(items);
 
-  const handleAmenitiesModal = () => {
+  const handleAmenitiesModal = (data: string[]) => {
+    setAmenitiesData(data);
     setShowAmenitiesModal((prev) => !prev);
   };
 
-  const handleRoomsModal = () => {
+  const handleRoomsModal = (rooms: any) => {
     setShowRoomsModal((prev) => !prev);
   };
   const handlePageChange = (
@@ -84,7 +87,7 @@ export const HotelTable = (props: IHotelTableProps) => {
                   <TableCell>{hotel.hotel_score}</TableCell>
                   <TableCell>
                     <Button
-                      onClick={handleAmenitiesModal}
+                      onClick={() => handleAmenitiesModal(hotel.amenities)}
                       sx={{ fontSize: "12px" }}
                       variant="text"
                     >
@@ -93,7 +96,7 @@ export const HotelTable = (props: IHotelTableProps) => {
                   </TableCell>
                   <TableCell>
                     <Button
-                      onClick={handleRoomsModal}
+                      // onClick={() => handleRoomsModal(hotel.cheapest_price)}
                       sx={{ fontSize: "14px" }}
                       variant="text"
                     >
@@ -106,22 +109,25 @@ export const HotelTable = (props: IHotelTableProps) => {
                 </TableRow>
               );
             })}
+            {showAmenitiesModal && amenitiesData && (
+              <Modal
+                open={showAmenitiesModal}
+                onClose={() => setShowAmenitiesModal(false)}
+              >
+                <AmenitiesMenu amenities={amenitiesData} />
+              </Modal>
+            )}
+            {showRoomsModal && (
+              <Modal
+                open={showRoomsModal}
+                onClose={() => setShowRoomsModal(false)}
+              >
+                <RoomsMenu />
+              </Modal>
+            )}
           </TableBody>
         </Table>
       </Box>
-      {showAmenitiesModal && (
-        <Modal
-          open={showAmenitiesModal}
-          onClose={() => setShowAmenitiesModal(false)}
-        >
-          <AmenitiesMenu />
-        </Modal>
-      )}
-      {showRoomsModal && (
-        <Modal open={showRoomsModal} onClose={() => setShowRoomsModal(false)}>
-          <RoomsMenu />
-        </Modal>
-      )}
 
       <TablePagination
         component="div"
@@ -164,13 +170,19 @@ const style = {
   pb: 3,
 };
 
-export const AmenitiesMenu = () => {
+interface IAmenitiesMenuProps {
+  amenities: string[];
+}
+export const AmenitiesMenu = ({ amenities }: IAmenitiesMenuProps) => {
   return (
     <Box sx={{ ...style }}>
-      <p>Hi mom</p>
+      {amenities.map((amenity) => (
+        <p>{amenity}</p>
+      ))}
     </Box>
   );
 };
+
 export const RoomsMenu = () => {
   return (
     <Box sx={{ ...style }}>

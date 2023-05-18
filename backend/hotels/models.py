@@ -30,6 +30,7 @@ class Hotel(BaseModel):
     lat = models.FloatField(blank=True, null=True)
     lng = models.FloatField(blank=True, null=True)
     hotel_score = models.FloatField(default=2.5)
+    approved = models.BooleanField(default=False)
 
     def get_average_rating(self):
         reviews = Review.objects.filter(hotel=self)

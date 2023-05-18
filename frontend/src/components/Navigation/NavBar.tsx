@@ -269,7 +269,7 @@ const NavBar = () => {
             <MenuItem component={Link} to="/add-property">
               <Avatar /> List Properties
             </MenuItem>
-            <MenuItem component={Link} to="/listings">
+            <MenuItem component={Link} to={`/listings/${user.user_id}`}>
               <Avatar /> View my Hotels
             </MenuItem>
             <Divider />

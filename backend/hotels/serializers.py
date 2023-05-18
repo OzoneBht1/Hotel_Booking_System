@@ -46,6 +46,7 @@ class HotelSerializer(ModelSerializer):
     manager = serializers.StringRelatedField(read_only=True)
     review_count = serializers.SerializerMethodField()
     cheapest_price = serializers.SerializerMethodField()
+    room_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Hotel
@@ -56,6 +57,7 @@ class HotelSerializer(ModelSerializer):
             "amenities",
             "room_count",
             "manager",
+            "rooms",
             "hotel_images",
             "hotel_score",
             "lng",
@@ -78,6 +80,14 @@ class HotelSerializer(ModelSerializer):
             return cheapest_price
         else:
             return "N/A"
+
+    def get_room_count(self, obj):
+        rooms = Room.objects.filter(hotel=obj)
+        count = 0
+        for room in rooms:
+            count = count + room.quantity
+
+        return count
 
     def create(self, validated_data):
         # print(validated_data["manager"])

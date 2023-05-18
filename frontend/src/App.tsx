@@ -21,6 +21,7 @@ import { UserType } from "./components/types/types";
 import UserManagement from "./pages/AdminSection/UserManagement";
 import HotelManagement from "./pages/AdminSection/HotelManagement";
 import Booking from "./components/Booking";
+import UserListings from "./components/UserListings";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 function App() {
@@ -45,6 +46,7 @@ function App() {
             <Route path="/add-property" element={<ListProperties />} />
             <Route path="/profile/:id" element={<Profile />} />
             <Route path="/bookings/:id" element={<Booking />} />
+            <Route path="/listings/:id" element={<UserListings />} />
             <Route element={<VerifyAdmin />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/customers" element={<UserManagement />} />
