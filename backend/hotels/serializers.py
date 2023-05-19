@@ -7,7 +7,7 @@ from rest_framework.serializers import (
 from rest_framework import serializers
 from django.db.models import Min
 
-from hotels.views import History
+from .models import History
 
 from .models import (
     FAQ,

@@ -4,6 +4,7 @@ from .views import (
     BookingDetailsByUserApi,
     CheckPermissionAPIView,
     CreateBookingTempApi,
+    CreateHistoryApi,
     DeleteTempBookingApi,
     FAQByHotelApi,
     GetAllBookingApi,
@@ -139,4 +140,5 @@ urlpatterns = [
         GetBookingApi.as_view(),
         name="get-single-booking",
     ),
+    path("create-history/", CreateHistoryApi.as_view(), name="create-history"),
 ]

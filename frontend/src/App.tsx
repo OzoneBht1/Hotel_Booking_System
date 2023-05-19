@@ -16,18 +16,43 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import VerifyAdmin from "./utils/VerifyAdmin";
 import Dashboard from "./pages/AdminSection/Dashboard";
-import { useAppSelector } from "./store/hooks";
+import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { UserType } from "./components/types/types";
 import UserManagement from "./pages/AdminSection/UserManagement";
 import HotelManagement from "./pages/AdminSection/HotelManagement";
 import Booking from "./components/Booking";
 import UserListings from "./components/UserListings";
 import OrderManagement from "./pages/AdminSection/OrderManagement";
+import { useRecommendHotelsQuery } from "./store/api/history-slice";
+import { historyActions } from "./store/history-slice";
+import Loading from "./components/Loading";
+import { useEffect } from "react";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 function App() {
   const { user } = useAppSelector((state) => state.auth);
-  console.log(user);
+  const { hotels } = useAppSelector((state) => state.history);
+  const dispatch = useAppDispatch();
+
+  const {
+    data: recommendedHotels,
+    isLoading: recommendedHotelsIsLoading,
+    isSuccess,
+  } = useRecommendHotelsQuery({
+    user_id: user?.user_id ? user?.user_id : null,
+  });
+
+  useEffect(() => {
+    if (!recommendedHotels) return;
+    dispatch(
+      historyActions.setRecommendations({ hotelData: recommendedHotels })
+    );
+  }, [recommendedHotels, dispatch]);
+
+  if (recommendedHotelsIsLoading) {
+    return <Loading />;
+  }
+
   return (
     <Elements stripe={stripePromise}>
       <div>

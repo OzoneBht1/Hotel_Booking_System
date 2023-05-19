@@ -612,31 +612,46 @@ class HouseRulesByHotelApi(generics.RetrieveAPIView):
         return HouseRules.objects.filter(hotel=hotel_id)
 
 
+from rest_framework import serializers
+
+
 class CreateHistoryApi(generics.CreateAPIView):
     queryset = History.objects.all()
-    serializer_class = HistorySerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
-    def post(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
+        # Get the hotel_id from the request data
+        hotel_id = request.data.get("hotel")
+
+        # Retrieve the hotel instance using the hotel_id
+        try:
+            hotel = Hotel.objects.get(id=hotel_id)
+        except Hotel.DoesNotExist:
+            raise serializers.ValidationError("Invalid hotel ID.")
+
         # Check if a history entry already exists for the current user
         user_history = History.objects.filter(user=request.user).first()
 
         if user_history:
-            # Update the existing history entry with the new hotel_id
-            user_history.hotel = request.data.get("hotel_id")
+            # Update the existing history entry with the new hotel instance
+            user_history.hotel = hotel
             user_history.save()
         else:
             # Create a new history entry
-            return self.create(request, *args, **kwargs)
+            History.objects.create(user=request.user, hotel=hotel)
 
         return Response("History updated successfully.")
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 def recommend_hotels(request):
-    user_id = request.GET.get("user_id", None)
-    history = History.objects.get(user=user_id)
+    user_id = request.data.get("user_id", None)
+    history = None
+
+    if user_id:
+        history = History.objects.get(user=user_id)
+        print(history)
     if not history:
         top_hotels = (
             Booking.objects.values("hotel")
@@ -651,7 +666,7 @@ def recommend_hotels(request):
 
         return JsonResponse(serialized_data, safe=False)
 
-    hotel_id = history.hotel
+    hotel_id = history.hotel.id
 
     hotel_name = Hotel.objects.get(id=hotel_id).name
 

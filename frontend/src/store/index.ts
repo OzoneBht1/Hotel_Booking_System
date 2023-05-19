@@ -4,6 +4,7 @@ import listReducer from "./list-slice";
 import roomReducer from "./roomSlice";
 import paymentReducer from "./paymentSlice";
 import tempBookReducer from "./tempBookSlice";
+import historyReducer from "./history-slice";
 import { apiSlice } from "./api/apiSlice";
 import { paymentSlice } from "./api/payment-slice";
 import { reviewApiSlice } from "./api/review-slice";
@@ -15,6 +16,7 @@ const store = configureStore({
     room: roomReducer,
     tempBook: tempBookReducer,
     paymentRed: paymentReducer,
+    history: historyReducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
     [paymentSlice.reducerPath]: paymentSlice.reducer,
   },
