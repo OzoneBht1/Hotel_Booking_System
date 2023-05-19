@@ -145,7 +145,7 @@ export default function PaymentForm({ data, handleNext }: IPaymentFormProps) {
           <Grid item xs={12} md={13}>
             <LinkAuthenticationElement
               id="link-authentication-element"
-              // onChange={(e) => setEmail(e.value.email)}
+              onChange={(e) => setEmail(e.value.email)}
             />
 
             <PaymentElement id="payment-element" />

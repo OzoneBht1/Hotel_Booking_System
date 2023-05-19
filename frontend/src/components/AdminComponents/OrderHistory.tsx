@@ -6,67 +6,19 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Typography } from "@mui/material";
+import { IBookingCreate } from "../types/types";
+import { getDate, getDays, getTotalPrice } from "../../utils/RoomUtils";
 
-// Generate Order Data
-function createData(
-  id: number,
-  date: string,
-  name: string,
-  shipTo: string,
-  paymentMethod: string,
-  amount: number
-) {
-  return { id, date, name, shipTo, paymentMethod, amount };
+interface IOrderHistoryProps {
+  data: IBookingCreate[];
 }
-
-const rows = [
-  createData(
-    0,
-    "16 Mar, 2019",
-    "Elvis Presley",
-    "Tupelo, MS",
-    "VISA ⠀•••• 3719",
-    312.44
-  ),
-  createData(
-    1,
-    "16 Mar, 2019",
-    "Paul McCartney",
-    "London, UK",
-    "VISA ⠀•••• 2574",
-    866.99
-  ),
-  createData(
-    2,
-    "16 Mar, 2019",
-    "Tom Scholz",
-    "Boston, MA",
-    "MC ⠀•••• 1253",
-    100.81
-  ),
-  createData(
-    3,
-    "16 Mar, 2019",
-    "Michael Jackson",
-    "Gary, IN",
-    "AMEX ⠀•••• 2000",
-    654.39
-  ),
-  createData(
-    4,
-    "15 Mar, 2019",
-    "Bruce Springsteen",
-    "Long Branch, NJ",
-    "VISA ⠀•••• 5919",
-    212.79
-  ),
-];
 
 function preventDefault(event: React.MouseEvent) {
   event.preventDefault();
 }
 
-export default function Orders() {
+export default function Orders({ data }: IOrderHistoryProps) {
+  console.log(data);
   return (
     <React.Fragment>
       <Typography>Recent Orders</Typography>
@@ -74,20 +26,27 @@ export default function Orders() {
         <TableHead>
           <TableRow>
             <TableCell>Date</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Ship To</TableCell>
-            <TableCell>Payment Method</TableCell>
+            <TableCell>Hotel</TableCell>
+            <TableCell>Paid By</TableCell>
+            <TableCell>User</TableCell>
+            <TableCell>Check In</TableCell>
+            <TableCell>Check Out</TableCell>
             <TableCell align="right">Sale Amount</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.id}>
-              <TableCell>{row.date}</TableCell>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.shipTo}</TableCell>
-              <TableCell>{row.paymentMethod}</TableCell>
-              <TableCell align="right">{`$${row.amount}`}</TableCell>
+          {data.map((order) => (
+            <TableRow key={order.id}>
+              <TableCell>{getDate(order.created_at as string)}</TableCell>
+              <TableCell>{order.hotel_name}</TableCell>
+              <TableCell>{order.email}</TableCell>
+              <TableCell>{order.user_name}</TableCell>
+              <TableCell>{order.check_in}</TableCell>
+              <TableCell>{order.check_out}</TableCell>
+              <TableCell align="right">{`$${getTotalPrice(
+                order.rooms as any,
+                getDays(order.check_in, order.check_out)
+              )}`}</TableCell>
             </TableRow>
           ))}
         </TableBody>

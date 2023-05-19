@@ -61,3 +61,17 @@ export const getDateTime = (date: string) => {
   const formattedDateTime: string = formattedDate + " " + formattedTime;
   return formattedDateTime;
 };
+
+export const getDate = (date: string) => {
+  const dateTimeObj: Date = new Date(date);
+  const formattedDate: string = dateTimeObj.toISOString().split("T")[0];
+  return formattedDate;
+};
+
+export const getTimeHHMM = (date: string) => {
+  const dateTimeObj: Date = new Date(date);
+  const hours: string = String(dateTimeObj.getHours()).padStart(2, "0");
+  const minutes: string = String(dateTimeObj.getMinutes()).padStart(2, "0");
+  const formattedTime: string = `${hours}:${minutes}`;
+  return formattedTime;
+};

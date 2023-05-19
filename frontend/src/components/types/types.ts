@@ -238,6 +238,8 @@ export interface IPayment {
 }
 
 export interface IBookingCreate extends ITempBookingSet {
+  created_at?: string;
+  user_name?: string;
   email: string;
   paymentIntentId: string;
 }

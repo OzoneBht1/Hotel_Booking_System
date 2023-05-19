@@ -32,7 +32,7 @@ export default function Deposits() {
         ${amount}
       </Typography>
       <Typography color="text.secondary" sx={{ flex: 1, marginY: 1 }}>
-        on {getDateTime(latestBooking?.created_at)}
+        on {getDateTime(latestBooking?.created_at as string)}
       </Typography>
       <Typography color="text.secondary" sx={{ flex: 1 }}>
         for {latestBooking?.hotel_name}

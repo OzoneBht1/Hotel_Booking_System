@@ -72,6 +72,20 @@ export const bookingApiSlice = apiSlice.injectEndpoints({
         include: "booking",
       }),
     }),
+    getAllBookingToday: build.query<IBookingCreate[], null>({
+      query: () => ({
+        url: `/get-bookings-today`,
+        method: "GET",
+        include: "booking",
+      }),
+    }),
+    getAllBookings: build.query<IBookingCreate[], null>({
+      query: () => ({
+        url: `/get-bookings`,
+        method: "GET",
+        include: "booking",
+      }),
+    }),
   }),
 });
 
@@ -82,4 +96,6 @@ export const {
   useDeleteTempBookingMutation,
   useGetBookingsByUserQuery,
   useGetLatestBookingQuery,
+  useGetAllBookingTodayQuery,
+  useGetAllBookingsQuery,
 } = bookingApiSlice;
