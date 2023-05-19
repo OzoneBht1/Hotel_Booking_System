@@ -50,3 +50,14 @@ export const getDays = (checkIn: string | Date, checkOut: string | Date) => {
 
   return days;
 };
+
+export const getDateTime = (date: string) => {
+  const dateTimeObj: Date = new Date(date);
+  const formattedDate: string = dateTimeObj.toISOString().split("T")[0];
+  const formattedTime: string = dateTimeObj
+    .toISOString()
+    .split("T")[1]
+    .split(".")[0];
+  const formattedDateTime: string = formattedDate + " " + formattedTime;
+  return formattedDateTime;
+};

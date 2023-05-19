@@ -65,6 +65,13 @@ export const bookingApiSlice = apiSlice.injectEndpoints({
         },
       }),
     }),
+    getLatestBooking: build.query<IBookingCreate, null>({
+      query: () => ({
+        url: `/latest-booking/`,
+        method: "GET",
+        include: "booking",
+      }),
+    }),
   }),
 });
 
@@ -74,4 +81,5 @@ export const {
   useCreateBookingMutation,
   useDeleteTempBookingMutation,
   useGetBookingsByUserQuery,
+  useGetLatestBookingQuery,
 } = bookingApiSlice;
