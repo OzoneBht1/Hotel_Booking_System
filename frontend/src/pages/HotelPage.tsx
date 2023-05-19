@@ -14,7 +14,7 @@ import {
 } from "../store/api/hotelSlice";
 import Loading from "../components/Loading";
 import { BASEURL } from "../store/api/apiSlice";
-import { Button, Rating, Tab, Tabs, Tooltip } from "@mui/material";
+import { Button, Rating, Stack, Tab, Tabs, Tooltip } from "@mui/material";
 import { ScoreBadge } from "../components/HomePageItem";
 import getHotelRating from "../utils/GetScoreRating";
 import getBookingRating from "../utils/GetScoreRating";
@@ -38,6 +38,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import CreateReview from "../components/HotelPage/CreateReview";
 import Error from "./404";
+import RecommendedItems from "../components/RecommendedItems";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -396,6 +397,24 @@ const HotelPage = () => {
                 <ListItemText primary="Enhanced food service safety" />
               </ListItem>
             </List>
+          </Box>
+        </Box>
+      </Box>
+      <Box
+        ref={reviewsRef}
+        display="flex"
+        width="75%"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        sx={
+          {
+            // backgroundColor: "white",
+          }
+        }
+      >
+        <Box width="100%">
+          <Box width="100%" gap={3} overflow="hidden">
+            <RecommendedItems />
           </Box>
         </Box>
       </Box>

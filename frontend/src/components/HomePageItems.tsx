@@ -7,9 +7,11 @@ import "react-multi-carousel/lib/styles.css";
 import { useQuery } from "react-query";
 import { useGetHomePageItemsQuery } from "../store/api/hotelSlice";
 import Loading from "./Loading";
-import Error from "../pages/404";
-import { ArrowLeft, ArrowLeftRounded, ArrowRight } from "@mui/icons-material";
 import { useAppSelector } from "../store/hooks";
+
+import { amber } from "@mui/material/colors";
+import RecommendedItems from "./RecommendedItems";
+
 const countries = ["France", "United Kingdom", "Netherlands", "Austria"];
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -76,32 +78,10 @@ const HomePageItems = () => {
         <StyledBox>
           {recommendedHotels && (
             <Stack gap={4} marginBottom={8}>
-              <Typography
-                variant="h4"
-                component="h4"
-                sx={{ alignSelf: "flex-start", color: "yellow" }}
-                whiteSpace="nowrap"
-              >
-                Recommended Hotels
-              </Typography>
-              <Carousel
-                responsive={responsive}
-                infinite={true}
-                // autoPlay={true}
-                autoPlaySpeed={3000}
-                keyBoardControl={true}
-                customTransition="all .5"
-                transitionDuration={500}
-                containerClass="carousel-container"
-                removeArrowOnDeviceType={["tablet", "mobile"]}
-                deviceType="desktop"
-              >
-                {recommendedHotels.map((hotel) => (
-                  <HomePageItem key={hotel.id} {...hotel} />
-                ))}
-              </Carousel>
+              <RecommendedItems />
             </Stack>
           )}
+
           {countryApiData &&
             countries.map((country) => (
               <Stack gap={4} marginBottom={8} key={country}>
