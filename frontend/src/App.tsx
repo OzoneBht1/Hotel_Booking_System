@@ -22,6 +22,7 @@ import UserManagement from "./pages/AdminSection/UserManagement";
 import HotelManagement from "./pages/AdminSection/HotelManagement";
 import Booking from "./components/Booking";
 import UserListings from "./components/UserListings";
+import OrderManagement from "./pages/AdminSection/OrderManagement";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 function App() {
@@ -50,6 +51,7 @@ function App() {
             <Route element={<VerifyAdmin />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/customers" element={<UserManagement />} />
+              <Route path="/order-history" element={<OrderManagement />} />
               <Route path="/hotels" element={<HotelManagement />} />
             </Route>
           </Route>

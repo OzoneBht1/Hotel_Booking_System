@@ -79,11 +79,17 @@ export const bookingApiSlice = apiSlice.injectEndpoints({
         include: "booking",
       }),
     }),
-    getAllBookings: build.query<IBookingCreate[], null>({
-      query: () => ({
+    getAllBookings: build.query<IPaginated<IBookingCreate>, IBookingQuery>({
+      query: ({ search, ordering, limit = 10, page }) => ({
         url: `/get-bookings`,
         method: "GET",
         include: "booking",
+        params: {
+          search,
+          ordering,
+          limit,
+          offset: page * limit,
+        },
       }),
     }),
   }),

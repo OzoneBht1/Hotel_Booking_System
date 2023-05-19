@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { MoreVert } from "@mui/icons-material";
 import { IBookingCreate, IPaginated } from "./types/types";
+import { getDate, getDays, getTotalPrice } from "../utils/RoomUtils";
 
 interface ICustomersTableProps {
   count?: number;
@@ -42,12 +43,15 @@ export const BookingTable = (props: ICustomersTableProps) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Payment Id</TableCell>
+              <TableCell>Id</TableCell>
+              <TableCell>Date</TableCell>
               <TableCell>Hotel</TableCell>
 
-              <TableCell>Payee</TableCell>
+              <TableCell>Paid By</TableCell>
+              <TableCell>Payee Email</TableCell>
               <TableCell>Check In</TableCell>
               <TableCell>Check Out</TableCell>
+              <TableCell>Sale Amount</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -56,11 +60,17 @@ export const BookingTable = (props: ICustomersTableProps) => {
 
               return (
                 <TableRow hover key={booking.id}>
-                  <TableCell>{booking.paymentIntentId}</TableCell>
+                  <TableCell>{booking.id}</TableCell>
+                  <TableCell>{getDate(booking.created_at as string)}</TableCell>
                   <TableCell>{booking.hotel_name}</TableCell>
+                  <TableCell>{booking.user_name}</TableCell>
                   <TableCell>{booking.email}</TableCell>
                   <TableCell>{booking.check_in}</TableCell>
                   <TableCell>{booking.check_out}</TableCell>
+                  <TableCell>{`$${getTotalPrice(
+                    booking.rooms as any,
+                    getDays(booking.check_in, booking.check_out)
+                  )}`}</TableCell>
                 </TableRow>
               );
             })}
