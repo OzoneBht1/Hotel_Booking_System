@@ -6,6 +6,8 @@ from .views import (
     CreateBookingTempApi,
     DeleteTempBookingApi,
     FAQByHotelApi,
+    GetAllBookingApi,
+    GetAllBookingToday,
     GetBookingApi,
     GetBookingTempApi,
     HotelCreateApi,
@@ -23,6 +25,7 @@ from .views import (
     ReviewsOfAUserApi,
     recommend_hotels,
     get_next_available_date,
+    LatestBookingView,
     RoomByHotelApi,
     SingleRoomByHotelApi,
 )
@@ -82,6 +85,9 @@ urlpatterns = [
         GetBookingTempApi.as_view(),
         name="get-booking",
     ),
+    path("latest-booking/", LatestBookingView.as_view(), name="latest-sale"),
+    path("get-bookings-today/", GetAllBookingToday.as_view(), name="today-sale"),
+    path("get-bookings/", GetAllBookingApi.as_view(), name="all-bookings"),
     path(
         "hotels/<int:hotel_id>/create-temp-booking/<int:user_id>/",
         CreateBookingTempApi.as_view(),

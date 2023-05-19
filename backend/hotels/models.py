@@ -138,3 +138,8 @@ class FAQ(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="faqs")
     question = models.CharField(max_length=200)
     answer = models.TextField()
+
+
+class History(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)

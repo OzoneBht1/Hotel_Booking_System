@@ -51,6 +51,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "core.urls"
 
+TIME_ZONE = "Asia/Kathmandu"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -102,7 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
 
 USE_I18N = True
 

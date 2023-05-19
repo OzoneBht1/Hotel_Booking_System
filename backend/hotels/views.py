@@ -43,9 +43,13 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from rest_framework.response import Response
-from django.db.models import Q, Min
+from django.db.models import Q, Count, Min
 from .models import Review
-
+from django.db.models import DateTimeField
+from django.db.models.functions import TruncDate
+from django.utils import timezone
+from django.db.models.functions import Cast
+from django.db.models import DateField
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -292,6 +296,15 @@ class BookingDetailsByUserApi(generics.ListAPIView):
         return queryset
 
 
+class LatestBookingView(generics.RetrieveAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_object(self):
+        return Booking.objects.latest("updated_at")
+
+
 class HotelsByLocationApi(generics.ListAPIView):
     serializer_class = HotelSerializer
     authentication_classes = []
@@ -397,6 +410,50 @@ class ReviewByHotelApi(generics.ListAPIView):
 
 
 # class CreateReviewApi(generics.CreateAPIView):
+
+
+class GetAllBookingApi(generics.ListAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+    permission_classes = [IsAdminUser]
+    pagination_class = CustomPagination
+    filter_backends = [
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        DjangoFilterBackend,
+    ]
+
+    search_fields = ["hotel__name"]
+    # ordering_fields = ["id", "name", "hotel_score"]
+    # ordering = ["name"]
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
+class GetAllBookingToday(generics.ListAPIView):
+    serializer_class = BookingSerializer
+    permission_classes = [IsAdminUser]
+    pagination_class = None
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        # Get today's date in the current timezone
+        today = timezone.localdate()
+        print(today)
+
+        current_date_utc = timezone.make_aware(
+            timezone.datetime.combine(today, timezone.datetime.min.time())  # type: ignore
+        )
+        print(current_date_utc.date())
+        print(Booking.objects.latest("updated_at").updated_at.date())
+
+        # Filter bookings for today
+        queryset = Booking.objects.filter(created_at__date=current_date_utc.date())
+
+        return queryset
 
 
 class GetBookingApi(generics.RetrieveAPIView):
@@ -556,7 +613,25 @@ class HouseRulesByHotelApi(generics.RetrieveAPIView):
 
 @api_view(["GET"])
 def recommend_hotels(request):
-    hotel_name = request.GET.get("hotel_name", "")
+    user_id = request.GET.get("user_id", None)
+    history = History.objects.get(user=user_id)
+    if not history:
+        top_hotels = (
+            Booking.objects.values("hotel")
+            .annotate(total_bookings=Count("hotel"))
+            .order_by("-total_bookings")[:5]
+        )
+        hotel_ids = [item["hotel"] for item in top_hotels]
+        hotels = Hotel.objects.filter(id__in=hotel_ids)
+
+        serializer = HotelSerializer(hotels, many=True)
+        serialized_data = serializer.data
+
+        return JsonResponse(serialized_data, safe=False)
+
+    hotel_id = history.hotel
+
+    hotel_name = Hotel.objects.get(id=hotel_id).name
 
     if hotel_name not in list(name_to_idx.keys()):
         embed = model.encode(hotel_name)
@@ -568,19 +643,16 @@ def recommend_hotels(request):
         hotel_names = [idx_to_name[i] for i in hotel_indices]
         hotels = Hotel.objects.filter(name__in=hotel_names)
 
-        serialized_data = serialize("json", hotels)
-        serialized_data = json.loads(serialized_data)
+    else:
+        idx = name_to_idx[hotel_name]
+        sim_scores = list(enumerate(sim_matrix[idx]))
+        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+        sim_scores = sim_scores[1:11]
+        hotel_indices = [i[0] for i in sim_scores]
+        hotel_names = [idx_to_name[i] for i in hotel_indices]
+        hotels = Hotel.objects.filter(name__in=hotel_names)
 
-        return JsonResponse(serialized_data, safe=False)
-
-    idx = name_to_idx[hotel_name]
-    sim_scores = list(enumerate(sim_matrix[idx]))
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-    sim_scores = sim_scores[1:11]
-    hotel_indices = [i[0] for i in sim_scores]
-    hotel_names = [idx_to_name[i] for i in hotel_indices]
-    hotels = Hotel.objects.filter(name__in=hotel_names)
-    serialized_data = serialize("json", hotels)
-    serialized_data = json.loads(serialized_data)
+    serializer = HotelSerializer(hotels, many=True)
+    serialized_data = serializer.data
 
     return JsonResponse(serialized_data, safe=False)

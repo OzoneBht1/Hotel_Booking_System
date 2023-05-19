@@ -130,6 +130,7 @@ class RoomWithoutHotelSerializer(ModelSerializer):
 
 class RoomTempSerializer(ModelSerializer):
     room_type = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
 
     class Meta:
         model = RoomTemp
@@ -137,6 +138,9 @@ class RoomTempSerializer(ModelSerializer):
 
     def get_room_type(self, obj):
         return obj.room.room_type
+
+    def get_price(self, obj):
+        return obj.room.price
 
 
 class BookTempCreateSerializer(ModelSerializer):
@@ -259,6 +263,7 @@ class BookCreateSerializer(ModelSerializer):
 class BookingSerializer(ModelSerializer):
     rooms = RoomTempSerializer(many=True)
     hotel_name = SerializerMethodField()
+    user_name = SerializerMethodField()
 
     class Meta:
         model = Booking
@@ -268,9 +273,15 @@ class BookingSerializer(ModelSerializer):
             "check_out",
             "rooms",
             "hotel_name",
+            "user_name",
             "email",
             "paymentIntentId",
+            "created_at",
+            "updated_at",
         ]
 
     def get_hotel_name(self, obj):
         return obj.hotel.name
+
+    def get_user_name(self, obj):
+        return obj.user.first_name + " " + obj.user.last_name
