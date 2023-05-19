@@ -87,6 +87,7 @@ export interface IHotelData {
   room_count: number;
   lat: number;
   lng: number;
+  approved?: boolean;
 }
 
 export interface IPaginated<T> {
@@ -120,10 +121,9 @@ export interface IQuery {
   checkInDate: string;
   checkOutDate: string;
   searchQuery: string;
-  people: number;
   ordering?: string;
-  rooms: number;
   page?: number;
+  room_count?: number;
 }
 export interface IHotelSearchQuery extends IQuery {
   min_price?: number;
@@ -238,6 +238,8 @@ export interface IPayment {
 }
 
 export interface IBookingCreate extends ITempBookingSet {
+  created_at?: string;
+  user_name?: string;
   email: string;
   paymentIntentId: string;
 }

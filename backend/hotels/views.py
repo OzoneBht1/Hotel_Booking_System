@@ -1,4 +1,5 @@
 from django.db import models
+from django.http.response import JsonResponse
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -10,6 +11,8 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 from account_manager.permissions import UserDetailPermission
+from django.core.serializers import serialize
+import json
 
 
 # from account_manager.permissions import UserDetailPermission
@@ -22,6 +25,7 @@ from .serializers import (
     Booking,
     BookingSerializer,
     FAQSerializer,
+    HistorySerializer,
     HotelCreateWithDetailsSerializer,
     HotelSerializer,
     HouseRules,
@@ -32,17 +36,21 @@ from .serializers import (
     User,
 )
 from rest_framework.decorators import api_view
-from .models import Hotel
-from .permissions import CanLeaveReview, IsCurrentUserPermission
+from .models import History, Hotel
+from .permissions import CanLeaveReview, IsCurrentUserPermission, datetime
 from .pagination import CustomPagination, CustomPagination
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from rest_framework.response import Response
-from django.db.models import Q, Min
+from django.db.models import Q, Count, Min
 from .models import Review
-
+from django.db.models import DateTimeField
+from django.db.models.functions import TruncDate
+from django.utils import timezone
+from django.db.models.functions import Cast
+from django.db.models import DateField
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -204,8 +212,11 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
         ordering = self.request.query_params.get("ordering", None)
         min_price = self.request.query_params.get("min_price", None)
         max_price = self.request.query_params.get("max_price", None)
+        check_in = self.request.query_params.get("check_in", None)
+        check_out = self.request.query_params.get("check_out", None)
         min_score = self.request.query_params.get("min_score", None)
         max_score = self.request.query_params.get("max_score", None)
+        room_count = self.request.query_params.get("room_count", None)
 
         if search_query:
             queryset = queryset.filter(
@@ -214,9 +225,9 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
 
         queryset = self.filter_queryset(queryset)
 
-        if min_price and max_price:
-            queryset = queryset.filter(rooms__price__range=(min_price, max_price))
-
+        # if min_price and max_price:
+        # queryset = queryset.filter(rooms__price__range=(min_price, max_price))
+        #
         if min_score and max_score:
             queryset = queryset.filter(hotel_score__range=(min_score, max_score))
 
@@ -230,6 +241,9 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
                 # Order by other fields
                 queryset = queryset.order_by(ordering)
 
+        if room_count:
+            queryset = queryset.filter(room_count__gte=room_count)
+
         return queryset
 
 
@@ -242,13 +256,25 @@ class BookingCreateApi(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user)  # Assign the logged-in user to the booking
+        booking = serializer.save(
+            user=request.user
+        )  # Assign the logged-in user to the booking
         headers = self.get_success_headers(serializer.data)
+        update_available_rooms(request.data)
         return Response(
             {"message": "Temporary Booking Created"},
             status=status.HTTP_201_CREATED,
             headers=headers,
         )
+
+
+def update_available_rooms(booking):
+    print("booking", booking)
+    for rooms in booking["rooms"]:
+        room_id = rooms["room"]
+        room_obj = Room.objects.get(id=room_id)
+        room_obj.quantity -= rooms["quantity"]
+        room_obj.save()
 
 
 class BookingDetailsByUserApi(generics.ListAPIView):
@@ -269,6 +295,15 @@ class BookingDetailsByUserApi(generics.ListAPIView):
         user = self.kwargs["user_id"]
         queryset = Booking.objects.filter(user=user)
         return queryset
+
+
+class LatestBookingView(generics.RetrieveAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_object(self):
+        return Booking.objects.latest("updated_at")
 
 
 class HotelsByLocationApi(generics.ListAPIView):
@@ -378,6 +413,50 @@ class ReviewByHotelApi(generics.ListAPIView):
 # class CreateReviewApi(generics.CreateAPIView):
 
 
+class GetAllBookingApi(generics.ListAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+    permission_classes = [IsAdminUser]
+    pagination_class = CustomPagination
+    filter_backends = [
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        DjangoFilterBackend,
+    ]
+
+    search_fields = ["hotel__name"]
+    # ordering_fields = ["id", "name", "hotel_score"]
+    # ordering = ["name"]
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
+class GetAllBookingToday(generics.ListAPIView):
+    serializer_class = BookingSerializer
+    permission_classes = [IsAdminUser]
+    pagination_class = None
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        # Get today's date in the current timezone
+        today = timezone.localdate()
+        print(today)
+
+        current_date_utc = timezone.make_aware(
+            timezone.datetime.combine(today, timezone.datetime.min.time())  # type: ignore
+        )
+        print(current_date_utc.date())
+        print(Booking.objects.latest("updated_at").updated_at.date())
+
+        # Filter bookings for today
+        queryset = Booking.objects.filter(created_at__date=current_date_utc.date())
+
+        return queryset
+
+
 class GetBookingApi(generics.RetrieveAPIView):
     serializer_class = BookingSerializer
     lookup_field = "hotel_id"
@@ -435,6 +514,23 @@ class CreateBookingTempApi(generics.CreateAPIView):
             status=status.HTTP_201_CREATED,
             headers=headers,
         )
+
+
+@api_view(["GET"])
+def get_next_available_date(request, room_id):
+    now = datetime.now().date()
+    bookings = Booking.objects.filter(rooms__room=room_id, check_out__gte=now).order_by(
+        "check_out"
+    )
+    print(bookings)
+    earliest_booking = bookings.first()
+    if earliest_booking is not None:
+        earliest_check_out_date = earliest_booking.check_out
+        return Response(
+            {"earliest": earliest_check_out_date}, status=status.HTTP_200_OK
+        )
+
+    return Response({"earliest": None}, status=status.HTTP_200_OK)
 
 
 class GetBookingTempApi(generics.RetrieveAPIView):
@@ -516,9 +612,48 @@ class HouseRulesByHotelApi(generics.RetrieveAPIView):
         return HouseRules.objects.filter(hotel=hotel_id)
 
 
+class CreateHistoryApi(generics.CreateAPIView):
+    queryset = History.objects.all()
+    serializer_class = HistorySerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def post(self, request, *args, **kwargs):
+        # Check if a history entry already exists for the current user
+        user_history = History.objects.filter(user=request.user).first()
+
+        if user_history:
+            # Update the existing history entry with the new hotel_id
+            user_history.hotel = request.data.get("hotel_id")
+            user_history.save()
+        else:
+            # Create a new history entry
+            return self.create(request, *args, **kwargs)
+
+        return Response("History updated successfully.")
+
+
 @api_view(["GET"])
 def recommend_hotels(request):
-    hotel_name = request.GET.get("hotel_name", "")
+    user_id = request.GET.get("user_id", None)
+    history = History.objects.get(user=user_id)
+    if not history:
+        top_hotels = (
+            Booking.objects.values("hotel")
+            .annotate(total_bookings=Count("hotel"))
+            .order_by("-total_bookings")[:5]
+        )
+        hotel_ids = [item["hotel"] for item in top_hotels]
+        hotels = Hotel.objects.filter(id__in=hotel_ids)
+
+        serializer = HotelSerializer(hotels, many=True)
+        serialized_data = serializer.data
+
+        return JsonResponse(serialized_data, safe=False)
+
+    hotel_id = history.hotel
+
+    hotel_name = Hotel.objects.get(id=hotel_id).name
 
     if hotel_name not in list(name_to_idx.keys()):
         embed = model.encode(hotel_name)
@@ -528,13 +663,18 @@ def recommend_hotels(request):
         sim_scores = sim_scores[1:11]
         hotel_indices = [i[0] for i in sim_scores]
         hotel_names = [idx_to_name[i] for i in hotel_indices]
+        hotels = Hotel.objects.filter(name__in=hotel_names)
 
-        return Response(hotel_names)
+    else:
+        idx = name_to_idx[hotel_name]
+        sim_scores = list(enumerate(sim_matrix[idx]))
+        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+        sim_scores = sim_scores[1:11]
+        hotel_indices = [i[0] for i in sim_scores]
+        hotel_names = [idx_to_name[i] for i in hotel_indices]
+        hotels = Hotel.objects.filter(name__in=hotel_names)
 
-    idx = name_to_idx[hotel_name]
-    sim_scores = list(enumerate(sim_matrix[idx]))
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-    sim_scores = sim_scores[1:11]
-    hotel_indices = [i[0] for i in sim_scores]
-    hotel_names = [idx_to_name[i] for i in hotel_indices]
-    return Response(hotel_names)
+    serializer = HotelSerializer(hotels, many=True)
+    serialized_data = serializer.data
+
+    return JsonResponse(serialized_data, safe=False)

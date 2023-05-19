@@ -1,11 +1,13 @@
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Container from "@mui/system/Container";
+import { useGetAllBookingTodayQuery } from "../../store/api/bookingSlice";
 import LatestSale from "./LatestSale";
 import OrderHistory from "./OrderHistory";
 import SaleToday from "./SaleToday";
 
 const DashboardMain = () => {
+  const { data, isLoading, isError } = useGetAllBookingTodayQuery(null);
   return (
     <>
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -20,7 +22,7 @@ const DashboardMain = () => {
                 height: 240,
               }}
             >
-              <SaleToday />
+              {data && <SaleToday data={data} />}
             </Paper>
           </Grid>
           {/* Recent Deposits */}
@@ -39,7 +41,7 @@ const DashboardMain = () => {
           {/* Recent Orders */}
           <Grid item xs={12}>
             <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-              <OrderHistory />
+              {data && <OrderHistory data={data} />}
             </Paper>
           </Grid>
         </Grid>

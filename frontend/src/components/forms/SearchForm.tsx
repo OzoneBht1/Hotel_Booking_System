@@ -24,6 +24,8 @@ import { useHotelSearchMutation } from "../../store/api/hotelSlice";
 import { IHotelData, IQuery } from "../types/types";
 import { useTheme } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
+import BedIcon from "@mui/icons-material/Bed";
+
 interface ISearchFormProps {
   onSearch: (query: IQuery) => void;
 }
@@ -95,7 +97,6 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
   const theme = useTheme();
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [rooms, setRooms] = useState(1);
-  const [people, setPeople] = useState(1);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [hotelSearch, { isLoading }] = useHotelSearchMutation();
   const [hotels, setHotels] = useState<IHotelData[]>([]);
@@ -103,10 +104,6 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
     React.useState<HTMLButtonElement | null>(null);
 
   const [errorMessage, setErrorMessage] = useState("");
-  const handlePeopleChange = (increment: number) => {
-    if (people < 2 && increment < 0) return;
-    setPeople((prev) => prev + increment);
-  };
 
   const handleRoomChange = (increment: number) => {
     if (rooms < 2 && increment < 0) return;
@@ -187,9 +184,8 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
     const queryData = {
       checkInDate,
       checkOutDate,
-      people,
       searchQuery,
-      rooms,
+      room_count: rooms,
     };
     onSearch(queryData);
   };
@@ -331,14 +327,11 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
             justifyContent="flex-start"
           >
             <Icon>
-              <SupervisorAccountIcon
+              <BedIcon
                 // color={theme.palette.background.primary}
                 sx={{ width: 30, height: 30, color: grey[600] }}
               />
             </Icon>
-            <Typography variant="body2" textTransform="none">
-              {people} {people > 1 ? "People" : "Person"}
-            </Typography>
 
             <Typography variant="body2" textTransform="none">
               {rooms} {rooms > 1 ? "Rooms" : "Room"}
@@ -369,26 +362,6 @@ const SearchForm = ({ onSearch }: ISearchFormProps) => {
                   </Button>
                   <StyledTypography>{rooms}</StyledTypography>
                   <Button onClick={() => handleRoomChange(1)}>
-                    <PlusMinusIcon>
-                      <AddIcon />
-                    </PlusMinusIcon>
-                  </Button>
-                </Box>
-              </StyledBox>
-            </MenuItem>
-            <Divider />
-
-            <MenuItem>
-              <StyledBox>
-                <StyledTypography>People:</StyledTypography>
-                <Box display="flex" alignItems="center">
-                  <Button onClick={() => handlePeopleChange(-1)}>
-                    <PlusMinusIcon>
-                      <RemoveIcon />
-                    </PlusMinusIcon>
-                  </Button>
-                  <StyledTypography>{people}</StyledTypography>
-                  <Button onClick={() => handlePeopleChange(1)}>
                     <PlusMinusIcon>
                       <AddIcon />
                     </PlusMinusIcon>

@@ -30,6 +30,7 @@ class Hotel(BaseModel):
     lat = models.FloatField(blank=True, null=True)
     lng = models.FloatField(blank=True, null=True)
     hotel_score = models.FloatField(default=2.5)
+    approved = models.BooleanField(default=False)
 
     def get_average_rating(self):
         reviews = Review.objects.filter(hotel=self)
@@ -100,17 +101,9 @@ class Booking(BaseModel):
     )
     check_in = models.DateField()
     check_out = models.DateField()
-    booking_status = models.CharField(
-        max_length=100,
-        choices=[
-            ("Pending", "Pending"),
-            ("Confirmed", "Confirmed"),
-            ("Cancelled", "Cancelled"),
-        ],
-        default="Pending",
-    )
     email = models.EmailField()
     paymentIntentId = models.CharField(max_length=200, null=True, blank=True)
+    duration_complete = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.hotel.name}"
@@ -145,3 +138,8 @@ class FAQ(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="faqs")
     question = models.CharField(max_length=200)
     answer = models.TextField()
+
+
+class History(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)

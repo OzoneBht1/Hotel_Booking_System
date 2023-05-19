@@ -12,7 +12,11 @@ import SingleRoom from "./SingleRoom";
 import { Box } from "@mui/system";
 import { Button, TextField } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { getTotalPrice, getTotalQuantity } from "../../utils/RoomUtils";
+import {
+  getDays,
+  getTotalPrice,
+  getTotalQuantity,
+} from "../../utils/RoomUtils";
 import { roomActions } from "../../store/roomSlice";
 import { useState } from "react";
 import { useSetBookClickedHistoryMutation } from "../../store/api/bookingSlice";
@@ -23,7 +27,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 interface IRoomsProps {
   rooms: IPaginated<IHotelRoom> | undefined;
 }
-
+let stayDuration = 0;
 const Rooms = ({ rooms }: IRoomsProps) => {
   const theme = useTheme();
   const addedRooms = useAppSelector((state) => state.room.rooms);
@@ -39,13 +43,16 @@ const Rooms = ({ rooms }: IRoomsProps) => {
   const [selectedCheckOutDate, setSelectedCheckOutDate] = useState<Date | null>(
     null
   );
+  if (selectedCheckInDate && selectedCheckOutDate) {
+    stayDuration = getDays(selectedCheckInDate, selectedCheckOutDate);
+  }
+
   const [error, setError] = useState<null | string>(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const { id: hotelId } = useParams();
 
-  const [setTempBooking, { isLoading, isError }] =
-    useSetBookClickedHistoryMutation();
+  const [setTempBooking] = useSetBookClickedHistoryMutation();
 
   const resetHandler = () => {
     dispatch(roomActions.clearRooms());
@@ -118,7 +125,7 @@ const Rooms = ({ rooms }: IRoomsProps) => {
               </TableCell>
               <TableCell
                 sx={{ color: theme.palette.primary.contrastText }}
-                align="right"
+                align="center"
               >
                 Amount Available
               </TableCell>
@@ -159,7 +166,7 @@ const Rooms = ({ rooms }: IRoomsProps) => {
                     <Box display="flex" alignItems="center" gap={1}>
                       Subtotal :{" "}
                       <Typography fontSize={20}>
-                        ${getTotalPrice(addedRooms)}
+                        ${getTotalPrice(addedRooms, stayDuration)}
                       </Typography>
                     </Box>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -215,6 +222,13 @@ const Rooms = ({ rooms }: IRoomsProps) => {
                       </Typography>
                     </Box>
                   </Box>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    Duration :
+                    <Typography fontSize={20}>
+                      {stayDuration > 0 ? stayDuration : 0} days
+                    </Typography>
+                  </Box>
+
                   <Box display="flex" alignItems="center" gap={2}>
                     <Button
                       onClick={resetHandler}

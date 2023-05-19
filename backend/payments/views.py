@@ -4,6 +4,7 @@ import stripe
 import os
 from dotenv import load_dotenv
 import functools
+import datetime
 
 from account_manager.views import send_mail
 from hotels.serializers import Booking
@@ -15,18 +16,23 @@ load_dotenv()
 stripe.api_key = os.getenv("STRIPE_API_KEY")
 
 
+import datetime
+import functools
+
+
 def calculate_order_amount(items):
-    # Replace this constant with a calculation of the order's amount
-    # Calculate the order total on the server to prevent
-    # people from directly manipulating the amount on the client
+    check_in_date = datetime.datetime.strptime(items["check_in"], "%Y-%m-%d")
+    check_out_date = datetime.datetime.strptime(items["check_out"], "%Y-%m-%d")
+
+    stay_duration = (check_out_date - check_in_date).days
 
     total_quantity = functools.reduce(
-        lambda acc, item: acc + item["quantity"] * item["price"], items["rooms"], 0
+        lambda acc, item: acc + (item["quantity"] * item["price"] * stay_duration),
+        items["rooms"],
+        0,
     )
-    print(total_quantity)
-    print(type(total_quantity))
-
-    return total_quantity
+    # converting to dollars
+    return total_quantity * 100
 
 
 @api_view(["POST"])

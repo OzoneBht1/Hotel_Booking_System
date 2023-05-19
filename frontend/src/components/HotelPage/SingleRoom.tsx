@@ -8,10 +8,14 @@ import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import MenuItem from "@mui/material/MenuItem";
 import { IHotelRoom } from "../types/types";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useAppDispatch } from "../../store/hooks";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { roomActions } from "../../store/roomSlice";
-
+import { useGetNextAvailableDateQuery } from "../../store/api/review-slice";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/Info";
+import { IconButton } from "@mui/material";
+import { Stack } from "@mui/system";
 interface ISingleRoom {
   room: IHotelRoom;
   reset: boolean;
@@ -20,9 +24,15 @@ interface ISingleRoom {
 
 const SingleRoom = ({ room, reset, setReset }: ISingleRoom) => {
   const [roomQuantity, setRoomQuantity] = useState("0");
+  console.log(room);
+  const { data: availability, isLoading: availabilityIsLoading } =
+    useGetNextAvailableDateQuery(
+      { roomId: room.id?.toString()! },
+      {
+        skip: !room.id,
+      }
+    );
 
-  const rooms = useAppSelector((state) => state.room.rooms);
-  console.log(rooms);
   const dispatch = useAppDispatch();
 
   const handleRoomChange = (event: SelectChangeEvent) => {
@@ -66,7 +76,20 @@ const SingleRoom = ({ room, reset, setReset }: ISingleRoom) => {
           </Typography>
         </Box>
       </TableCell>
-      <TableCell align="center">{room.quantity}</TableCell>
+      <TableCell align="center">
+        <Box>
+          {room.quantity}
+          {availability?.earliest && (
+            <Tooltip
+              title={`More rooms will be available from ${availability.earliest}`}
+            >
+              <IconButton>
+                <InfoIcon color="primary" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
+      </TableCell>
       <TableCell align="center">${room.price}</TableCell>
       <TableCell align="center">
         <FormControl sx={{ minWidth: 120 }} size="small">

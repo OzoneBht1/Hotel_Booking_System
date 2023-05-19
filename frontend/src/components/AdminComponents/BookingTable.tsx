@@ -27,7 +27,7 @@ interface IHotelTableProps {
   //
 }
 
-export const HotelTable = (props: IHotelTableProps) => {
+export const BookingTable = (props: IHotelTableProps) => {
   const { count = 0, items, page = 0, rowsPerPage = 0 } = props;
   const [showAmenitiesModal, setShowAmenitiesModal] = useState(false);
   const [showRoomsModal, setShowRoomsModal] = useState(false);
@@ -154,7 +154,7 @@ export const HotelTable = (props: IHotelTableProps) => {
   );
 };
 
-export default HotelTable;
+export default BookingTable;
 
 const style = {
   position: "absolute" as "absolute",

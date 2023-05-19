@@ -12,11 +12,15 @@ import { usePrompt } from "../hooks/use-prompt";
 import ListPropertiesAccessibilities from "../components/ListProperties/ListPropertiesAccessibilities";
 import { useAppSelector } from "../store/hooks";
 import { useCreateHotelMutation } from "../store/api/hotelSlice";
+import { useNavigate } from "react-router-dom";
+import { Alert, Snackbar } from "@mui/material";
 // import something which provides prompt if user is about to leave page;
 
 const ListProperties = () => {
+  const nav = useNavigate();
   const [hotelImage, setHotelImage] = useState<File | null>(null);
   const [roomImages, setRoomImages] = useState<File[] | null>(null);
+  const [open, setOpen] = useState(false);
   const rooms = useAppSelector((state) => state.list.rooms);
   const { list } = useAppSelector((state) => state);
   const user = useAppSelector((state) => state.auth.user);
@@ -69,7 +73,7 @@ const ListProperties = () => {
     formData.append("room_count", JSON.stringify(roomsCount));
     formData.append("manager", JSON.stringify(user?.user_id));
 
-    data.amenities.forEach((amenity, index) => {
+    data.amenities.forEach((amenity) => {
       formData.append(`amenities`, JSON.stringify({ name: amenity.name }));
     });
     data.rooms.forEach((room, index) => {
@@ -85,10 +89,17 @@ const ListProperties = () => {
       });
     });
     formData.append("house_rules", JSON.stringify(data.house_rules));
-    data.faqs.forEach((faq, index) => {
+    data.faqs.forEach((faq) => {
       formData.append(`faqs`, JSON.stringify(faq));
     });
-    createHotel(formData);
+    createHotel(formData)
+      .unwrap()
+      .then(() => {
+        nav("/");
+      })
+      .catch(() => {
+        setOpen(true);
+      });
   };
 
   const roomPrevHandler = (roomImages: File[] | null) => {
@@ -138,6 +149,17 @@ const ListProperties = () => {
 
   return (
     <>
+      <Snackbar open={open} onClose={() => setOpen(false)}>
+        <Alert
+          onClose={() => setOpen(false)}
+          severity="error"
+          elevation={6}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Something went wrong. Please try again later.
+        </Alert>
+      </Snackbar>
       <Box padding={5}>{steps[currentStepIndex]}</Box>
     </>
   );

@@ -30,6 +30,8 @@ export default function PaymentForm({ data, handleNext }: IPaymentFormProps) {
   const elements = useElements();
   const clientSecret = data["payment_intent_client_secret"];
   const { hotelId, userId } = useParams();
+  console.log(data);
+  const { user } = useAppSelector((state) => state.auth);
 
   const dispatch = useAppDispatch();
   console.log(clientSecret);

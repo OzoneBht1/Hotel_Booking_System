@@ -65,6 +65,33 @@ export const bookingApiSlice = apiSlice.injectEndpoints({
         },
       }),
     }),
+    getLatestBooking: build.query<IBookingCreate, null>({
+      query: () => ({
+        url: `/latest-booking/`,
+        method: "GET",
+        include: "booking",
+      }),
+    }),
+    getAllBookingToday: build.query<IBookingCreate[], null>({
+      query: () => ({
+        url: `/get-bookings-today`,
+        method: "GET",
+        include: "booking",
+      }),
+    }),
+    getAllBookings: build.query<IPaginated<IBookingCreate>, IBookingQuery>({
+      query: ({ search, ordering, limit = 10, page }) => ({
+        url: `/get-bookings`,
+        method: "GET",
+        include: "booking",
+        params: {
+          search,
+          ordering,
+          limit,
+          offset: page * limit,
+        },
+      }),
+    }),
   }),
 });
 
@@ -74,4 +101,7 @@ export const {
   useCreateBookingMutation,
   useDeleteTempBookingMutation,
   useGetBookingsByUserQuery,
+  useGetLatestBookingQuery,
+  useGetAllBookingTodayQuery,
+  useGetAllBookingsQuery,
 } = bookingApiSlice;

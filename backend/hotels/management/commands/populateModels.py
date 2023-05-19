@@ -54,6 +54,7 @@ class Command(BaseCommand):
                 hotel_score=row["Average_Score"],
                 lat=row["lat"] if type(row["lat"]) == float else 0.0,
                 lng=row["lng"] if type(row["lng"]) == float else 0.0,
+                approved=True,
             )
             for i in range(1, random.randint(8, 20)):
                 amenity = Amenity.objects.get(id=random.randint(1, 70))

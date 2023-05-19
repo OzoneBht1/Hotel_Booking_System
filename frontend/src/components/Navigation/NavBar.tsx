@@ -30,15 +30,26 @@ import { useQuery } from "react-query";
 import { useUserDetailQuery } from "../../store/api/authorization-api-slice";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 
-const authenticatedPages = ["List your Property"];
-const unauthenticatedPages = ["List your Property", "Login", "Register"];
+const authenticatedPages = [
+  "Home",
+  "List your Property",
+  "Profile",
+  "Booking History",
+  "My Listings",
+];
+const unauthenticatedPages = ["Login", "Register"];
 
 enum Page {
   Home = "/",
   "List your Property" = "/add-property",
   Login = "/login",
   Register = "/register",
+  Logout = "/logout",
+  Profile = "/profile",
+  "Booking History" = "/booking-history",
+  "My Listings" = "/listings",
 }
+
 // enum which associates each page with their path
 
 const NavBar = () => {
@@ -46,9 +57,11 @@ const NavBar = () => {
   const user = useAppSelector((state) => state.auth.user);
   const [logout, { isSuccess }] = useLogoutUserMutation();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [actionsAnchorEl, setActionsAnchorEl] = useState<HTMLElement | null>(
+    null
+  );
   const openMenu = Boolean(anchorEl);
   const userId = useAppSelector((state) => state.auth.user?.user_id);
-  console.log(userId);
 
   const { data, isLoading, isError } = useUserDetailQuery(userId!, {
     skip: !userId,
@@ -60,6 +73,13 @@ const NavBar = () => {
     setAnchorEl(null);
   };
 
+  const handleActionsClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    setActionsAnchorEl(event.currentTarget);
+  };
+
+  const handleActionsClose = () => {
+    setActionsAnchorEl(null);
+  };
   // state to control the menu
 
   const dispatch = useAppDispatch();
@@ -90,32 +110,27 @@ const NavBar = () => {
       direction="row"
       spacing={{ sm: 1, md: 2, lg: 3 }}
       // gap={1}
+      paddingRight={5}
       sx={{
         display: { xs: "none", sm: "flex" },
         alignItems: "center",
       }}
     >
-      {pagesToRender.map((page) => (
-        <Button
-          to={`${Page[page as pageStrings]}`}
-          key={page}
-          variant="text"
-          component={NavLink}
-          sx={{
-            opacity: 0.8,
-            "&.active": {
-              color: theme.palette.primary.dark,
-              fontWeight: 900,
-              opacity: 1,
-            },
-          }}
-        >
-          {page}
-        </Button>
-      ))}
-
+      {!user &&
+        pagesToRender.map((page: string) => {
+          return (
+            <Button
+              variant="text"
+              sx={{ fontSize: 16 }}
+              component={NavLink}
+              to={Page[page as keyof typeof Page]}
+            >
+              {page}
+            </Button>
+          );
+        })}
       {user && (
-        <Box component={Link} to={`/bookings/${user.user_id}`}>
+        <Box onClick={handleActionsClick}>
           <PendingActionsIcon sx={{ width: 40, height: 40 }} color="primary" />
         </Box>
       )}
@@ -150,14 +165,19 @@ const NavBar = () => {
     <Drawer open={open} onClose={() => setOpen(false)} anchor="right">
       <List>
         {pagesToRender.map((page) => (
-          <ListItem
-            to={`${Page[page as pageStrings]}`}
-            key={page}
-            component={NavLink}
-          >
-            {page}
-          </ListItem>
+          <>
+            <ListItem
+              to={`${Page[page as pageStrings]}`}
+              key={page}
+              component={NavLink}
+            >
+              {page}
+            </ListItem>
+          </>
         ))}
+
+        <Divider />
+        {user && <ListItem onClick={logoutHandler}>Logout</ListItem>}
       </List>
     </Drawer>
   );
@@ -173,10 +193,7 @@ const NavBar = () => {
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
-          justifyContent: {
-            xs: "space-between",
-            md: "space-around",
-          },
+          justifyContent: "space-between",
         }}
       >
         <Stack direction="row" alignItems="center">
@@ -209,6 +226,61 @@ const NavBar = () => {
 
           {mobileNavigationDrawer}
         </Stack>
+        {user && (
+          <Menu
+            anchorEl={actionsAnchorEl}
+            id="profile-menu"
+            open={Boolean(actionsAnchorEl)}
+            onClick={handleActionsClose}
+            MenuListProps={{
+              "aria-labelledby": "profile-button",
+            }}
+            onClose={handleClose}
+            aria-haspopup="true"
+            PaperProps={{
+              elevation: 0,
+              sx: {
+                overflow: "visible",
+                filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                mt: 1,
+                "& .MuiAvatar-root": {
+                  width: 32,
+                  height: 32,
+                  ml: -0.5,
+                  mr: 1,
+                },
+                "&:before": {
+                  content: '""',
+                  display: "block",
+                  position: "absolute",
+                  top: 0,
+                  right: 14,
+                  width: 10,
+                  height: 10,
+                  bgColor: "background.paper",
+                  transform: "translateY(-50%) rotate(45deg)",
+                  zIndex: 0,
+                },
+              },
+            }}
+            transformOrigin={{ horizontal: "center", vertical: "top" }}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+          >
+            <MenuItem component={Link} to="/add-property">
+              <Avatar /> List Properties
+            </MenuItem>
+            <MenuItem component={Link} to={`/listings/${user.user_id}`}>
+              <Avatar /> View my Hotels
+            </MenuItem>
+            <Divider />
+            <MenuItem component={Link} to={`bookings/${user.user_id}`}>
+              <ListItemIcon>
+                <PersonAdd fontSize="small" />
+              </ListItemIcon>
+              Booking History
+            </MenuItem>
+          </Menu>
+        )}
         {user && (
           <Menu
             anchorEl={anchorEl}

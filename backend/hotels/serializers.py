@@ -7,6 +7,8 @@ from rest_framework.serializers import (
 from rest_framework import serializers
 from django.db.models import Min
 
+from hotels.views import History
+
 from .models import (
     FAQ,
     Amenity,
@@ -46,6 +48,7 @@ class HotelSerializer(ModelSerializer):
     manager = serializers.StringRelatedField(read_only=True)
     review_count = serializers.SerializerMethodField()
     cheapest_price = serializers.SerializerMethodField()
+    room_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Hotel
@@ -56,6 +59,7 @@ class HotelSerializer(ModelSerializer):
             "amenities",
             "room_count",
             "manager",
+            "rooms",
             "hotel_images",
             "hotel_score",
             "lng",
@@ -78,6 +82,14 @@ class HotelSerializer(ModelSerializer):
             return cheapest_price
         else:
             return "N/A"
+
+    def get_room_count(self, obj):
+        rooms = Room.objects.filter(hotel=obj)
+        count = 0
+        for room in rooms:
+            count = count + room.quantity
+
+        return count
 
     def create(self, validated_data):
         # print(validated_data["manager"])
@@ -120,6 +132,7 @@ class RoomWithoutHotelSerializer(ModelSerializer):
 
 class RoomTempSerializer(ModelSerializer):
     room_type = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
 
     class Meta:
         model = RoomTemp
@@ -127,6 +140,9 @@ class RoomTempSerializer(ModelSerializer):
 
     def get_room_type(self, obj):
         return obj.room.room_type
+
+    def get_price(self, obj):
+        return obj.room.price
 
 
 class BookTempCreateSerializer(ModelSerializer):
@@ -249,6 +265,7 @@ class BookCreateSerializer(ModelSerializer):
 class BookingSerializer(ModelSerializer):
     rooms = RoomTempSerializer(many=True)
     hotel_name = SerializerMethodField()
+    user_name = SerializerMethodField()
 
     class Meta:
         model = Booking
@@ -258,9 +275,21 @@ class BookingSerializer(ModelSerializer):
             "check_out",
             "rooms",
             "hotel_name",
+            "user_name",
             "email",
             "paymentIntentId",
+            "created_at",
+            "updated_at",
         ]
 
     def get_hotel_name(self, obj):
         return obj.hotel.name
+
+    def get_user_name(self, obj):
+        return obj.user.first_name + " " + obj.user.last_name
+
+
+class HistorySerializer(ModelSerializer):
+    class Meta:
+        model = History
+        fields = "__all__"

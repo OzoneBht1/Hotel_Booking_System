@@ -18,13 +18,11 @@ import VerifyAdmin from "./utils/VerifyAdmin";
 import Dashboard from "./pages/AdminSection/Dashboard";
 import { useAppSelector } from "./store/hooks";
 import { UserType } from "./components/types/types";
-import Layout from "./components/AdminComponents/Layout";
-import { Box } from "@mui/system";
 import UserManagement from "./pages/AdminSection/UserManagement";
-import AdminProfileMain from "./components/AdminComponents/AdminProfileMain";
 import HotelManagement from "./pages/AdminSection/HotelManagement";
-import Unauthorized from "./pages/Unauthorized";
 import Booking from "./components/Booking";
+import UserListings from "./components/UserListings";
+import OrderManagement from "./pages/AdminSection/OrderManagement";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 function App() {
@@ -49,9 +47,11 @@ function App() {
             <Route path="/add-property" element={<ListProperties />} />
             <Route path="/profile/:id" element={<Profile />} />
             <Route path="/bookings/:id" element={<Booking />} />
+            <Route path="/listings/:id" element={<UserListings />} />
             <Route element={<VerifyAdmin />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/customers" element={<UserManagement />} />
+              <Route path="/order-history" element={<OrderManagement />} />
               <Route path="/hotels" element={<HotelManagement />} />
             </Route>
           </Route>
