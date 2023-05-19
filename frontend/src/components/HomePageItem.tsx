@@ -14,13 +14,28 @@ import { BASEURL } from "../store/api/apiSlice";
 import DefaultImage from "../assets/default-hotel-image.jpg";
 import { useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
+import { useCreateHistoryMutation } from "../store/api/history-slice";
+import { useAppSelector } from "../store/hooks";
+
 const HomePageItem = (props: IHomePageItems) => {
+  const [setHistory, { isLoading }] = useCreateHistoryMutation();
+  const { user } = useAppSelector((state) => state.auth);
   const nav = useNavigate();
 
   const cardClickHandler = () => {
     console.log(props);
     console.log("clicked");
-    nav(`/hotel/${props.id}`);
+    if (user) {
+      setHistory({
+        hotel: props.id,
+        user: user?.user_id,
+      }).then((res) => {
+        console.log(res);
+        nav(`/hotel/${props.id}`);
+      });
+    } else {
+      nav(`/hotel/${props.id}`);
+    }
   };
 
   return (

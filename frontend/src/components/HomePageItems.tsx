@@ -9,6 +9,7 @@ import { useGetHomePageItemsQuery } from "../store/api/hotelSlice";
 import Loading from "./Loading";
 import Error from "../pages/404";
 import { ArrowLeft, ArrowLeftRounded, ArrowRight } from "@mui/icons-material";
+import { useAppSelector } from "../store/hooks";
 const countries = ["France", "United Kingdom", "Netherlands", "Austria"];
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -19,7 +20,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   alignItems: "center",
   overflow: "hidden",
   margin: "1rem",
-  marginTop:      "7rem",
+  marginTop: "7rem",
 
   [theme.breakpoints.down("sm")]: {
     width: "100%",
@@ -57,6 +58,11 @@ const HomePageItems = () => {
     isLoading,
   } = useGetHomePageItemsQuery();
 
+  const { hotels: recommendedHotels } = useAppSelector(
+    (state) => state.history
+  );
+  console.log(recommendedHotels);
+
   // if (isError) {
   //   return <Error />;
   // }
@@ -68,6 +74,34 @@ const HomePageItems = () => {
         <p>No Data Found.</p>
       ) : (
         <StyledBox>
+          {recommendedHotels && (
+            <Stack gap={4} marginBottom={8}>
+              <Typography
+                variant="h4"
+                component="h4"
+                sx={{ alignSelf: "flex-start", color: "yellow" }}
+                whiteSpace="nowrap"
+              >
+                Recommended Hotels
+              </Typography>
+              <Carousel
+                responsive={responsive}
+                infinite={true}
+                // autoPlay={true}
+                autoPlaySpeed={3000}
+                keyBoardControl={true}
+                customTransition="all .5"
+                transitionDuration={500}
+                containerClass="carousel-container"
+                removeArrowOnDeviceType={["tablet", "mobile"]}
+                deviceType="desktop"
+              >
+                {recommendedHotels.map((hotel) => (
+                  <HomePageItem key={hotel.id} {...hotel} />
+                ))}
+              </Carousel>
+            </Stack>
+          )}
           {countryApiData &&
             countries.map((country) => (
               <Stack gap={4} marginBottom={8} key={country}>

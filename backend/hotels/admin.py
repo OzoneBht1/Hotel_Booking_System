@@ -10,6 +10,7 @@ from .models import (
     RoomTemp,
     FAQ,
     HouseRules,
+    History,
 )
 
 # Register your models here.
@@ -24,3 +25,4 @@ admin.site.register(BookTemp)
 admin.site.register(RoomTemp)
 admin.site.register(FAQ)
 admin.site.register(HouseRules)
+admin.site.register(History)
