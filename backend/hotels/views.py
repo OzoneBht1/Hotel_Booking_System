@@ -25,6 +25,7 @@ from .serializers import (
     Booking,
     BookingSerializer,
     FAQSerializer,
+    HistorySerializer,
     HotelCreateWithDetailsSerializer,
     HotelSerializer,
     HouseRules,
@@ -35,7 +36,7 @@ from .serializers import (
     User,
 )
 from rest_framework.decorators import api_view
-from .models import Hotel
+from .models import History, Hotel
 from .permissions import CanLeaveReview, IsCurrentUserPermission, datetime
 from .pagination import CustomPagination, CustomPagination
 import pickle
@@ -609,6 +610,27 @@ class HouseRulesByHotelApi(generics.RetrieveAPIView):
         hotel_id = self.kwargs.get("id")
 
         return HouseRules.objects.filter(hotel=hotel_id)
+
+
+class CreateHistoryApi(generics.CreateAPIView):
+    queryset = History.objects.all()
+    serializer_class = HistorySerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def post(self, request, *args, **kwargs):
+        # Check if a history entry already exists for the current user
+        user_history = History.objects.filter(user=request.user).first()
+
+        if user_history:
+            # Update the existing history entry with the new hotel_id
+            user_history.hotel = request.data.get("hotel_id")
+            user_history.save()
+        else:
+            # Create a new history entry
+            return self.create(request, *args, **kwargs)
+
+        return Response("History updated successfully.")
 
 
 @api_view(["GET"])
