@@ -646,10 +646,12 @@ class CreateHistoryApi(generics.CreateAPIView):
 
 @api_view(["POST"])
 def recommend_hotels(request):
-    user_id = request.POST.get("user_id", None)
+    user_id = request.data.get("user_id", None)
     history = None
+
     if user_id:
         history = History.objects.get(user=user_id)
+        print(history)
     if not history:
         top_hotels = (
             Booking.objects.values("hotel")
@@ -664,7 +666,7 @@ def recommend_hotels(request):
 
         return JsonResponse(serialized_data, safe=False)
 
-    hotel_id = history.hotel
+    hotel_id = history.hotel.id
 
     hotel_name = Hotel.objects.get(id=hotel_id).name
 
