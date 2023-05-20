@@ -1,16 +1,14 @@
-import React, { useState } from "react";
-import SearchIcon from "@mui/icons-material/Search";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Card,
   IconButton,
-  InputAdornment,
   Menu,
   MenuItem,
   MenuList,
+  Modal,
   OutlinedInput,
   Snackbar,
-  SvgIcon,
 } from "@mui/material";
 import {
   Avatar,
@@ -25,8 +23,13 @@ import {
   Typography,
 } from "@mui/material";
 import { MoreVert } from "@mui/icons-material";
-import { IPaginated, IUserData } from "../types/types";
-import { useSendResetMutation } from "../../store/api/authorization-api-slice";
+import { ICountryData, IPaginated, ISelect, IUserData } from "../types/types";
+import {
+  useSendResetMutation,
+  useUpdateProfileMutation,
+} from "../../store/api/authorization-api-slice";
+import UserProfile from "../UserProfile";
+import { getCountries } from "../api/getCountries";
 interface ICustomersTableProps {
   count?: number;
   items: IPaginated<IUserData>;
@@ -42,19 +45,40 @@ export const CustomersTable = (props: ICustomersTableProps) => {
   const { count = 0, items, page = 0, rowsPerPage = 0 } = props;
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [id, setId] = useState<number | null>(null);
+  const [userData, setUserData] = useState<IUserData | null>(null);
   const [showSnackbar, setShowSnackbar] = useState(false);
-
+  const [openUpdateProfile, setOpenUpdateProfile] = useState(false);
+  const [countries, setCountries] = useState<ISelect[]>([]);
   const [severity, setSeverity] = useState<"success" | "error">("success");
   const [message, setMessage] = useState("");
+  const [updateProfile] = useUpdateProfileMutation();
+
+  const fetchCountries = useCallback(async () => {
+    const returnedData = await getCountries<ICountryData[]>();
+    const transformedCountries: ISelect[] = [];
+
+    returnedData.map((country) => {
+      transformedCountries.push({
+        value: country.name,
+        label: country.name,
+      });
+    });
+    setCountries(transformedCountries);
+  }, []);
+
+  useEffect(() => {
+    fetchCountries();
+  }, []);
 
   const [sendReset] = useSendResetMutation();
   const open = Boolean(anchorEl);
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    id: number
+    data: IUserData
   ) => {
     setAnchorEl(event.currentTarget);
-    setId(id);
+    setId(data.id as number);
+    setUserData(data);
   };
   const handleSendReset = () => {
     sendReset(id)
@@ -73,10 +97,39 @@ export const CustomersTable = (props: ICustomersTableProps) => {
       });
 
     setAnchorEl(null);
+    setId(null);
   };
 
   const handleUpdateProfile = () => {
+    setOpenUpdateProfile(true);
     setAnchorEl(null);
+  };
+
+  const updateHandler = (data: any) => {
+    const first_name = data.firstName;
+    const last_name = data.lastName;
+
+    delete data.email;
+    delete data.firstName;
+    delete data.lastName;
+
+    console.log(data);
+
+    const formData = new FormData();
+    formData.append("first_name", first_name);
+    formData.append("last_name", last_name);
+    formData.append("gender", data.gender);
+    formData.append("country", data.country);
+    if (data.image) {
+      formData.append("image", data.image, data.image.name);
+    }
+
+    updateProfile({ formData, id: id }).then(() => {
+      setShowSnackbar(true);
+      setMessage("Profile updated successfully");
+    });
+    setOpenUpdateProfile(false);
+    setId(null);
   };
 
   const handlePageChange = (
@@ -139,7 +192,7 @@ export const CustomersTable = (props: ICustomersTableProps) => {
                   </TableCell>
                   <TableCell>
                     <IconButton
-                      onClick={(e) => handleClick(e, customer.id as number)}
+                      onClick={(e) => handleClick(e, customer as IUserData)}
                     >
                       <MoreVert />
                     </IconButton>
@@ -164,6 +217,35 @@ export const CustomersTable = (props: ICustomersTableProps) => {
           </TableBody>
         </Table>
       </Box>
+      {openUpdateProfile && countries && userData && (
+        <Modal
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          open={openUpdateProfile}
+          onClose={() => setOpenUpdateProfile(false)}
+        >
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            width="80%"
+            sx={{
+              backgroundColor: "white",
+              gap: 3,
+              padding: 10,
+            }}
+          >
+            <UserProfile
+              data={userData}
+              onSubmitForm={updateHandler}
+              countries={countries}
+            />
+          </Box>
+        </Modal>
+      )}
       <TablePagination
         component="div"
         count={count}
