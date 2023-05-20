@@ -107,6 +107,75 @@ class UserDetailSerializer(ModelSerializer):
         read_only_fields = ["email"]
 
 
+from django.contrib.auth.hashers import check_password
+
+
+class PasswordUpdateSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={
+            "input_type": "password",
+        },
+    )
+    new_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={
+            "input_type": "password",
+        },
+    )
+    password2 = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={
+            "input_type": "password",
+        },
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            "old_password",
+            "new_password",
+            "password2",
+        ]
+
+    def validate(self, data):
+        user = self.context["request"].user
+
+        # Check if the old password matches
+        print(user)
+        if not check_password(data["old_password"], user.password):
+            raise serializers.ValidationError("Invalid old password.")
+
+        # Check if the new passwords match
+        if data["new_password"] != data["password2"]:
+            raise serializers.ValidationError("New passwords do not match.")
+
+        return data
+
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data["new_password"])
+        instance.save()
+        return instance
+
+
+class ProfileUpdateSerializer(ModelSerializer):
+    gender = serializers.ChoiceField(choices=GENDER_CHOICES)
+    image = Base64ImageField(required=False, allow_null=True)
+
+    class Meta:
+        model = User
+        fields = [
+            "first_name",
+            "last_name",
+            "gender",
+            "country",
+            "image",
+        ]
+
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):

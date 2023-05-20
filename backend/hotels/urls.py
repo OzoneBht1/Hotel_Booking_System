@@ -11,6 +11,7 @@ from .views import (
     GetAllBookingToday,
     GetBookingApi,
     GetBookingTempApi,
+    HotelApproveRejectApi,
     HotelCreateApi,
     HotelCreateWithDetailApi,
     HotelDetailApi,
@@ -24,11 +25,14 @@ from .views import (
     ReviewCreateApi,
     ReviewsNotByUser,
     ReviewsOfAUserApi,
+    UnApprovedHotelsApi,
     recommend_hotels,
     get_next_available_date,
+    send_contract,
     LatestBookingView,
     RoomByHotelApi,
     SingleRoomByHotelApi,
+    update_amenities,
 )
 
 # type: ignore
@@ -36,9 +40,24 @@ urlpatterns = [
     path("hotels/", HotelListApi.as_view(), name="hotels"),  # type: ignore
     path("hotels/<int:id>", HotelDetailApi.as_view(), name="hotels"),
     path(
+        "hotels/unapproved",
+        UnApprovedHotelsApi.as_view(),
+        name="unapproved",
+    ),
+    path(
+        "hotel/<int:hotel_id>/approve-reject",
+        HotelApproveRejectApi.as_view(),
+        name="approve-reject",
+    ),
+    path(
         "hotels/<int:id>/reviews",
         ReviewByHotelApi.as_view(),
         name="hotel_review",
+    ),
+    path(
+        "hotels/<int:id>/faqs",
+        FAQByHotelApi.as_view(),
+        name="hotel_faq",
     ),
     path(
         "hotels/<int:id>/faqs",
@@ -85,6 +104,11 @@ urlpatterns = [
         "hotels/<int:hotel_id>/get-temp-booking/<int:user_id>/",
         GetBookingTempApi.as_view(),
         name="get-booking",
+    ),
+    path(
+        "hotel/<int:hotel_id>/update-amenities/",
+        update_amenities,
+        name="update-amenities",
     ),
     path("latest-booking/", LatestBookingView.as_view(), name="latest-sale"),
     path("get-bookings-today/", GetAllBookingToday.as_view(), name="today-sale"),
@@ -141,4 +165,9 @@ urlpatterns = [
         name="get-single-booking",
     ),
     path("create-history/", CreateHistoryApi.as_view(), name="create-history"),
+    path(
+        "hotels/send-contract",
+        send_contract,
+        name="contract",
+    ),
 ]

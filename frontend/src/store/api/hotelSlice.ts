@@ -98,6 +98,53 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         },
       }),
     }),
+    getALlUnApprovedHotels: build.query<IPaginated<IHotelData>, IHotelQuery>({
+      query: ({ search = "", ordering, limit = 10, page = 1 }) => ({
+        url: "/hotels/unapproved",
+        method: "GET",
+        include: "credentials",
+        params: {
+          search,
+          ordering,
+
+          limit,
+          offset: page * limit,
+        },
+      }),
+
+      providesTags: ["UnApprovedHotels"],
+    }),
+    sendContract: build.mutation<any, { email: string }>({
+      query: (body) => ({
+        url: `/hotels/send-contract`,
+        method: "POST",
+        body: body,
+      }),
+    }),
+    approveHotel: build.mutation<any, { hotelId: number }>({
+      query: ({ hotelId }) => ({
+        url: `/hotel/${hotelId.toString()}/approve-reject`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["UnApprovedHotels"],
+    }),
+    rejectHotel: build.mutation<any, { hotelId: number }>({
+      query: ({ hotelId }) => ({
+        url: `/hotel/${hotelId.toString()}/approve-reject`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["UnApprovedHotels"],
+    }),
+    updateAmenities: build.mutation<
+      any,
+      { hotelId: number; amenities: string[] }
+    >({
+      query: ({ hotelId, amenities }) => ({
+        url: `/hotel/${hotelId.toString()}/update-amenities/`,
+        method: "PUT",
+        body: amenities,
+      }),
+    }),
   }),
 });
 
@@ -110,4 +157,9 @@ export const {
   useGetFaqsQuery,
   useCreateHotelMutation,
   useGetAllHotelsQuery,
+  useGetALlUnApprovedHotelsQuery,
+  useSendContractMutation,
+  useApproveHotelMutation,
+  useRejectHotelMutation,
+  useUpdateAmenitiesMutation,
 } = hotelApiSlice;

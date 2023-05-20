@@ -144,7 +144,7 @@ const ListProperties = () => {
 
   usePrompt(
     "Are you sure you want to leave this page? Your listing progress will not be saved.",
-    currentStepIndex > 1
+    currentStepIndex > 1 && currentStepIndex < 7
   );
 
   return (

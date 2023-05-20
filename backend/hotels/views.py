@@ -1,3 +1,4 @@
+from io import BytesIO
 from django.db import models
 from django.http.response import JsonResponse
 from rest_framework import generics
@@ -6,18 +7,29 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework import status
 from sentence_transformers.models.Pooling import json
-
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
-
 from account_manager.permissions import UserDetailPermission
 from django.core.serializers import serialize
 import json
+from io import BytesIO
+from datetime import datetime
+from django.http import HttpResponse, JsonResponse
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import (
+    User,
+)  # Or import your custom User model if you have one
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from rest_framework.decorators import api_view
 
 
 # from account_manager.permissions import UserDetailPermission
 from .serializers import (
     FAQ,
+    Amenity,
     BookCreateSerializer,
     BookTemp,
     BookTempCreateSerializer,
@@ -88,11 +100,35 @@ class HotelCreateApi(generics.CreateAPIView):
         return self.create(request, *args, **kwargs)
 
 
+class HotelApproveRejectApi(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Hotel.objects.all()
+    serializer_class = HotelSerializer
+    lookup_field = "id"
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def put(self, request, *args, **kwargs):
+        hotel = Hotel.objects.get(id=kwargs["hotel_id"])
+        hotel.approved = True
+        hotel.save()
+        return Response(
+            {"message": "The hotel was approved"}, status=status.HTTP_200_OK
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        hotel = Hotel.objects.get(id=kwargs["hotel_id"])
+        hotel.delete()
+        return Response(
+            {"message": "The hotel was approved"}, status=status.HTTP_200_OK
+        )
+
+
 class HotelCreateWithDetailApi(generics.CreateAPIView):
     queryset = Hotel.objects.all()
     serializer_class = HotelCreateWithDetailsSerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    # permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         amenities = request.POST.getlist("amenities")
@@ -145,12 +181,46 @@ class HotelCreateWithDetailApi(generics.CreateAPIView):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+@api_view(["PUT"])
+def update_amenities(request, hotel_id):
+    hotel = Hotel.objects.get(id=hotel_id)
+    amenities = request.data  
+    hotel.amenities.clear()
+
+    for amenity_data in amenities:
+        amenity = Amenity.objects.get(name=amenity_data)
+        hotel.amenities.add(amenity)
+    hotel.save()
+    return Response({"message": "Amenities updated"}, status=status.HTTP_200_OK)
+
+
 
 class HotelListApi(generics.ListAPIView):
-    queryset = Hotel.objects.all()
+    queryset = Hotel.objects.filter(approved=True)
     serializer_class = HotelSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAdminUser]
+    pagination_class = CustomPagination
+    filter_backends = [
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        DjangoFilterBackend,
+    ]
+
+    filterset_fields = ["hotel_score"]
+    search_fields = ["name", "address", "id", "rooms__room_type"]
+    ordering_fields = ["id", "name", "hotel_score"]
+    ordering = ["name"]
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
+class UnApprovedHotelsApi(generics.ListAPIView):
+    queryset = Hotel.objects.filter(approved=False)
+    serializer_class = HotelSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminUser]
     pagination_class = CustomPagination
     filter_backends = [
         filters.SearchFilter,
@@ -207,7 +277,7 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
 
     def get_queryset(self):
-        queryset = Hotel.objects.all()
+        queryset = Hotel.objects.filter(approved=True)
         search_query = self.request.query_params.get("term", None)
         ordering = self.request.query_params.get("ordering", None)
         min_price = self.request.query_params.get("min_price", None)
@@ -642,6 +712,97 @@ class CreateHistoryApi(generics.CreateAPIView):
             History.objects.create(user=request.user, hotel=hotel)
 
         return Response("History updated successfully.")
+
+
+def generate_pdf(request, user_id):
+    # Retrieve the user from the database based on the user_id parameter
+    user = User.objects.get(id=user_id)
+
+    # Generate the PDF file using ReportLab
+    buffer = BytesIO()
+    pdf_canvas = canvas.Canvas(buffer, pagesize=letter)
+
+    # Set font sizes and positions for different elements
+    title_size = 20
+    title_pos = 300
+    content_size = 12
+    content_pos = 650
+    line_space = 20
+
+    # Draw the title
+    pdf_canvas.setFontSize(title_size)
+    pdf_canvas.drawCentredString(title_pos, 700, "Hotel Contract")
+
+    # Draw the user information
+    pdf_canvas.setFontSize(content_size)
+    pdf_canvas.drawString(
+        50, content_pos, f"Customer Name: {user.first_name} {user.last_name}"
+    )
+    pdf_canvas.drawString(50, content_pos - line_space, f"Email: {user.email}")
+    pdf_canvas.setFontSize(content_size)
+    contract_content = [
+        "Contract Clause 1: Reservation Details",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "",
+        "Contract Clause 2: Payment Terms",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "",
+        "Contract Clause 3: Cancellation Policy",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "",
+        "Contract Clause 4: Additional Terms and Conditions",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "Contract Clause 5: Additional Terms and Conditions",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "Contract Clause 6: Additional Terms and Conditions",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    ]
+    contract_pos = content_pos - line_space * 4
+
+    for line in contract_content:
+        pdf_canvas.drawString(50, contract_pos, line)
+        contract_pos -= line_space
+
+    signature_pos = contract_pos - line_space * 3
+    pdf_canvas.setFontSize(content_size)
+    pdf_canvas.drawString(50, signature_pos, "Signature:")
+    pdf_canvas.line(120, signature_pos - 12, 300, signature_pos - 12)
+
+    # Add more contract content as needed
+    # ...
+
+    # Close the PDF object cleanly, and we're done.
+    pdf_canvas.showPage()
+    pdf_canvas.save()
+
+    return HttpResponse(buffer.getvalue(), content_type="application/pdf")
+
+
+@api_view(["GET"])
+def download_pdf(request, user_id):
+    pdf_response = generate_pdf(request, user_id)
+
+    return pdf_response
+
+
+@csrf_exempt
+@api_view(["POST"])
+def send_contract(request):
+    email = request.data.get("email")
+    user_id = User.objects.get(email=email).id
+    pdf = generate_pdf(request, user_id)
+
+    print(email)
+    msg = EmailMessage(
+        f"Hotel Contract",
+        "Please find the attached contract and send it to ozonebhattarai@gmail.com with your signature",
+        "ozonebhattarai@gmail.com",
+        [email],
+    )
+    msg.attach(f"contract_{user_id}.pdf", pdf.getvalue(), "application/pdf")
+    msg.send()
+
+    return JsonResponse({"success": True})
 
 
 @api_view(["POST"])

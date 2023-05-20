@@ -7,9 +7,7 @@ import {
   IconButton,
   Menu,
   Modal,
-  Paper,
   Snackbar,
-  Tooltip,
 } from "@mui/material";
 import {
   Avatar,
@@ -23,13 +21,16 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { MoreVert } from "@mui/icons-material";
+import { Cancel, MoreVert } from "@mui/icons-material";
 import { IHotelData, IPaginated } from "../types/types";
 import { BASEURL } from "../../store/api/apiSlice";
-import { amenitiesMap } from "../icons/Icons";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
-import { useUpdateAmenitiesMutation } from "../../store/api/hotelSlice";
+import {
+  useApproveHotelMutation,
+  useRejectHotelMutation,
+  useSendContractMutation,
+} from "../../store/api/hotelSlice";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 interface IHotelTableProps {
   count?: number;
@@ -42,25 +43,29 @@ interface IHotelTableProps {
   //
 }
 
-export const HotelTable = (props: IHotelTableProps) => {
+export const UnApprovedHotelsTable = (props: IHotelTableProps) => {
   const { count = 0, items, page = 0, rowsPerPage = 0 } = props;
   const [showAmenitiesModal, setShowAmenitiesModal] = useState(false);
   const [showRoomsModal, setShowRoomsModal] = useState(false);
   const [amenitiesData, setAmenitiesData] = useState<string[] | null>(null);
-  const [hotelId, setHotelId] = useState<null | number>(null);
-  const [showSnackbar, setShowSnackbar] = useState(false);
-  const [severity, setSeverity] = useState<"success" | "error">("success");
+  const [roomsData, setRoomsData] = useState<any[] | null>(null);
+  const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
 
-  const handleAmenitiesModal = (data: string[], id: number) => {
+  const [sendContract, { isLoading }] = useSendContractMutation();
+  const [approveHotel] = useApproveHotelMutation();
+  const [rejectHotel] = useRejectHotelMutation();
+  console.log(items);
+
+  const handleAmenitiesModal = (data: string[]) => {
     setAmenitiesData(data);
-    setHotelId(id);
     setShowAmenitiesModal((prev) => !prev);
   };
 
   const handleRoomsModal = (rooms: any) => {
     setShowRoomsModal((prev) => !prev);
   };
+
   const handlePageChange = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
@@ -68,26 +73,38 @@ export const HotelTable = (props: IHotelTableProps) => {
     props.onPageChange(newPage);
   };
 
-  const postUpdateHandler = () => {
-    setAmenitiesData(null);
-    setHotelId(null);
-    setShowAmenitiesModal(false);
-    setShowSnackbar(true);
-    setMessage("Amenities Updated Successfully");
-    setSeverity("success");
+  const handleSendContract = (email: string) => {
+    sendContract({ email }).then(() => {
+      setOpen(true);
+      setMessage("Contract Sent to the user!");
+    });
+  };
+
+  const approveHandler = (hotelId: number) => {
+    approveHotel({ hotelId }).then((res) => {
+      setOpen(true);
+      setMessage(res.data.message);
+    });
+  };
+
+  const rejectHandler = (hotelId: number) => {
+    rejectHotel({ hotelId }).then((res) => {
+      setOpen(true);
+      setMessage(res.data.message);
+    });
   };
 
   return (
     <Card>
       <Box sx={{ minWidth: 800 }}>
         <Snackbar
-          open={showSnackbar}
+          open={open}
           autoHideDuration={6000}
-          onClose={() => setShowSnackbar(false)}
+          onClose={() => setOpen(false)}
         >
           <Alert
-            onClose={() => setShowSnackbar(false)}
-            severity={severity}
+            onClose={() => setOpen(false)}
+            severity="success"
             elevation={6}
             variant="filled"
             sx={{ width: "100%" }}
@@ -100,13 +117,19 @@ export const HotelTable = (props: IHotelTableProps) => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Address</TableCell>
-              <TableCell>Score</TableCell>
+              <TableCell>Managed By</TableCell>
               <TableCell>Amenities</TableCell>
               <TableCell>Rooms</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Send Contract</TableCell>
+              <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
+            {items?.results?.length === 0 && (
+              <Typography margin={3} variant="h6">
+                There are currently no hotels left to be approved.
+              </Typography>
+            )}
             {items?.results?.map((hotel) => {
               return (
                 <TableRow hover key={hotel.id}>
@@ -127,12 +150,11 @@ export const HotelTable = (props: IHotelTableProps) => {
                     </Stack>
                   </TableCell>
                   <TableCell>{hotel.address}</TableCell>
-                  <TableCell>{hotel.hotel_score}</TableCell>
+                  <TableCell>{hotel.manager}</TableCell>
+
                   <TableCell>
                     <Button
-                      onClick={() =>
-                        handleAmenitiesModal(hotel.amenities, hotel.id)
-                      }
+                      onClick={() => handleAmenitiesModal(hotel.amenities)}
                       sx={{ fontSize: "12px" }}
                       variant="text"
                     >
@@ -149,29 +171,51 @@ export const HotelTable = (props: IHotelTableProps) => {
                     </Button>
                   </TableCell>
                   <TableCell>
-                    <MoreVert />
+                    <Button
+                      onClick={() =>
+                        handleSendContract(hotel.manager as string)
+                      }
+                      disabled={isLoading}
+                      variant="contained"
+                      color="success"
+                    >
+                      Send
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    <Stack direction="row" alignItems="center" gap={3}>
+                      <IconButton
+                        onClick={() => approveHandler(hotel.id)}
+                        color="success"
+                      >
+                        <CheckCircleIcon />
+                      </IconButton>
+
+                      <IconButton
+                        onClick={() => rejectHandler(hotel.id)}
+                        color="error"
+                      >
+                        <CancelIcon />
+                      </IconButton>
+                    </Stack>
                   </TableCell>
                 </TableRow>
               );
             })}
-            {showAmenitiesModal && hotelId && amenitiesData && (
+            {showAmenitiesModal && amenitiesData && (
               <Modal
                 open={showAmenitiesModal}
                 onClose={() => setShowAmenitiesModal(false)}
               >
-                <AmenitiesMenu
-                  onUpdate={postUpdateHandler}
-                  hotelId={hotelId}
-                  amenities={amenitiesData}
-                />
+                <AmenitiesMenu amenities={amenitiesData} />
               </Modal>
             )}
-            {showRoomsModal && (
+            {showRoomsModal && roomsData && (
               <Modal
                 open={showRoomsModal}
                 onClose={() => setShowRoomsModal(false)}
               >
-                <RoomsMenu />
+                <RoomsMenu rooms={roomsData} />
               </Modal>
             )}
           </TableBody>
@@ -203,15 +247,14 @@ export const HotelTable = (props: IHotelTableProps) => {
   );
 };
 
-export default HotelTable;
+export default UnApprovedHotelsTable;
 
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 900,
-  height: 485,
+  width: 400,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -222,103 +265,22 @@ const style = {
 
 interface IAmenitiesMenuProps {
   amenities: string[];
-  hotelId: number;
-  onUpdate: () => void;
 }
-export const AmenitiesMenu = ({
-  amenities,
-  hotelId,
-  onUpdate,
-}: IAmenitiesMenuProps) => {
-  const [hotelAmenities, setHotelAmenities] = useState<string[]>(amenities);
-  const amenityNames = Object.keys(amenitiesMap);
-  const [updateAmenities] = useUpdateAmenitiesMutation();
-  const filteredAmenities = amenityNames.filter((amenity) => {
-    return !hotelAmenities.includes(amenity);
-  });
-  console.log(amenities);
-
-  const amenitiesAddHandler = (amenity: string) => {
-    setHotelAmenities((prev) => [...prev, amenity]);
-  };
-
-  const amenitiesRemoveHandler = (amenity: string) => {
-    setHotelAmenities((prev) => prev.filter((item) => item !== amenity));
-  };
-
-  const amenitiesUpdateHandler = () => {
-    updateAmenities({ hotelId, amenities }).then(() => onUpdate());
-  };
-
+export const AmenitiesMenu = ({ amenities }: IAmenitiesMenuProps) => {
   return (
     <Box sx={{ ...style }}>
-      <Stack direction="row" width="100%">
-        <Stack width="50%">
-          <Typography margin={2} variant="h6">
-            All Amenities
-          </Typography>
-          <Paper style={{ maxHeight: 325, padding: 10, overflow: "auto" }}>
-            {filteredAmenities.map((amenity) => (
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Typography>{amenity}</Typography>
-
-                <Tooltip title="Remove">
-                  <IconButton>
-                    <AddIcon onClick={() => amenitiesAddHandler(amenity)} />
-                  </IconButton>
-                </Tooltip>
-              </Stack>
-            ))}
-          </Paper>
-        </Stack>
-        <Stack borderLeft={1} width="50%">
-          <Typography margin={2} variant="h6">
-            Selected Amenities
-          </Typography>
-          <Paper
-            style={{
-              maxHeight: 325,
-              padding: 10,
-              overflow: "auto",
-            }}
-          >
-            {hotelAmenities.map((amenity) => (
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Typography>{amenity}</Typography>
-                <Tooltip title="Remove">
-                  <IconButton>
-                    <RemoveIcon
-                      onClick={() => amenitiesRemoveHandler(amenity)}
-                    />
-                  </IconButton>
-                </Tooltip>
-              </Stack>
-            ))}
-          </Paper>
-        </Stack>
-      </Stack>
-      <Stack direction="row" justifyContent="flex-end">
-        <Button
-          onClick={amenitiesUpdateHandler}
-          variant="contained"
-          sx={{ marginTop: 2 }}
-        >
-          Update
-        </Button>
-      </Stack>
+      {amenities.map((amenity) => (
+        <p>{amenity}</p>
+      ))}
     </Box>
   );
 };
 
-export const RoomsMenu = () => {
+interface IRoomsMenuProps {
+  rooms: any[];
+}
+export const RoomsMenu = ({ rooms }: IRoomsMenuProps) => {
+  console.log(rooms);
   return (
     <Box sx={{ ...style }}>
       <p>Hi dad</p>

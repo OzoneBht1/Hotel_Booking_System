@@ -86,7 +86,7 @@ const baseQueryWithReauth: BaseQueryFn<
 export const apiSlice = createApi({
   baseQuery: baseQueryWithReauth,
   reducerPath: "api",
-  tagTypes: ["UserReviews"],
+  tagTypes: ["UserReviews", "UnApprovedHotels"],
 
   endpoints: () => ({}),
 });
