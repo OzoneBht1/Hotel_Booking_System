@@ -196,6 +196,12 @@ const FaqAndCleanPractices = ({
                   fontWeight: 800,
                 }}
                 variant="outlined"
+                error={errors.faqs?.[index]?.question ? true : false}
+                helperText={
+                  errors.faqs?.[index]?.question
+                    ? (errors.faqs?.[index]?.question.message as string)
+                    : ""
+                }
                 {...register(`faqs.${index}.question`)}
               />
               <TextField
@@ -203,6 +209,12 @@ const FaqAndCleanPractices = ({
                 multiline
                 label="Answer"
                 variant="outlined"
+                error={errors.faqs?.[index]?.answer ? true : false}
+                helperText={
+                  errors.faqs?.[index]?.question
+                    ? (errors.faqs?.[index]?.answer.message as string)
+                    : ""
+                }
                 {...register(`faqs.${index}.answer`)}
               />
             </Box>

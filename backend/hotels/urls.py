@@ -16,6 +16,7 @@ from .views import (
     HotelCreateWithDetailApi,
     HotelDetailApi,
     HotelListApi,
+    HotelOfPartnerApi,
     HotelSearchApi,
     HotelsByLocationApi,
     HotelByLocationAndNameApi,
@@ -33,6 +34,7 @@ from .views import (
     RoomByHotelApi,
     SingleRoomByHotelApi,
     update_amenities,
+    RoomListAPIView,
 )
 
 # type: ignore
@@ -159,6 +161,12 @@ urlpatterns = [
         name="modify-reviews",
     ),
     path("hotels/recommend-hotels/", recommend_hotels, name="recommend"),
+    path("hotels/listings/", HotelOfPartnerApi.as_view(), name="recommend"),
+    path(
+        "hotels/<int:hotel_id>/rooms-by-hotel/",
+        RoomListAPIView.as_view(),
+        name="recommend",
+    ),
     path(
         "booking/<int:hotel_id>/<int:user_id>",
         GetBookingApi.as_view(),

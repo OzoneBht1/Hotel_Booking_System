@@ -98,6 +98,26 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         },
       }),
     }),
+    hotelsByPartner: build.query<IPaginated<IHotelData>, IHotelQuery>({
+      query: ({ search = "", ordering, limit = 10, page = 1 }) => ({
+        url: "/hotels/listings/",
+        method: "GET",
+        include: "credentials",
+        params: {
+          search,
+          ordering,
+          limit,
+          offset: page * limit,
+        },
+      }),
+    }),
+
+    getRooomsByHotel: build.query<IPaginated<IHotelRoom>, { id: number }>({
+      query: ({ id }) => ({
+        url: `/hotels/${id}/rooms`,
+        method: "GET",
+      }),
+    }),
     getALlUnApprovedHotels: build.query<IPaginated<IHotelData>, IHotelQuery>({
       query: ({ search = "", ordering, limit = 10, page = 1 }) => ({
         url: "/hotels/unapproved",
@@ -154,8 +174,10 @@ export const {
   useGetHotelDetailsQuery,
   useGetSearchedResultsQuery,
   useGetRoomsQuery,
+  useHotelsByPartnerQuery,
   useGetFaqsQuery,
   useCreateHotelMutation,
+  useGetRooomsByHotelQuery,
   useGetAllHotelsQuery,
   useGetALlUnApprovedHotelsQuery,
   useSendContractMutation,

@@ -23,7 +23,7 @@ from django.contrib.auth.models import (
 )  # Or import your custom User model if you have one
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 
 
 # from account_manager.permissions import UserDetailPermission
@@ -40,6 +40,7 @@ from .serializers import (
     HistorySerializer,
     HotelCreateWithDetailsSerializer,
     HotelSerializer,
+    HotelSerializerWithApproval,
     HouseRules,
     HouseRulesSerializer,
     ReviewSerializer,
@@ -181,10 +182,11 @@ class HotelCreateWithDetailApi(generics.CreateAPIView):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
 @api_view(["PUT"])
 def update_amenities(request, hotel_id):
     hotel = Hotel.objects.get(id=hotel_id)
-    amenities = request.data  
+    amenities = request.data
     hotel.amenities.clear()
 
     for amenity_data in amenities:
@@ -192,7 +194,6 @@ def update_amenities(request, hotel_id):
         hotel.amenities.add(amenity)
     hotel.save()
     return Response({"message": "Amenities updated"}, status=status.HTTP_200_OK)
-
 
 
 class HotelListApi(generics.ListAPIView):
@@ -214,6 +215,14 @@ class HotelListApi(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
+
+class HotelOfPartnerApi(generics.ListAPIView):
+    serializer_class = HotelSerializerWithApproval
+
+
+    def get_queryset(self):
+        user = self.request.user
+        return Hotel.objects.filter(manager=user)
 
 
 class UnApprovedHotelsApi(generics.ListAPIView):
@@ -295,8 +304,10 @@ class HotelByLocationAndNameApi(generics.ListAPIView):
 
         queryset = self.filter_queryset(queryset)
 
-        # if min_price and max_price:
-        # queryset = queryset.filter(rooms__price__range=(min_price, max_price))
+        if min_price and max_price:
+            price_range_queryset = queryset.filter(rooms__price__range=(min_price, max_price))
+            hotel_ids = price_range_queryset.values('id')
+            queryset = queryset.filter(id__in=hotel_ids)
         #
         if min_score and max_score:
             queryset = queryset.filter(hotel_score__range=(min_score, max_score))
@@ -336,6 +347,17 @@ class BookingCreateApi(generics.CreateAPIView):
             status=status.HTTP_201_CREATED,
             headers=headers,
         )
+
+
+class RoomListAPIView(generics.ListAPIView):
+    serializer_class = RoomSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminUser]
+    pagination_class = None
+
+    def get_queryset(self):
+        hotel_id = self.kwargs["hotel_id"]
+        return Room.objects.filter(hotels__id=hotel_id)
 
 
 def update_available_rooms(booking):
