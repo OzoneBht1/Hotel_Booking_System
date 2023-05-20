@@ -6,6 +6,13 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems, secondaryListItems } from "./ListItems";
+import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../../store/hooks";
+import { authActions } from "../../store/auth-slice";
+import { useLogoutUserMutation } from "../../store/api/authentication-api-slice";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -42,6 +49,20 @@ interface ISidebarProps {
 }
 
 const Sidebar = ({ open, toggleDrawer }: ISidebarProps) => {
+  const nav = useNavigate();
+  const dispatch = useAppDispatch();
+  const [logout] = useLogoutUserMutation();
+
+  const logoutHandler = async () => {
+    dispatch(authActions.logOut());
+
+    await logout()
+      .unwrap()
+      .then(() => {
+        nav("/", { state: { openOnLogout: true }, replace: true });
+      });
+  };
+
   return (
     <Drawer variant="permanent" open={open}>
       <Toolbar
@@ -61,6 +82,12 @@ const Sidebar = ({ open, toggleDrawer }: ISidebarProps) => {
         {mainListItems}
         <Divider sx={{ my: 1 }} />
         {secondaryListItems}
+        <ListItemButton onClick={logoutHandler}>
+          <ListItemIcon>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText primary="Logout" />
+        </ListItemButton>
       </List>
     </Drawer>
   );

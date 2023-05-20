@@ -29,6 +29,7 @@ from rest_framework.decorators import api_view
 # from account_manager.permissions import UserDetailPermission
 from .serializers import (
     FAQ,
+    Amenity,
     BookCreateSerializer,
     BookTemp,
     BookTempCreateSerializer,
@@ -179,6 +180,19 @@ class HotelCreateWithDetailApi(generics.CreateAPIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(["PUT"])
+def update_amenities(request, hotel_id):
+    hotel = Hotel.objects.get(id=hotel_id)
+    amenities = request.data  
+    hotel.amenities.clear()
+
+    for amenity_data in amenities:
+        amenity = Amenity.objects.get(name=amenity_data)
+        hotel.amenities.add(amenity)
+    hotel.save()
+    return Response({"message": "Amenities updated"}, status=status.HTTP_200_OK)
+
 
 
 class HotelListApi(generics.ListAPIView):

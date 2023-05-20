@@ -32,6 +32,7 @@ from .views import (
     LatestBookingView,
     RoomByHotelApi,
     SingleRoomByHotelApi,
+    update_amenities,
 )
 
 # type: ignore
@@ -103,6 +104,11 @@ urlpatterns = [
         "hotels/<int:hotel_id>/get-temp-booking/<int:user_id>/",
         GetBookingTempApi.as_view(),
         name="get-booking",
+    ),
+    path(
+        "hotel/<int:hotel_id>/update-amenities/",
+        update_amenities,
+        name="update-amenities",
     ),
     path("latest-booking/", LatestBookingView.as_view(), name="latest-sale"),
     path("get-bookings-today/", GetAllBookingToday.as_view(), name="today-sale"),

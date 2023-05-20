@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { Backdrop, Button, Card, Menu, Modal } from "@mui/material";
+import {
+  Alert,
+  Backdrop,
+  Button,
+  Card,
+  IconButton,
+  Menu,
+  Modal,
+  Paper,
+  Snackbar,
+  Tooltip,
+} from "@mui/material";
 import {
   Avatar,
   Box,
@@ -15,6 +26,10 @@ import {
 import { MoreVert } from "@mui/icons-material";
 import { IHotelData, IPaginated } from "../types/types";
 import { BASEURL } from "../../store/api/apiSlice";
+import { amenitiesMap } from "../icons/Icons";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import { useUpdateAmenitiesMutation } from "../../store/api/hotelSlice";
 
 interface IHotelTableProps {
   count?: number;
@@ -32,10 +47,14 @@ export const HotelTable = (props: IHotelTableProps) => {
   const [showAmenitiesModal, setShowAmenitiesModal] = useState(false);
   const [showRoomsModal, setShowRoomsModal] = useState(false);
   const [amenitiesData, setAmenitiesData] = useState<string[] | null>(null);
-  console.log(items);
+  const [hotelId, setHotelId] = useState<null | number>(null);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [severity, setSeverity] = useState<"success" | "error">("success");
+  const [message, setMessage] = useState("");
 
-  const handleAmenitiesModal = (data: string[]) => {
+  const handleAmenitiesModal = (data: string[], id: number) => {
     setAmenitiesData(data);
+    setHotelId(id);
     setShowAmenitiesModal((prev) => !prev);
   };
 
@@ -49,9 +68,33 @@ export const HotelTable = (props: IHotelTableProps) => {
     props.onPageChange(newPage);
   };
 
+  const postUpdateHandler = () => {
+    setAmenitiesData(null);
+    setHotelId(null);
+    setShowAmenitiesModal(false);
+    setShowSnackbar(true);
+    setMessage("Amenities Updated Successfully");
+    setSeverity("success");
+  };
+
   return (
     <Card>
       <Box sx={{ minWidth: 800 }}>
+        <Snackbar
+          open={showSnackbar}
+          autoHideDuration={6000}
+          onClose={() => setShowSnackbar(false)}
+        >
+          <Alert
+            onClose={() => setShowSnackbar(false)}
+            severity={severity}
+            elevation={6}
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            {message}
+          </Alert>
+        </Snackbar>
         <Table>
           <TableHead>
             <TableRow>
@@ -87,7 +130,9 @@ export const HotelTable = (props: IHotelTableProps) => {
                   <TableCell>{hotel.hotel_score}</TableCell>
                   <TableCell>
                     <Button
-                      onClick={() => handleAmenitiesModal(hotel.amenities)}
+                      onClick={() =>
+                        handleAmenitiesModal(hotel.amenities, hotel.id)
+                      }
                       sx={{ fontSize: "12px" }}
                       variant="text"
                     >
@@ -109,12 +154,16 @@ export const HotelTable = (props: IHotelTableProps) => {
                 </TableRow>
               );
             })}
-            {showAmenitiesModal && amenitiesData && (
+            {showAmenitiesModal && hotelId && amenitiesData && (
               <Modal
                 open={showAmenitiesModal}
                 onClose={() => setShowAmenitiesModal(false)}
               >
-                <AmenitiesMenu amenities={amenitiesData} />
+                <AmenitiesMenu
+                  onUpdate={postUpdateHandler}
+                  hotelId={hotelId}
+                  amenities={amenitiesData}
+                />
               </Modal>
             )}
             {showRoomsModal && (
@@ -161,7 +210,8 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 900,
+  height: 485,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -172,13 +222,98 @@ const style = {
 
 interface IAmenitiesMenuProps {
   amenities: string[];
+  hotelId: number;
+  onUpdate: () => void;
 }
-export const AmenitiesMenu = ({ amenities }: IAmenitiesMenuProps) => {
+export const AmenitiesMenu = ({
+  amenities,
+  hotelId,
+  onUpdate,
+}: IAmenitiesMenuProps) => {
+  const [hotelAmenities, setHotelAmenities] = useState<string[]>(amenities);
+  const amenityNames = Object.keys(amenitiesMap);
+  const [updateAmenities] = useUpdateAmenitiesMutation();
+  const filteredAmenities = amenityNames.filter((amenity) => {
+    return !hotelAmenities.includes(amenity);
+  });
+  console.log(amenities);
+
+  const amenitiesAddHandler = (amenity: string) => {
+    setHotelAmenities((prev) => [...prev, amenity]);
+  };
+
+  const amenitiesRemoveHandler = (amenity: string) => {
+    setHotelAmenities((prev) => prev.filter((item) => item !== amenity));
+  };
+
+  const amenitiesUpdateHandler = () => {
+    updateAmenities({ hotelId, amenities }).then(() => onUpdate());
+  };
+
   return (
     <Box sx={{ ...style }}>
-      {amenities.map((amenity) => (
-        <p>{amenity}</p>
-      ))}
+      <Stack direction="row" width="100%">
+        <Stack width="50%">
+          <Typography margin={2} variant="h6">
+            All Amenities
+          </Typography>
+          <Paper style={{ maxHeight: 325, padding: 10, overflow: "auto" }}>
+            {filteredAmenities.map((amenity) => (
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <Typography>{amenity}</Typography>
+
+                <Tooltip title="Remove">
+                  <IconButton>
+                    <AddIcon onClick={() => amenitiesAddHandler(amenity)} />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            ))}
+          </Paper>
+        </Stack>
+        <Stack borderLeft={1} width="50%">
+          <Typography margin={2} variant="h6">
+            Selected Amenities
+          </Typography>
+          <Paper
+            style={{
+              maxHeight: 325,
+              padding: 10,
+              overflow: "auto",
+            }}
+          >
+            {hotelAmenities.map((amenity) => (
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <Typography>{amenity}</Typography>
+                <Tooltip title="Remove">
+                  <IconButton>
+                    <RemoveIcon
+                      onClick={() => amenitiesRemoveHandler(amenity)}
+                    />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            ))}
+          </Paper>
+        </Stack>
+      </Stack>
+      <Stack direction="row" justifyContent="flex-end">
+        <Button
+          onClick={amenitiesUpdateHandler}
+          variant="contained"
+          sx={{ marginTop: 2 }}
+        >
+          Update
+        </Button>
+      </Stack>
     </Box>
   );
 };

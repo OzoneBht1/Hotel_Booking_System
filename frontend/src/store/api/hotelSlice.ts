@@ -135,6 +135,16 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["UnApprovedHotels"],
     }),
+    updateAmenities: build.mutation<
+      any,
+      { hotelId: number; amenities: string[] }
+    >({
+      query: ({ hotelId, amenities }) => ({
+        url: `/hotel/${hotelId.toString()}/update-amenities/`,
+        method: "PUT",
+        body: amenities,
+      }),
+    }),
   }),
 });
 
@@ -151,4 +161,5 @@ export const {
   useSendContractMutation,
   useApproveHotelMutation,
   useRejectHotelMutation,
+  useUpdateAmenitiesMutation,
 } = hotelApiSlice;
