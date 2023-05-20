@@ -1,3 +1,4 @@
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics
 
 from hotels.pagination import CustomPagination
@@ -24,6 +25,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from .permissions import UserDetailPermission
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
+from django.utils.crypto import get_random_string
 
 
 class UserListSerializer(generics.ListAPIView):
@@ -90,6 +92,7 @@ class UserProfileUpdate(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = ProfileUpdateSerializer
     lookup_field = "id"
+    permission_classes = [IsAuthenticated, UserDetailPermission, IsAdminUser]
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -131,6 +134,33 @@ class UserLogoutView(APIView):
     def get(self, request):
         logout(request)
         return Response({"success": True})
+
+
+@api_view(["POST"])
+@csrf_exempt
+def reset_password(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({"message": "User not found"}, status=404)
+
+    # Generate a random password
+    new_password = get_random_string(length=10)
+
+    # Set the user's password
+    user.set_password(new_password)
+    user.save()
+
+    # Send the new password to the user's email
+    send_mail(
+        "Password Reset",
+        f"Your new password: {new_password}. Please reset the password as soon as you log in from the profile page.",
+        "noreply@example.com",
+        [user.email],
+        fail_silently=False,
+    )
+
+    return Response({"message": "Password reset successful"}, status=200)
 
 
 @api_view(["POST"])

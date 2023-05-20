@@ -23,6 +23,14 @@ export const authenticationApiSlice = apiSlice.injectEndpoints({
         body: formData,
       }),
     }),
+    sendReset: build.mutation<any, any>({
+      query: (id) => ({
+        url: `user/${id}/send-reset`,
+        method: "POST",
+        include: "credentials",
+      }),
+    }),
+
     updatePassword: build.mutation<any, any>({
       query: (data) => ({
         url: `user/${data.id}/set-pass`,
@@ -54,4 +62,5 @@ export const {
   useUpdateProfileMutation,
   useGetAllUsersQuery,
   useUpdatePasswordMutation,
+  useSendResetMutation,
 } = authenticationApiSlice;
