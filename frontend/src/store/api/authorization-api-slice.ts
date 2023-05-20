@@ -15,6 +15,22 @@ export const authenticationApiSlice = apiSlice.injectEndpoints({
         include: "credentials",
       }),
     }),
+    updateProfile: build.mutation<any, any>({
+      query: ({ formData, id }) => ({
+        url: `user/${id}/update`,
+        method: "PATCH",
+        include: "credentials",
+        body: formData,
+      }),
+    }),
+    updatePassword: build.mutation<any, any>({
+      query: (data) => ({
+        url: `user/${data.id}/set-pass`,
+        method: "PATCH",
+        include: "credentials",
+        body: data,
+      }),
+    }),
 
     getAllUsers: build.query<IPaginated<IUserData>, IUserQuery>({
       query: ({ search = "", user_type, ordering, limit = 10, page = 1 }) => ({
@@ -33,5 +49,9 @@ export const authenticationApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useUserDetailQuery, useGetAllUsersQuery } =
-  authenticationApiSlice;
+export const {
+  useUserDetailQuery,
+  useUpdateProfileMutation,
+  useGetAllUsersQuery,
+  useUpdatePasswordMutation,
+} = authenticationApiSlice;

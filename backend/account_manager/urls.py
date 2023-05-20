@@ -26,4 +26,12 @@ urlpatterns = [
     path("verify/", verify_email, name="verify_email"),
     path("users/", UserListSerializer.as_view(), name="user_list"),
     path("user/<int:id>/", views.UserDetailApi.as_view(), name="profile"),
+    path(
+        "user/<int:id>/set-pass",
+        views.PasswordUpdateView.as_view(),
+        name="update-password",
+    ),
+    path(
+        "user/<int:id>/update", views.UserProfileUpdate.as_view(), name="profile-update"
+    ),
 ]

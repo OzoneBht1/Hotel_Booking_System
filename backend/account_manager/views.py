@@ -1,10 +1,12 @@
 from rest_framework import generics
 
 from hotels.pagination import CustomPagination
-from hotels.views import IsAdminUser
+from hotels.views import IsAdminUser, IsAuthenticated
 from .models import User, EmailVerification
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import (
+    PasswordUpdateSerializer,
+    ProfileUpdateSerializer,
     UserCreateSerializer,
     MyTokenObtainPairSerializer,
     EmailVerificationSerializer,
@@ -82,6 +84,35 @@ class UserProfileCreateApi(generics.CreateAPIView):
             status=status.HTTP_201_CREATED,
             headers=headers,
         )
+
+
+class UserProfileUpdate(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = ProfileUpdateSerializer
+    lookup_field = "id"
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(
+            {"message": "Updated Account Successfully"},
+            status=status.HTTP_200_OK,
+        )
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+
+class PasswordUpdateView(generics.UpdateAPIView):
+    serializer_class = PasswordUpdateSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = "id"
+
+    def get_object(self):
+        user = User.objects.get(id=self.kwargs["id"])
+        return user
 
 
 class UserDetailApi(generics.RetrieveUpdateDestroyAPIView):
