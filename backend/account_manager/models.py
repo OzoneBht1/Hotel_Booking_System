@@ -39,7 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return super().set_password(raw_password)
 
     def __str__(self) -> str:
-        return f"{str(self.pk)}, {self.first_name},{self.email}, {self.user_type}"
+        return self.email
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

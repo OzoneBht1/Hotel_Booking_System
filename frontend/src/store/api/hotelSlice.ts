@@ -98,6 +98,27 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         },
       }),
     }),
+    getALlUnApprovedHotels: build.query<IPaginated<IHotelData>, IHotelQuery>({
+      query: ({ search = "", ordering, limit = 10, page = 1 }) => ({
+        url: "/hotels/unapproved",
+        method: "GET",
+        include: "credentials",
+        params: {
+          search,
+          ordering,
+
+          limit,
+          offset: page * limit,
+        },
+      }),
+    }),
+    sendContract: build.mutation<any, { email: string }>({
+      query: (body) => ({
+        url: `/hotels/send-contract`,
+        method: "POST",
+        body: body,
+      }),
+    }),
   }),
 });
 
@@ -110,4 +131,6 @@ export const {
   useGetFaqsQuery,
   useCreateHotelMutation,
   useGetAllHotelsQuery,
+  useGetALlUnApprovedHotelsQuery,
+  useSendContractMutation,
 } = hotelApiSlice;

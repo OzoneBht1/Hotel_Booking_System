@@ -24,8 +24,10 @@ from .views import (
     ReviewCreateApi,
     ReviewsNotByUser,
     ReviewsOfAUserApi,
+    UnApprovedHotelsApi,
     recommend_hotels,
     get_next_available_date,
+    send_contract,
     LatestBookingView,
     RoomByHotelApi,
     SingleRoomByHotelApi,
@@ -35,6 +37,11 @@ from .views import (
 urlpatterns = [
     path("hotels/", HotelListApi.as_view(), name="hotels"),  # type: ignore
     path("hotels/<int:id>", HotelDetailApi.as_view(), name="hotels"),
+    path(
+        "hotels/unapproved",
+        UnApprovedHotelsApi.as_view(),
+        name="unapproved",
+    ),
     path(
         "hotels/<int:id>/reviews",
         ReviewByHotelApi.as_view(),
@@ -141,4 +148,9 @@ urlpatterns = [
         name="get-single-booking",
     ),
     path("create-history/", CreateHistoryApi.as_view(), name="create-history"),
+    path(
+        "hotels/send-contract",
+        send_contract,
+        name="contract",
+    ),
 ]

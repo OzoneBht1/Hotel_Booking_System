@@ -27,6 +27,7 @@ import { useRecommendHotelsQuery } from "./store/api/history-slice";
 import { historyActions } from "./store/history-slice";
 import Loading from "./components/Loading";
 import { useEffect } from "react";
+import ApprovalManagement from "./pages/AdminSection/ApprovalManagement";
 
 const stripePromise = loadStripe(import.meta.env.VITE_REACT_APP_STRIPE_URL);
 function App() {
@@ -78,6 +79,7 @@ function App() {
               <Route path="/customers" element={<UserManagement />} />
               <Route path="/order-history" element={<OrderManagement />} />
               <Route path="/hotels" element={<HotelManagement />} />
+              <Route path="/approve-hotels" element={<ApprovalManagement />} />
             </Route>
           </Route>
           <Route path="*" element={<Error />} />

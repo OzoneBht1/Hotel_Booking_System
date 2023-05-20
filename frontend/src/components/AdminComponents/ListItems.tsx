@@ -49,14 +49,11 @@ export const mainListItems = (
 
 export const secondaryListItems = (
   <React.Fragment>
-    <ListSubheader component="div" inset>
-      Saved reports
-    </ListSubheader>
-    <ListItemButton>
+    <ListItemButton component={Link} to="/approve-hotels">
       <ListItemIcon>
         <AssignmentIcon />
       </ListItemIcon>
-      <ListItemText primary="Current month" />
+      <ListItemText primary="Hotel Approval" />
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
