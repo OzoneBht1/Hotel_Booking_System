@@ -111,6 +111,8 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
           offset: page * limit,
         },
       }),
+
+      providesTags: ["UnApprovedHotels"],
     }),
     sendContract: build.mutation<any, { email: string }>({
       query: (body) => ({
@@ -118,6 +120,20 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: body,
       }),
+    }),
+    approveHotel: build.mutation<any, { hotelId: number }>({
+      query: ({ hotelId }) => ({
+        url: `/hotel/${hotelId.toString()}/approve-reject`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["UnApprovedHotels"],
+    }),
+    rejectHotel: build.mutation<any, { hotelId: number }>({
+      query: ({ hotelId }) => ({
+        url: `/hotel/${hotelId.toString()}/approve-reject`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["UnApprovedHotels"],
     }),
   }),
 });
@@ -133,4 +149,6 @@ export const {
   useGetAllHotelsQuery,
   useGetALlUnApprovedHotelsQuery,
   useSendContractMutation,
+  useApproveHotelMutation,
+  useRejectHotelMutation,
 } = hotelApiSlice;

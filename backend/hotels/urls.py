@@ -11,6 +11,7 @@ from .views import (
     GetAllBookingToday,
     GetBookingApi,
     GetBookingTempApi,
+    HotelApproveRejectApi,
     HotelCreateApi,
     HotelCreateWithDetailApi,
     HotelDetailApi,
@@ -43,9 +44,19 @@ urlpatterns = [
         name="unapproved",
     ),
     path(
+        "hotel/<int:hotel_id>/approve-reject",
+        HotelApproveRejectApi.as_view(),
+        name="approve-reject",
+    ),
+    path(
         "hotels/<int:id>/reviews",
         ReviewByHotelApi.as_view(),
         name="hotel_review",
+    ),
+    path(
+        "hotels/<int:id>/faqs",
+        FAQByHotelApi.as_view(),
+        name="hotel_faq",
     ),
     path(
         "hotels/<int:id>/faqs",

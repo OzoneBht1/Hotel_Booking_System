@@ -71,6 +71,7 @@ export interface IHotelData {
   address: string;
   description: string;
   amenities: string[];
+  manager?: string;
   hotel_images?: {
     id: number;
     created_at: string;

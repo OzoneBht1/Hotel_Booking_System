@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Backdrop, Button, Card, Menu, Modal } from "@mui/material";
+import {
+  Alert,
+  Backdrop,
+  Button,
+  Card,
+  IconButton,
+  Menu,
+  Modal,
+  Snackbar,
+} from "@mui/material";
 import {
   Avatar,
   Box,
@@ -12,10 +21,16 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { MoreVert } from "@mui/icons-material";
+import { Cancel, MoreVert } from "@mui/icons-material";
 import { IHotelData, IPaginated } from "../types/types";
 import { BASEURL } from "../../store/api/apiSlice";
-import { useSendContractMutation } from "../../store/api/hotelSlice";
+import {
+  useApproveHotelMutation,
+  useRejectHotelMutation,
+  useSendContractMutation,
+} from "../../store/api/hotelSlice";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 interface IHotelTableProps {
   count?: number;
@@ -33,7 +48,13 @@ export const UnApprovedHotelsTable = (props: IHotelTableProps) => {
   const [showAmenitiesModal, setShowAmenitiesModal] = useState(false);
   const [showRoomsModal, setShowRoomsModal] = useState(false);
   const [amenitiesData, setAmenitiesData] = useState<string[] | null>(null);
-  const [sendContract, { isLoading, isError }] = useSendContractMutation();
+  const [roomsData, setRoomsData] = useState<any[] | null>(null);
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const [sendContract, { isLoading }] = useSendContractMutation();
+  const [approveHotel] = useApproveHotelMutation();
+  const [rejectHotel] = useRejectHotelMutation();
   console.log(items);
 
   const handleAmenitiesModal = (data: string[]) => {
@@ -44,6 +65,7 @@ export const UnApprovedHotelsTable = (props: IHotelTableProps) => {
   const handleRoomsModal = (rooms: any) => {
     setShowRoomsModal((prev) => !prev);
   };
+
   const handlePageChange = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
@@ -52,13 +74,44 @@ export const UnApprovedHotelsTable = (props: IHotelTableProps) => {
   };
 
   const handleSendContract = (email: string) => {
-    console.log("hi");
-    sendContract({ email });
+    sendContract({ email }).then(() => {
+      setOpen(true);
+      setMessage("Contract Sent to the user!");
+    });
+  };
+
+  const approveHandler = (hotelId: number) => {
+    approveHotel({ hotelId }).then((res) => {
+      setOpen(true);
+      setMessage(res.data.message);
+    });
+  };
+
+  const rejectHandler = (hotelId: number) => {
+    rejectHotel({ hotelId }).then((res) => {
+      setOpen(true);
+      setMessage(res.data.message);
+    });
   };
 
   return (
     <Card>
       <Box sx={{ minWidth: 800 }}>
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          onClose={() => setOpen(false)}
+        >
+          <Alert
+            onClose={() => setOpen(false)}
+            severity="success"
+            elevation={6}
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            {message}
+          </Alert>
+        </Snackbar>
         <Table>
           <TableHead>
             <TableRow>
@@ -68,7 +121,7 @@ export const UnApprovedHotelsTable = (props: IHotelTableProps) => {
               <TableCell>Amenities</TableCell>
               <TableCell>Rooms</TableCell>
               <TableCell>Send Contract</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -119,14 +172,32 @@ export const UnApprovedHotelsTable = (props: IHotelTableProps) => {
                   </TableCell>
                   <TableCell>
                     <Button
-                      onClick={() => handleSendContract(hotel.manager)}
+                      onClick={() =>
+                        handleSendContract(hotel.manager as string)
+                      }
+                      disabled={isLoading}
+                      variant="contained"
                       color="success"
                     >
                       Send
                     </Button>
                   </TableCell>
                   <TableCell>
-                    <MoreVert />
+                    <Stack direction="row" alignItems="center" gap={3}>
+                      <IconButton
+                        onClick={() => approveHandler(hotel.id)}
+                        color="success"
+                      >
+                        <CheckCircleIcon />
+                      </IconButton>
+
+                      <IconButton
+                        onClick={() => rejectHandler(hotel.id)}
+                        color="error"
+                      >
+                        <CancelIcon />
+                      </IconButton>
+                    </Stack>
                   </TableCell>
                 </TableRow>
               );
@@ -139,12 +210,12 @@ export const UnApprovedHotelsTable = (props: IHotelTableProps) => {
                 <AmenitiesMenu amenities={amenitiesData} />
               </Modal>
             )}
-            {showRoomsModal && (
+            {showRoomsModal && roomsData && (
               <Modal
                 open={showRoomsModal}
                 onClose={() => setShowRoomsModal(false)}
               >
-                <RoomsMenu />
+                <RoomsMenu rooms={roomsData} />
               </Modal>
             )}
           </TableBody>
@@ -205,7 +276,11 @@ export const AmenitiesMenu = ({ amenities }: IAmenitiesMenuProps) => {
   );
 };
 
-export const RoomsMenu = () => {
+interface IRoomsMenuProps {
+  rooms: any[];
+}
+export const RoomsMenu = ({ rooms }: IRoomsMenuProps) => {
+  console.log(rooms);
   return (
     <Box sx={{ ...style }}>
       <p>Hi dad</p>
