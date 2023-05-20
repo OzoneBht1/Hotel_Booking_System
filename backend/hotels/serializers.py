@@ -108,6 +108,57 @@ class HotelSerializer(ModelSerializer):
         return value
 
 
+class HotelSerializerWithApproval(ModelSerializer):
+    hotel_images = serializers.SerializerMethodField()
+    amenities = serializers.StringRelatedField(many=True, read_only=True)
+    manager = serializers.StringRelatedField(read_only=True)
+    review_count = serializers.SerializerMethodField()
+    cheapest_price = serializers.SerializerMethodField()
+    room_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Hotel
+        fields = [
+            "id",
+            "name",
+            "address",
+            "amenities",
+            "approved",
+            "room_count",
+            "manager",
+            "rooms",
+            "hotel_images",
+            "hotel_score",
+            "lng",
+            "lat",
+            "review_count",
+            "cheapest_price",
+        ]
+
+    def get_hotel_images(self, obj):
+        hotel_images = HotelImages.objects.filter(hotel=obj)
+        return HotelImagesSerializer(hotel_images, many=True).data
+
+    def get_review_count(self, obj):
+        count = Review.objects.filter(hotel=obj).count()
+        return count
+
+    def get_cheapest_price(self, obj):
+        cheapest_price = obj.rooms.aggregate(min_price=Min("price"))["min_price"]
+        if cheapest_price:
+            return cheapest_price
+        else:
+            return "N/A"
+
+    def get_room_count(self, obj):
+        rooms = Room.objects.filter(hotel=obj)
+        count = 0
+        for room in rooms:
+            count = count + room.quantity
+
+        return count
+
+
 class HotelImagesSerializer(ModelSerializer):
     class Meta:
         model = HotelImages

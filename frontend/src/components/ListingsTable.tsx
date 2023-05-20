@@ -28,15 +28,15 @@ import {
   Typography,
 } from "@mui/material";
 import { MoreVert } from "@mui/icons-material";
-import { IHotelData, IPaginated } from "../types/types";
-import { BASEURL } from "../../store/api/apiSlice";
-import { amenitiesMap } from "../icons/Icons";
+import { IHotelData, IPaginated } from "../components/types/types";
+import { BASEURL } from "../store/api/apiSlice";
+import { amenitiesMap } from "../components/icons/Icons";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import {
   useGetRooomsByHotelQuery,
   useUpdateAmenitiesMutation,
-} from "../../store/api/hotelSlice";
+} from "../store/api/hotelSlice";
 
 interface IHotelTableProps {
   count?: number;
@@ -49,7 +49,7 @@ interface IHotelTableProps {
   //
 }
 
-export const HotelTable = (props: IHotelTableProps) => {
+export const ListingsTable = (props: IHotelTableProps) => {
   const { count = 0, items, page = 0, rowsPerPage = 0 } = props;
   const [showAmenitiesModal, setShowAmenitiesModal] = useState(false);
   const [showRoomsModal, setShowRoomsModal] = useState(false);
@@ -112,6 +112,7 @@ export const HotelTable = (props: IHotelTableProps) => {
               <TableCell>Score</TableCell>
               <TableCell>Amenities</TableCell>
               <TableCell>Rooms</TableCell>
+              <TableCell>Approved</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -156,6 +157,9 @@ export const HotelTable = (props: IHotelTableProps) => {
                     >
                       {hotel.room_count}
                     </Button>
+                  </TableCell>
+                  <TableCell>
+                    {hotel?.approved === true ? "Approved" : "Unapproved"}
                   </TableCell>
                   <TableCell>
                     <MoreVert />
@@ -212,7 +216,7 @@ export const HotelTable = (props: IHotelTableProps) => {
   );
 };
 
-export default HotelTable;
+export default ListingsTable;
 
 const style = {
   position: "absolute" as "absolute",

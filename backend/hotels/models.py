@@ -68,9 +68,6 @@ class BookTemp(BaseModel):
     check_out = models.DateField(blank=True, null=True)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
 
-    class Meta:
-        unique_together = ["user", "hotel"]
-
     def __str__(self):
         return f"{self.user.first_name} - {self.hotel.name}"
 
