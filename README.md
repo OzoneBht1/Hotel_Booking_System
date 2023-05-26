@@ -13,6 +13,8 @@ A comprehensive hotel booking platform with features such as authentication, sea
 ## Prerequisites 
 - [Node.js](https://nodejs.org/) 
 - [Python 3](https://www.python.org/downloads/)
+- [Stripe Api Key](https://stripe.com/)
+- [PostgreSQL](https://www.postgresql.org/)
 
 
 ##Installing
@@ -22,34 +24,72 @@ A comprehensive hotel booking platform with features such as authentication, sea
 ```bash
 $ git clone https://github.com/OzoneBht1/FYP--Hotel-Booking-System.git
 ```
-
-2. Install the required packages for the frontend:
+2. Configure publishable Stripe API key for the frontend:
 
 ```bash
 $ cd frontend
+$ touch .env
+$ vi .env
+$ VITE_REACT_APP_STRIPE_URL="YOUR_STRIPE_PUBLISHABLE_KEY"
+$ :wq
+```
+
+3. Install the required packages for the frontend:
+
+```bash
 $ npm install
 ```
 
 3. Create and activate a virtual environment
 
 ```bash
+$ cd ../backend
 $ python3 -m venv myenv
 $ source myenv/bin/activate
+```
+
+4. Configure SMTP, Database and Stripe for the backend:
+
+```bash
+$ touch .env
+$ vi .env
+
+SECRET_KEY='YOUR_VALUE_HERE'
+
+DATABASE_NAME='YOUR_VALUE_HERE'
+DATABASE_USER='YOUR_VALUE_HERE'
+DATABASE_PASSWORD='YOUR_VALUE_HERE'
+DATABASE_HOST='YOUR_VALUE_HERE'
+DATABASE_PORT='YOUR_VALUE_HERE'
+
+EMAIL_BACKEND='YOUR_VALUE_HERE'
+EMAIL_HOST='YOUR_VALUE_HERE'
+EMAIL_USE_TLS='YOUR_VALUE_HERE'
+EMAIL_PORT='YOUR_VALUE_HERE'
+EMAIL_HOST_USER='YOUR_VALUE_HERE'
+EMAIL_HOST_PASSWORD='YOUR_VALUE_HERE'
+STRIPE_API_KEY='YOUR_VALUE_HERE'
+$ wq
+
 ```
 
 4. Install the required packages for the backend:
 
 ```bash
-$ cd ../backend
 $ pip install -r requirements.txt
 ```
 
-5. Run the frontend
+5. Run the frontend and backend servers seperately:
+
+```bash
+$ python manage.py runserver
+```
 
 ```bash
 $ cd ../frontend
-npm start
+$ npm run dev 
 ```
+
 The application should now be running on http://localhost:3000.
 
 ## Built With
