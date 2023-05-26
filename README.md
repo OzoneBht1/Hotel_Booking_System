@@ -8,7 +8,6 @@ A comprehensive hotel booking platform with features such as authentication, sea
 - Recommendation system based on user preferences
 - Booking management and payment processing
 - User-friendly interface with real-time updates and availability check
-- Option for cancellation and rescheduling of bookings
 
 ## Prerequisites 
 - [Node.js](https://nodejs.org/) 
